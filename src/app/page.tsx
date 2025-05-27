@@ -1,15 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { MainLayout } from "@/components/layout/main-layout"
+import { HeroSection } from "@/components/sections/hero"
+
 export default function Home() {
-  return (
-    <>
-      Hello World
-      <Button
-        variant="outline"
-        size="lg"
-        className="bg-blue-500 text-white hover:bg-blue-600"
-      >
-        Click me
-      </Button>
-    </>
-  );
+    return (
+        <MainLayout>
+            <HeroSection />
+        </MainLayout>
+    )
 }
