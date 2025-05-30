@@ -3,9 +3,9 @@ import Image from "next/image"
 
 export function HeroSection() {
     return (
-        <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-32">
+        <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-20">
             {/* Welcome Badge */}
-            <div className="mb-16 md:mb-20 z-10">
+            <div className="mb-8 md:mb-10 z-10">
                 <div className="bg-[#1a1f2e]/80 backdrop-blur-sm border border-synqit-primary/30 rounded-full px-6 py-3 shadow-lg">
                     <div className="flex items-center space-x-3">
                         <div className="w-4 h-4 bg-synqit-primary rounded-sm flex items-center justify-center">
@@ -19,7 +19,7 @@ export function HeroSection() {
             </div>
 
             {/* Logo with Tech Lines - aligned */}
-            <div className="mb-16 md:mb-20 w-full flex items-center justify-center gap-0">
+            <div className="mb-8 md:mb-10 w-full flex items-center justify-center gap-0">
                 {/* Right side tech lines (was left) */}
                 <div className="flex-shrink-0 h-72 md:h-[288px] flex items-center -ml-4 md:-ml-8 lg:-ml-12">
                     <svg
@@ -78,21 +78,21 @@ export function HeroSection() {
             </div>
 
             {/* Heading */}
-            <div className="text-center mb-8 md:mb-12 max-w-4xl z-10">
+            <div className="text-center mb-4 md:mb-6 max-w-4xl z-10">
                 <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
                     The Future of Web3 Collaboration <span className="block">Starts Here</span>
                 </h1>
             </div>
 
             {/* Description */}
-            <div className="text-center mb-12 md:mb-16 max-w-2xl z-10">
+            <div className="text-center mb-6 md:mb-8 max-w-2xl z-10">
                 <p className="text-synqit-muted text-lg md:text-xl leading-relaxed">
                     Discover and engage with the right partners, projects, and communities to accelerate your Web3 journey.
                 </p>
             </div>
 
             {/* CTA Button */}
-            <div className="mb-8 md:mb-12 z-10">
+            <div className="mb-4 md:mb-6 z-10">
                 <Button
                     size="lg"
                     className="bg-black hover:bg-gray-800 text-white px-8 md:px-12 py-4 md:py-6 text-sm md:text-base font-medium rounded-full transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-700 hover:border-gray-600"
