@@ -3,7 +3,7 @@ import Image from "next/image"
 
 export function HeroSection() {
     return (
-        <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-8">
+        <section className="relative min-h-screen flex flex-col items-center md:justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-4 md:mt-8 lg:mt-[104px]">
             {/* Welcome Badge */}
             <div className="mb-8 md:mb-10 z-10">
                 <div className="bg-[#1a1f2e]/80 backdrop-blur-sm border border-synqit-primary/30 rounded-full px-6 py-3 shadow-lg">
@@ -21,7 +21,7 @@ export function HeroSection() {
             {/* Logo with Tech Lines - aligned */}
             <div className="mb-8 md:mb-10 w-full flex items-center justify-center gap-0">
                 {/* Right side tech lines (was left) */}
-                <div className="flex-shrink-0 h-72 md:h-[288px] flex items-center -ml-4 md:-ml-8 lg:-ml-12 mt-10">
+                <div className="hidden md:flex flex-shrink-0 h-72 md:h-[288px] items-center -ml-4 md:-ml-8 lg:-ml-12 mt-10">
                     <svg
                         viewBox="0 0 585 332"
                         fill="none"
@@ -54,7 +54,7 @@ export function HeroSection() {
                     />
                 </div>
                 {/* Left side tech lines (was right) */}
-                <div className="flex-shrink-0 h-72 md:h-[288px] flex items-center -mr-4 md:-mr-8 lg:-mr-12 mt-10">
+                <div className="hidden md:flex flex-shrink-0 h-72 md:h-[288px] items-center -mr-4 md:-mr-8 lg:-mr-12 mt-10">
                     <svg
                         viewBox="0 0 586 332"
                         fill="none"
