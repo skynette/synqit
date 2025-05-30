@@ -3,7 +3,7 @@ import Image from "next/image"
 
 export function HeroSection() {
     return (
-        <section className="relative min-h-screen flex flex-col items-center md:justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-4 md:mt-8 lg:mt-[104px]">
+        <section className="relative min-h-screen flex flex-col items-center md:justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-4 md:mt-8">
             {/* Welcome Badge */}
             <div className="mb-8 md:mb-10 z-10">
                 <div className="bg-[#1a1f2e]/80 backdrop-blur-sm border border-synqit-primary/30 rounded-full px-6 py-3 shadow-lg">
@@ -92,12 +92,27 @@ export function HeroSection() {
             </div>
 
             {/* CTA Button */}
-            <div className="z-10">
+            <div className="z-10 w-full flex flex-col items-center gap-4">
+                {/* Desktop button */}
                 <Button
                     size="lg"
-                    className="bg-black hover:bg-gray-800 text-white px-8 md:px-10 py-3 md:py-5 text-xs md:text-sm font-medium rounded-full transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-700 hover:border-gray-600"
+                    className="hidden md:block bg-black hover:bg-gray-800 text-white px-8 md:px-10 text-xs md:text-sm font-medium rounded-full transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-700 hover:border-gray-600"
                 >
                     DISCOVER PROJECTS. FORGE PARTNERSHIPS.
+                </Button>
+                {/* Mobile buttons */}
+                <Button
+                    size="lg"
+                    className="block md:hidden bg-black hover:bg-gray-800 text-white w-full max-w-xs px-8 text-base font-medium rounded-full border border-synqit-primary"
+                >
+                    GET STARTED
+                </Button>
+                <Button
+                    size="lg"
+                    className="block md:hidden bg-[#23242a] text-gray-400 w-full max-w-xs px-8 text-base font-medium rounded-full border border-transparent"
+                    disabled
+                >
+                    Find Partners
                 </Button>
             </div>
         </section>
