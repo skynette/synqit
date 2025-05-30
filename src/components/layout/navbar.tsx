@@ -1,8 +1,6 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { SynqitLogo } from "@/components/ui/synqit-logo"
 
 const navigationItems = [
@@ -14,8 +12,6 @@ const navigationItems = [
 ]
 
 export function Navbar() {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
     return (
         <>
             {/* Desktop Navbar - Island Style */}
