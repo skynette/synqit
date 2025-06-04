@@ -77,8 +77,8 @@ export function PricingSection() {
                         <button
                             onClick={() => setBillingPeriod("monthly")}
                             className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${billingPeriod === "monthly"
-                                    ? "bg-synqit-primary text-synqit-primary-foreground"
-                                    : "text-synqit-muted-foreground hover:text-foreground"
+                                ? "bg-synqit-primary text-synqit-primary-foreground"
+                                : "text-synqit-muted-foreground hover:text-foreground"
                                 }`}
                         >
                             Monthly
@@ -86,8 +86,8 @@ export function PricingSection() {
                         <button
                             onClick={() => setBillingPeriod("yearly")}
                             className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${billingPeriod === "yearly"
-                                    ? "bg-synqit-primary text-synqit-primary-foreground"
-                                    : "text-synqit-muted-foreground hover:text-foreground"
+                                ? "bg-synqit-primary text-synqit-primary-foreground"
+                                : "text-synqit-muted-foreground hover:text-foreground"
                                 }`}
                         >
                             Yearly
@@ -148,9 +148,13 @@ export function PricingSection() {
 
                             {/* CTA Button */}
                             <button
-                                className="w-full py-3 bg-transparent border border-synqit-primary text-synqit-primary hover:bg-synqit-primary hover:text-synqit-primary-foreground rounded-full font-medium transition-all duration-200 uppercase tracking-wider text-sm"
+                                className="w-full bg-black/50 backdrop-blur-sm border border-blue-500 text-white hover:border-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 px-12 py-4 rounded-full font-medium uppercase tracking-[0.2em] text-sm relative overflow-hidden group"
+                                style={{
+                                    boxShadow: '0 0 15px rgba(59, 130, 246, 0.3), inset 0 0 15px rgba(59, 130, 246, 0.1)'
+                                }}
                             >
-                                Get Started
+                                <span className="relative z-10">Get Started</span>
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                             </button>
                         </div>
                     ))}

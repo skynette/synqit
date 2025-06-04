@@ -86,7 +86,7 @@ export function HeroSection() {
 
             {/* Description */}
             <div className="text-center mb-6 md:mb-8 z-10">
-                <p className="text-synqit-muted text-base md:text-lg leading-relaxed">
+                <p className="text-gray-400 text-base md:text-lg leading-relaxed">
                     Discover and engage with the right partners, projects, and communities to accelerate your Web3 journey.
                 </p>
             </div>
@@ -101,12 +101,15 @@ export function HeroSection() {
                     DISCOVER PROJECTS. FORGE PARTNERSHIPS.
                 </Button>
                 {/* Mobile buttons */}
-                <Button
-                    size="lg"
-                    className="block md:hidden bg-black hover:bg-gray-800 text-white w-full max-w-xs px-8 text-base font-medium rounded-full border border-synqit-primary"
+                <button
+                    className="block md:hidden bg-black/50 backdrop-blur-sm border border-blue-500 text-white hover:border-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 px-12 py-4 rounded-full font-medium uppercase tracking-[0.2em] text-sm relative overflow-hidden group w-full max-w-xs mx-auto"
+                    style={{
+                        boxShadow: '0 0 15px rgba(59, 130, 246, 0.3), inset 0 0 15px rgba(59, 130, 246, 0.1)'
+                    }}
                 >
-                    GET STARTED
-                </Button>
+                    <span className="relative z-10">GET STARTED</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                </button>
                 <Button
                     size="lg"
                     className="block md:hidden bg-[#23242a] text-gray-400 w-full max-w-xs px-8 text-base font-medium rounded-full border border-transparent"

@@ -218,9 +218,13 @@ export function TrustedBuildersSection() {
                 <div className="text-center">
                     <Link
                         href="/start-journey"
-                        className="inline-block bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 px-8 py-3 rounded-full font-medium uppercase tracking-wider"
+                        className="inline-block bg-black/50 backdrop-blur-sm border border-blue-500 text-white hover:border-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 px-12 py-4 rounded-full font-medium uppercase tracking-[0.2em] text-sm relative overflow-hidden group"
+                        style={{
+                            boxShadow: '0 0 15px rgba(59, 130, 246, 0.3), inset 0 0 15px rgba(59, 130, 246, 0.1)'
+                        }}
                     >
-                        Start Your Web3 Journey
+                        <span className="relative z-10">Start Your Web3 Journey</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                     </Link>
                 </div>
             </div>
