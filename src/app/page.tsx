@@ -15,7 +15,7 @@ export default function Home() {
         <MainLayout>
             <HeroSection />
             <Web3CollaborationSection />
-            {/* <UnlockWeb3Section /> */}
+            <UnlockWeb3Section />
             <WhyChooseSynqitSection />
             <HowSynqitWorksSection />
             <TrustedBuildersSection />
