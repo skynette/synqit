@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react"
+import { GradientHeading } from "../ui/heading"
 
 interface PricingPlan {
     id: string
@@ -65,9 +66,9 @@ export function PricingSection() {
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                    <GradientHeading as="h2" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         Flexible Pricing for Every Web3 Builder
-                    </h2>
+                    </GradientHeading>
                     <p className="text-synqit-muted-foreground text-base md:text-lg max-w-3xl mx-auto mb-8">
                         Whether you're a startup, investor, or enterprise, Synqit offers tailored plans to match your networking needs.
                     </p>

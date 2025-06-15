@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { GradientHeading } from "../ui/heading"
 
 interface CollaborationFeature {
     id: string
@@ -49,9 +50,9 @@ export function Web3CollaborationSection() {
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-16 md:mb-20">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                    <GradientHeading as="h2" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         Seamless Web3 Collaboration
-                    </h2>
+                    </GradientHeading>
                     <p className="text-synqit-muted-foreground text-base md:text-lg max-w-3xl mx-auto">
                         Discover and engage with the right partners, projects, and communities to accelerate your Web3 journey.
                     </p>

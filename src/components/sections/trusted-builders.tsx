@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from "next/image"
 import Link from "next/link"
+import { GradientHeading } from '../ui/heading'
 
 interface Partner {
     id: string
@@ -102,9 +103,9 @@ export function TrustedBuildersSection() {
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
+                    <GradientHeading as="h2" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                         Trusted by 1000+ Web3 Builders & Innovators
-                    </h2>
+                    </GradientHeading>
                     <p className="text-gray-400 text-base md:text-lg max-w-3xl mx-auto mb-8">
                         Join a growing community of Web3 enthusiasts, startups, and enterprises using Synqit to collaborate,
                         innovate, and build the future of decentralized work.

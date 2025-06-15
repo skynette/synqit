@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { GradientHeading } from "../ui/heading"
 
 interface Feature {
     id: string
@@ -53,9 +54,9 @@ export function WhyChooseSynqitSection() {
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                    <GradientHeading className="text-2xl md:text-3xl lg:text-4xl mb-4">
                         Why Choose Synqit?
-                    </h2>
+                    </GradientHeading>
                     <p className="text-synqit-muted-foreground text-base md:text-lg">
                         The Future of Web3 Collaboration, Secured & Smarter.
                     </p>
@@ -73,9 +74,9 @@ export function WhyChooseSynqitSection() {
                                 <Image
                                     src={feature.iconSrc}
                                     alt={feature.iconAlt}
-                                    width={40}
-                                    height={40}
-                                    className="w-10 h-10"
+                                    width={48}
+                                    height={48}
+                                    className="w-12 h-12"
                                 />
                             </div>
 
@@ -101,9 +102,9 @@ export function WhyChooseSynqitSection() {
                                 <Image
                                     src={bottomFeature.iconSrc}
                                     alt={bottomFeature.iconAlt}
-                                    width={40}
-                                    height={40}
-                                    className="w-10 h-10"
+                                    width={48}
+                                    height={48}
+                                    className="w-12 h-12"
                                 />
                             </div>
 

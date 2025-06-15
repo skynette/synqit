@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ChevronDown } from "lucide-react"
+import { GradientHeading } from "../ui/heading"
 
 interface FAQItem {
     id: string
@@ -48,9 +49,9 @@ export function FAQSection() {
             <div className="container mx-auto px-4 md:px-6 max-w-4xl">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+                    <GradientHeading as="h2" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                         Frequently Asked Questions (FAQs)
-                    </h2>
+                    </GradientHeading>
                     <p className="text-synqit-muted-foreground text-base md:text-lg">
                         Everything You Need to Know About Synqit - Answered! 🚀
                     </p>
@@ -92,7 +93,7 @@ export function FAQSection() {
                     ${isOpen ? 'max-h-96 pb-5' : 'max-h-0'}
                   `}
                                 >
-                                    <p className="text-base text-sm md:text-base leading-relaxed">
+                                    <p className="text-sm md:text-base leading-relaxed">
                                         {item.answer}
                                     </p>
                                 </div>

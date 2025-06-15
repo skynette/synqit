@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { GradientHeading } from "../ui/heading"
 
 const navigationLinks = [
     { name: "Home", href: "/" },
@@ -24,9 +25,9 @@ export function Footer() {
                 <div className="bg-synqit-surface/20 backdrop-blur-sm border border-synqit-border/30 rounded-3xl p-8 md:p-16">
                     {/* CTA Section */}
                     <div className="text-center mb-12 md:mb-16">
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8">
+                        <GradientHeading as="h2" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8">
                             Let's create your next big idea.
-                        </h2>
+                        </GradientHeading>
                         <Link
                             href="/get-started"
                             className="inline-block bg-black/50 backdrop-blur-sm border border-blue-500 text-white hover:border-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 px-10 py-3 rounded-full font-medium uppercase tracking-[0.2em] text-sm relative overflow-hidden group"

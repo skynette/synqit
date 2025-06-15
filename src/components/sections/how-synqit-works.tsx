@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { Check, ArrowDown } from "lucide-react"
+import { GradientHeading } from "../ui/heading"
 
 interface WorkStep {
     id: string
@@ -73,9 +74,9 @@ export function HowSynqitWorksSection() {
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-16 md:mb-20">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                    <GradientHeading as="h2" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         How Synqit Works
-                    </h2>
+                    </GradientHeading>
                     <p className="text-synqit-muted-foreground text-base md:text-lg">
                         Effortlessly find, connect, and collaborate with the right Web3 partners in just a few steps.
                     </p>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import Image from "next/image"
+import { GradientHeading } from "../ui/heading"
 
 interface Testimonial {
     id: string
@@ -88,9 +89,9 @@ export function TestimonialsSection() {
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                    <GradientHeading as="h2" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         Testimonials that Speak to Our Results
-                    </h2>
+                    </GradientHeading>
                     <p className="text-synqit-muted-foreground text-base md:text-lg">
                         See how Synqit is transforming Web3 partnerships with real success stories
                     </p>

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { GradientHeading } from "../ui/heading"
 
 export function HeroSection() {
     return (
@@ -79,9 +80,9 @@ export function HeroSection() {
 
             {/* Heading */}
             <div className="mb-4 md:mb-6 z-10">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight text-center">
+                <GradientHeading as="h1" className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-center">
                     The Future of Web3 Collaboration Starts<span className="block">Here</span>
-                </h1>
+                </GradientHeading>
             </div>
 
             {/* Description */}
