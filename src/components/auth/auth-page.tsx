@@ -333,7 +333,7 @@ function SocialLoginSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <button className="flex items-center justify-between bg-[#2a3142] border border-synqit-border rounded-lg px-4 py-3 text-white hover:bg-[#3a4152] transition-colors">
                     <div className="flex items-center gap-3">
-                        <Image src="/icons/gmail.svg" alt="Gmail" width={20} height={20} />
+                        <Image src="/icons/gmail.svg" alt="Gmail" width={30} height={30} />
                         <span>Gmail</span>
                     </div>
                     <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center">
@@ -345,7 +345,7 @@ function SocialLoginSection() {
 
                 <button className="flex items-center justify-between bg-[#2a3142] border border-synqit-border rounded-lg px-4 py-3 text-white hover:bg-[#3a4152] transition-colors">
                     <div className="flex items-center gap-3">
-                        <Image src="/icons/discord.svg" alt="Discord" width={20} height={20} />
+                        <Image src="/icons/discord.svg" alt="Discord" width={30} height={30} />
                         <span>Discord</span>
                     </div>
                     <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center">
@@ -372,15 +372,15 @@ function SocialLoginSection() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <button className="flex items-center justify-between bg-[#2a3142] border border-[#4C82ED] rounded-lg px-4 py-3 text-white hover:bg-[#3a4152] transition-colors">
                             <span>WalletConnect</span>
-                            <div className="w-8 h-8 bg-[#4C82ED] rounded-full flex items-center justify-center">
-                                <Image src="/icons/walletconnect.svg" alt="WalletConnect" width={16} height={16} />
+                            <div className="rounded-full flex items-center justify-center">
+                                <Image src="/icons/wallet-connect.svg" alt="WalletConnect" width={40} height={40} />
                             </div>
                         </button>
 
                         <button className="flex items-center justify-between bg-[#2a3142] border border-synqit-border rounded-lg px-4 py-3 text-white hover:bg-[#3a4152] transition-colors">
                             <span>Meta Mask</span>
-                            <div className="w-8 h-8 flex items-center justify-center">
-                                <Image src="/icons/metamask.svg" alt="MetaMask" width={20} height={20} />
+                            <div className="flex items-center justify-center">
+                                <Image src="/icons/metamask.svg" alt="MetaMask" width={40} height={40} />
                             </div>
                         </button>
                     </div>
@@ -428,7 +428,7 @@ export function AuthPage() {
                 </div>
 
                 {/* Form Container */}
-                <div className="bg-transparent -z-20 backdrop-blur-sm border border-synqit-border rounded-3xl p-8">
+                <div className="bg-blue-800/5 border border-synqit-border rounded-3xl p-8">
                     {/* Dynamic Form Content */}
                     {activeTab === 'login' ? (
                         <LoginForm onSubmit={handleLoginSubmit} />
