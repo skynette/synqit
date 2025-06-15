@@ -336,11 +336,28 @@ function SocialLoginSection() {
                         <Image src="/icons/gmail.svg" alt="Gmail" width={30} height={30} />
                         <span>Gmail</span>
                     </div>
-                    <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path d="M2 6L6 2L10 6M6 10V2" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </div>
+                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="34" height="34" rx="10" fill="white" />
+                        <g clip-path="url(#clip0_140_1159)">
+                            <g clip-path="url(#clip1_140_1159)">
+                                <g clip-path="url(#clip2_140_1159)">
+                                    <path d="M22 16.6699H12" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M18 12.6699L22 16.6699L18 20.6699" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </g>
+                            </g>
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_140_1159">
+                                <rect width="12" height="10" fill="white" transform="translate(11 11.6699)" />
+                            </clipPath>
+                            <clipPath id="clip1_140_1159">
+                                <rect width="12" height="10" fill="white" transform="translate(11 11.6699)" />
+                            </clipPath>
+                            <clipPath id="clip2_140_1159">
+                                <rect width="12" height="10" fill="white" transform="translate(11 11.6699)" />
+                            </clipPath>
+                        </defs>
+                    </svg>
                 </button>
 
                 <button className="flex items-center justify-between bg-[#2a3142] border border-synqit-border rounded-lg px-4 py-3 text-white hover:bg-[#3a4152] transition-colors">
@@ -348,11 +365,29 @@ function SocialLoginSection() {
                         <Image src="/icons/discord.svg" alt="Discord" width={30} height={30} />
                         <span>Discord</span>
                     </div>
-                    <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path d="M2 6L6 2L10 6M6 10V2" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </div>
+                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="34" height="34" rx="10" fill="white" />
+                        <g clip-path="url(#clip0_140_1159)">
+                            <g clip-path="url(#clip1_140_1159)">
+                                <g clip-path="url(#clip2_140_1159)">
+                                    <path d="M22 16.6699H12" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M18 12.6699L22 16.6699L18 20.6699" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </g>
+                            </g>
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_140_1159">
+                                <rect width="12" height="10" fill="white" transform="translate(11 11.6699)" />
+                            </clipPath>
+                            <clipPath id="clip1_140_1159">
+                                <rect width="12" height="10" fill="white" transform="translate(11 11.6699)" />
+                            </clipPath>
+                            <clipPath id="clip2_140_1159">
+                                <rect width="12" height="10" fill="white" transform="translate(11 11.6699)" />
+                            </clipPath>
+                        </defs>
+                    </svg>
+
                 </button>
             </div>
 
@@ -410,8 +445,8 @@ export function AuthPage() {
                     <button
                         onClick={() => setActiveTab('login')}
                         className={`flex-1 py-3 px-6 rounded-full font-medium transition-all duration-300 ${activeTab === 'login'
-                                ? 'bg-[#4C82ED] text-white shadow-lg'
-                                : 'bg-transparent text-gray-400 hover:text-white'
+                            ? 'bg-[#4C82ED] text-white shadow-lg'
+                            : 'bg-transparent text-gray-400 hover:text-white'
                             }`}
                     >
                         Login
@@ -419,8 +454,8 @@ export function AuthPage() {
                     <button
                         onClick={() => setActiveTab('signup')}
                         className={`flex-1 py-3 px-6 rounded-full font-medium transition-all duration-300 ${activeTab === 'signup'
-                                ? 'bg-[#4C82ED] text-white shadow-lg'
-                                : 'bg-transparent text-gray-400 hover:text-white'
+                            ? 'bg-[#4C82ED] text-white shadow-lg'
+                            : 'bg-transparent text-gray-400 hover:text-white'
                             }`}
                     >
                         Sign Up
