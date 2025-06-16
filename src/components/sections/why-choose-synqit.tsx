@@ -67,7 +67,7 @@ export function WhyChooseSynqitSection() {
                     {features.map((feature) => (
                         <div
                             key={feature.id}
-                            className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-8 flex gap-6"
+                            className="bg-synqit-surface/50 border border-synqit-border rounded-2xl p-8 flex items-center gap-6"
                         >
                             {/* Icon Container */}
                             <div className="flex-shrink-0">
@@ -95,16 +95,16 @@ export function WhyChooseSynqitSection() {
 
                 {/* Bottom Feature - Centered */}
                 <div className="flex justify-center">
-                    <div className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-8 max-w-2xl w-full">
-                        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
+                    <div className="bg-synqit-surface/50 border border-synqit-border rounded-2xl p-8 max-w-2xl w-full">
+                        <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                             {/* Icon */}
                             <div className="flex-shrink-0">
                                 <Image
                                     src={bottomFeature.iconSrc}
                                     alt={bottomFeature.iconAlt}
-                                    width={48}
-                                    height={48}
-                                    className="w-12 h-12"
+                                    width={64}
+                                    height={64}
+                                    className="w-16 h-16"
                                 />
                             </div>
 
