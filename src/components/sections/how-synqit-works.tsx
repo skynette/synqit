@@ -87,48 +87,60 @@ export function HowSynqitWorksSection() {
                     {workSteps.map((step, index) => (
                         <div key={step.id} className="relative">
                             {/* Main Card Container */}
-                            <div className="bg-synqit-surface/10 backdrop-blur-sm border border-synqit-border/20 rounded-2xl p-8 md:p-12">
-                                <div className={`flex flex-col ${step.imagePosition === 'left' ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-8 md:gap-12`}>
+                            <div className="relative bg-synqit-surface/10 border border-synqit-border/20 rounded-2xl p-8 md:p-12">
+                                {/* Stick SVG */}
+                                <div className={`hidden md:block absolute top-0 h-full z-10 py-6 w-16 ${(index % 2 === 0) ? 'left-0 pl-6' : 'left-1/2 -translate-x-1/2'}`}>
+                                    <img
+                                        src={`/icons/stick-${index + 1}.svg`}
+                                        alt=""
+                                        className="h-full"
+                                        draggable={false}
+                                    />
+                                </div>
+                                {/* Card Content */}
+                                <div className={`relative z-20 ${index % 2 === 0 ? 'md:ml-20' : ''}`}>
+                                    <div className={`flex flex-col ${step.imagePosition === 'left' ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-8 md:gap-12`}>
 
-                                    {/* Image Side with Icon */}
-                                    <div className="w-full md:w-1/2 relative">
-                                        {/* Image */}
-                                        <div className="relative w-full h-64 md:h-80">
-                                            <Image
-                                                src={step.imageSrc}
-                                                alt={step.imageAlt}
-                                                fill
-                                                className="object-contain"
-                                                priority={index === 0}
-                                            />
+                                        {/* Image Side with Icon */}
+                                        <div className="w-full md:w-1/2 relative">
+                                            {/* Image */}
+                                            <div className="relative w-full h-64 md:h-80">
+                                                <Image
+                                                    src={step.imageSrc}
+                                                    alt={step.imageAlt}
+                                                    fill
+                                                    className="object-contain"
+                                                    priority={index === 0}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    {/* Content Side */}
-                                    <div className="w-full md:w-1/2">
-                                        {/* Title and Description */}
-                                        <h3 className="text-2xl md:text-3xl font-bold mb-2">
-                                            {step.title}
-                                        </h3>
-                                        {step.description && (
-                                            <p className="text-synqit-muted-foreground text-sm italic mb-6">
-                                                {step.description}
-                                            </p>
-                                        )}
+                                        {/* Content Side */}
+                                        <div className="w-full md:w-1/2">
+                                            {/* Title and Description */}
+                                            <h3 className="text-2xl md:text-3xl font-bold mb-2">
+                                                {step.title}
+                                            </h3>
+                                            {step.description && (
+                                                <p className="text-synqit-muted-foreground text-sm italic mb-6">
+                                                    {step.description}
+                                                </p>
+                                            )}
 
-                                        {/* Bullet Points with Check Icons */}
-                                        <ul className="space-y-4">
-                                            {step.bulletPoints.map((point, pointIndex) => (
-                                                <li key={pointIndex} className="flex items-start gap-3">
-                                                    <div className={`w-6 h-6 ${step.iconColor} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                                                        <Check className="w-4 h-4 text-white" />
-                                                    </div>
-                                                    <p className="text-synqit-muted-foreground text-base leading-relaxed">
-                                                        {point}
-                                                    </p>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                            {/* Bullet Points with Check Icons */}
+                                            <ul className="space-y-4">
+                                                {step.bulletPoints.map((point, pointIndex) => (
+                                                    <li key={pointIndex} className="flex items-start gap-3">
+                                                        <div className={`w-6 h-6 ${step.iconColor} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                                                            <Check className="w-4 h-4 text-white" />
+                                                        </div>
+                                                        <p className="text-synqit-muted-foreground text-base leading-relaxed">
+                                                            {point}
+                                                        </p>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
