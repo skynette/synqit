@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from "next/image"
+import { GradientHeading } from '../ui/heading'
 
 export function UnlockWeb3Section() {
     return (
@@ -8,9 +9,9 @@ export function UnlockWeb3Section() {
                 {/* Main content wrapper */}
                 <div className="relative flex flex-col items-center justify-center">
                     {/* Heading */}
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 text-white text-center">
+                    <GradientHeading as='h2' className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 text-center">
                         Unlock the Power of Web3 Today!
-                    </h2>
+                    </GradientHeading>
 
                     {/* Subheading */}
                     <p className="text-gray-400 text-base md:text-lg lg:text-xl mb-12 md:mb-16 text-center">
@@ -20,7 +21,7 @@ export function UnlockWeb3Section() {
                     {/* Logo with SVG lines container */}
                     <div className="relative flex items-center justify-center mb-12 md:mb-16 w-full">
                         {/* Left SVG lines - Hidden on mobile */}
-                        <div className="hidden md:block absolute left-1/2 -translate-x-[calc(50%+80px)] md:-translate-x-[calc(50%+100px)] lg:-translate-x-[calc(50%+120px)]">
+                        <div className="hidden md:block absolute left-1/2 -translate-x-[calc(50%+80px)] md:-translate-x-[calc(50%+100px)] lg:-translate-x-[calc(50%+180px)]">
                             <svg
                                 viewBox="0 0 585 332"
                                 fill="none"
@@ -55,7 +56,7 @@ export function UnlockWeb3Section() {
                         </div>
 
                         {/* Right SVG lines - Hidden on mobile */}
-                        <div className="hidden md:block absolute left-1/2 translate-x-[calc(50%-80px)] md:translate-x-[calc(50%-100px)] lg:translate-x-[calc(50%-120px)]">
+                        <div className="hidden md:block absolute left-1/2 translate-x-[calc(50%-80px)] md:translate-x-[calc(50%-100px)] lg:translate-x-[calc(50%-70px)]">
                             <svg
                                 viewBox="0 0 586 332"
                                 fill="none"
