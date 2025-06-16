@@ -16,7 +16,7 @@ export function Navbar() {
         <>
             {/* Desktop Navbar - Island Style */}
             <nav className="hidden md:block fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[80%] max-w-[1193px] mx-auto rounded-full">
-                <div className="bg-[#1a1f2e]/90 backdrop-blur-md border border-synqit-border rounded-full px-6 py-1 shadow-2xl">
+                <div className="bg-[#1a1f2e]/90 backdrop-blur-md border border-synqit-border rounded-full px-4 py-2.5 shadow-2xl">
                     <div className="flex items-center justify-center space-x-8 w-full">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-2 min-w-0">
@@ -29,7 +29,7 @@ export function Navbar() {
                                 <a
                                     key={item.name}
                                     href={item.href}
-                                    className="text-white/80 hover:text-white transition-colors duration-200 text-sm font-medium whitespace-nowrap"
+                                    className="text-white/80 hover:text-white transition-colors duration-200 text-xs font-medium whitespace-nowrap"
                                 >
                                     {item.name}
                                 </a>
