@@ -66,12 +66,12 @@ export function Web3CollaborationSection() {
                             <div key={feature.id} className="relative">
                                 <div className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-6 lg:p-8 h-full">
                                     {/* Feature Image */}
-                                    <div className="relative w-full h-40 md:h-48 mb-6 rounded-lg overflow-hidden">
+                                    <div className="relative w-full h-64 md:h-48 mb-6 rounded-lg overflow-hidden">
                                         <Image
                                             src={feature.imageSrc}
                                             alt={feature.imageAlt}
                                             fill
-                                            className="object-none"
+                                            className="object-contain"
                                             priority
                                         />
                                     </div>
@@ -119,11 +119,11 @@ export function Web3CollaborationSection() {
 
                             {/* Secure On-Chain Partnerships Card */}
                             <div className="w-full md:w-auto">
-                                <div className="text-center">
+                                <div className="text-center bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-6 lg:p-8 h-full flex flex-col items-center justify-center">
                                     {/* Shield Icon Container */}
                                     <div className="inline-block mb-6">
-                                        <div className="w-24 h-24 md:w-32 md:h-32 bg-synqit-primary/10 rounded-2xl flex items-center justify-center">
-                                            <div className="relative w-[100px] h-[100px] md:w-[200px] md:h-[200px]">
+                                        <div className="w-32 h-32 md:w-32 md:h-32 bg-synqit-primary/10 rounded-2xl flex items-center justify-center">
+                                            <div className="relative w-24 h-24 md:w-[200px] md:h-[200px]">
                                                 <Image
                                                     src={bottomFeature.imageSrc}
                                                     alt={bottomFeature.imageAlt}
@@ -133,7 +133,6 @@ export function Web3CollaborationSection() {
                                             </div>
                                         </div>
                                     </div>
-
                                     <h3 className="text-xl md:text-2xl font-bold">
                                         {bottomFeature.title}
                                     </h3>
