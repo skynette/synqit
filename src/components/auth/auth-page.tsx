@@ -34,7 +34,7 @@ function LoginForm({ onSubmit }: LoginFormProps) {
         password: ''
     })
     const [agreeToTerms, setAgreeToTerms] = useState(false)
-    const [focusedField, setFocusedField] = useState<string>('')
+    const [focusedField, setFocusedField] = useState<string>("")
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -60,37 +60,31 @@ function LoginForm({ onSubmit }: LoginFormProps) {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Input */}
-                <div>
+                <div className={`${focusedField === 'email' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
                     <input
                         type="email"
                         name="email"
                         placeholder="Enter Email/Username"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
-                        style={{
-                            borderColor: getBorderColor('email', formData.email)
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#4C82ED'}
-                        onBlur={(e) => e.target.style.borderColor = formData.email ? '#4C82ED' : '#6B7280'}
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField('')}
+                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
                     />
                 </div>
 
                 {/* Password Input */}
-                <div>
+                <div className={`${focusedField === 'password' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
                     <input
                         type="password"
                         name="password"
                         placeholder="Enter Password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
-                        style={{
-                            borderColor: formData.password ? '#4C82ED' : '#6B7280'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#4C82ED'}
-                        onBlur={(e) => e.target.style.borderColor = formData.password ? '#4C82ED' : '#6B7280'}
+                        onFocus={() => setFocusedField('password')}
+                        onBlur={() => setFocusedField('')}
+                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
                     />
                 </div>
@@ -145,6 +139,7 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
         confirmPassword: ''
     })
     const [agreeToTerms, setAgreeToTerms] = useState(false)
+    const [focusedField, setFocusedField] = useState<string>("")
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -166,73 +161,61 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Input */}
-                <div>
+                <div className={`${focusedField === 'email' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
                     <input
                         type="email"
                         name="email"
                         placeholder="Enter Email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
-                        style={{
-                            borderColor: formData.email ? '#4C82ED' : '#6B7280'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#4C82ED'}
-                        onBlur={(e) => e.target.style.borderColor = formData.email ? '#4C82ED' : '#6B7280'}
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField('')}
+                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
                     />
                 </div>
 
                 {/* Username Input */}
-                <div>
+                <div className={`${focusedField === 'username' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
                     <input
                         type="text"
                         name="username"
                         placeholder="Enter Username"
                         value={formData.username}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
-                        style={{
-                            borderColor: formData.username ? '#4C82ED' : '#6B7280'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#4C82ED'}
-                        onBlur={(e) => e.target.style.borderColor = formData.username ? '#4C82ED' : '#6B7280'}
+                        onFocus={() => setFocusedField('username')}
+                        onBlur={() => setFocusedField('')}
+                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
                     />
                 </div>
 
                 {/* Password Input */}
-                <div>
+                <div className={`${focusedField === 'password' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
                     <input
                         type="password"
                         name="password"
                         placeholder="Enter Password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
-                        style={{
-                            borderColor: formData.password ? '#4C82ED' : '#6B7280'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#4C82ED'}
-                        onBlur={(e) => e.target.style.borderColor = formData.password ? '#4C82ED' : '#6B7280'}
+                        onFocus={() => setFocusedField('password')}
+                        onBlur={() => setFocusedField('')}
+                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
                     />
                 </div>
 
                 {/* Confirm Password Input */}
-                <div>
+                <div className={`${focusedField === 'confirmPassword' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
                     <input
                         type="password"
                         name="confirmPassword"
                         placeholder="Confirm Password"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
-                        style={{
-                            borderColor: formData.confirmPassword ? '#4C82ED' : '#6B7280'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#4C82ED'}
-                        onBlur={(e) => e.target.style.borderColor = formData.confirmPassword ? '#4C82ED' : '#6B7280'}
+                        onFocus={() => setFocusedField('confirmPassword')}
+                        onBlur={() => setFocusedField('')}
+                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
                     />
                 </div>
