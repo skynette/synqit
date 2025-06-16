@@ -160,6 +160,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
   }
   
   /* Synqit specific utility classes */
