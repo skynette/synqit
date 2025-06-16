@@ -3,7 +3,7 @@ import Image from "next/image"
 
 export function UnlockWeb3Section() {
     return (
-        <section className="w-full py-20 md:py-32 relative bg-[#0a0e1a] overflow-hidden">
+        <section className="w-full py-4 md:py-32 relative overflow-hidden">
             <div className="container mx-auto px-4 md:px-6 max-w-7xl relative">
                 {/* Main content wrapper */}
                 <div className="relative flex flex-col items-center justify-center">

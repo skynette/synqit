@@ -50,7 +50,7 @@ const bottomFeature: Feature = {
 
 export function WhyChooseSynqitSection() {
     return (
-        <section className="w-full py-20 md:py-32 relative">
+        <section className="w-full py-4 md:py-32 relative">
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-16">

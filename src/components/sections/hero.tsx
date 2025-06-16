@@ -4,7 +4,7 @@ import { GradientHeading } from "../ui/heading"
 
 export function HeroSection() {
     return (
-        <section className="relative min-h-screen flex flex-col items-center md:justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-4 md:mt-8">
+        <section className="relative min-h-screen flex flex-col items-center md:justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-4 md:mt-8 py-4 md:py-32">
             {/* Welcome Badge */}
             <div className="mb-8 md:mb-10 z-10">
                 <div className="bg-[#1a1f2e]/30 backdrop-blur-sm border border-synqit-primary/30 rounded-full px-6 py-3 shadow-lg">

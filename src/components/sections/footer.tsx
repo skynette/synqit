@@ -19,10 +19,10 @@ const socialLinks = [
 
 export function Footer() {
     return (
-        <footer className="w-full py-8 md:py-12">
+        <footer className="w-full py-2 md:py-12">
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
                 {/* Footer Content Container with Background */}
-                <div className="bg-synqit-surface/20 backdrop-blur-sm border border-synqit-border/30 rounded-3xl p-8 md:p-16">
+                <div className="bg-synqit-surface/30 border border-synqit-border/30 rounded-3xl p-8 md:p-16">
                     {/* CTA Section */}
                     <div className="text-center mb-12 md:mb-16">
                         <GradientHeading as="h2" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8">
