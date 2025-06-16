@@ -179,3 +179,16 @@
     @apply bg-synqit-input border-synqit-border text-foreground placeholder:text-synqit-muted-foreground;
   }
 }
+
+.unlock-oval-border {
+  border-radius: 999px/60vw;
+  aspect-ratio: 1/2;
+  overflow: hidden;
+  position: relative;
+}
+@media (min-width: 768px) {
+  .unlock-oval-border {
+    aspect-ratio: unset;
+    border-radius: 999px;
+  }
+}
