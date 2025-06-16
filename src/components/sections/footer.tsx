@@ -29,7 +29,7 @@ export function Footer() {
                             Let's create your next big idea.
                         </GradientHeading>
                         <Link
-                            href="/get-started"
+                            href="/auth"
                             className="inline-block bg-black/50 backdrop-blur-sm border border-blue-500 text-white hover:border-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 px-10 py-3 rounded-full font-medium uppercase tracking-[0.2em] text-sm relative overflow-hidden group"
                             style={{
                                 boxShadow: '0 0 15px rgba(59, 130, 246, 0.3), inset 0 0 15px rgba(59, 130, 246, 0.1)'

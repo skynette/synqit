@@ -14,13 +14,23 @@ export default function Home() {
     return (
         <MainLayout>
             <HeroSection />
-            <Web3CollaborationSection />
+            <section id="about">
+                <Web3CollaborationSection />
+            </section>
             <UnlockWeb3Section />
-            <WhyChooseSynqitSection />
-            <HowSynqitWorksSection />
+            <section id="why-synqit">
+                <WhyChooseSynqitSection />
+            </section>
+            <section id="how-synqit-work">
+                <HowSynqitWorksSection />
+            </section>
             <TrustedBuildersSection />
-            <TestimonialsSection />
-            <PricingSection/>
+            <section id="testimonial">
+                <TestimonialsSection />
+            </section>
+            <section id="pricing">
+                <PricingSection/>
+            </section>
             <FAQSection />
             <Footer />
         </MainLayout>
