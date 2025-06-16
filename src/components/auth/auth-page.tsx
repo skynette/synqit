@@ -88,6 +88,7 @@ function LoginForm({ onSubmit }: LoginFormProps) {
         password: ''
     })
     const [agreeToTerms, setAgreeToTerms] = useState(false)
+    const [focusedField, setFocusedField] = useState<string>('')
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -99,6 +100,10 @@ function LoginForm({ onSubmit }: LoginFormProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         onSubmit(formData)
+    }
+
+    const getBorderColor = (fieldName: string, fieldValue: string) => {
+        return focusedField === fieldName || fieldValue ? '#4C82ED' : '#6B7280'
     }
 
     return (
@@ -118,7 +123,7 @@ function LoginForm({ onSubmit }: LoginFormProps) {
                         onChange={handleInputChange}
                         className="w-full bg-transparent border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
                         style={{
-                            borderColor: formData.email || document.activeElement === event?.target ? '#4C82ED' : '#6B7280'
+                            borderColor: getBorderColor('email', formData.email)
                         }}
                         onFocus={(e) => e.target.style.borderColor = '#4C82ED'}
                         onBlur={(e) => e.target.style.borderColor = formData.email ? '#4C82ED' : '#6B7280'}
