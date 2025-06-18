@@ -4,9 +4,9 @@ import { GradientHeading } from "../ui/heading"
 
 export function HeroSection() {
     return (
-        <section className="relative min-h-screen flex flex-col items-center md:justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-4 md:mt-8 py-4 md:py-32">
+        <section className="relative min-h-screen flex flex-col items-center md:justify-center px-4 sm:px-6 lg:px-8 overflow-hidden mt-6 md:mt-10 py-4 md:py-20">
             {/* Welcome Badge */}
-            <div className="mb-8 md:mb-10 z-10">
+            <div className="mb-6 md:mb-8 z-10">
                 <div className="bg-[#1a1f2e]/30 backdrop-blur-sm border border-synqit-primary/30 rounded-full px-6 py-3 shadow-lg">
                     <div className="flex items-center space-x-3">
                         <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -77,14 +77,14 @@ export function HeroSection() {
             </div>
 
             {/* Heading */}
-            <div className="mb-4 md:mb-6 z-10">
-                <GradientHeading as="h1" className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-center">
-                    The Future of Web3 Collaboration Starts<span className="block">Here</span>
+            <div className="mt-8 mb-4 md:mt-10 md:mb-6 z-10">
+                <GradientHeading as="h1" className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-center">
+                    The Future of Web3 Collaboration Starts Here
                 </GradientHeading>
             </div>
 
             {/* Description */}
-            <div className="text-center mb-6 md:mb-8 z-10">
+            <div className="text-center mb-12 md:mb-16 z-10">
                 <p className="text-gray-400 text-base md:text-lg leading-relaxed">
                     Discover and engage with the right partners, projects, and communities to accelerate your Web3 journey.
                 </p>

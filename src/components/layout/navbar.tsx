@@ -16,11 +16,11 @@ export function Navbar() {
         <>
             {/* Desktop Navbar - Island Style */}
             <nav className="hidden md:block fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[80%] max-w-[1193px] mx-auto rounded-full">
-                <div className="bg-[#1a1f2e]/90 backdrop-blur-md border border-synqit-border rounded-full px-4 py-2.5 shadow-2xl">
+                <div className="bg-[#1a1f2e]/30 backdrop-blur-md border border-synqit-border rounded-full pl-4 pr-2 py-2 shadow-2xl">
                     <div className="flex items-center justify-center space-x-8 w-full">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-2 min-w-0">
-                            <SynqitLogo className="w-20 md:w-24 lg:w-28 xl:w-32 min-w-0" />
+                            <SynqitLogo className="w-16 md:w-20 lg:w-24 xl:w-28 min-w-0" />
                         </Link>
 
                         {/* Navigation Links */}
@@ -29,7 +29,7 @@ export function Navbar() {
                                 <a
                                     key={item.name}
                                     href={item.href}
-                                    className="text-white/80 hover:text-white transition-colors duration-200 text-xs font-medium whitespace-nowrap"
+                                    className="text-white/80 hover:text-white transition-colors duration-200 text-sm font-medium whitespace-nowrap"
                                 >
                                     {item.name}
                                 </a>
@@ -39,7 +39,7 @@ export function Navbar() {
                         {/* Login Button with Gradient Border */}
                         <Link
                             href="/auth"
-                            className="w-fit bg-black/50 backdrop-blur-sm border border-blue-500 text-white hover:border-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 px-8 py-2.5 rounded-full font-medium uppercase tracking-[0.2em] text-sm relative overflow-hidden group flex items-center justify-center"
+                            className="w-fit bg-black/50 backdrop-blur-sm border border-blue-500 text-white hover:border-blue-400 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-300 px-14 py-5 rounded-full font-medium uppercase tracking-[0.2em] text-xs relative overflow-hidden group flex items-center justify-center"
                             style={{
                                 boxShadow: '0 0 15px rgba(59, 130, 246, 0.3), inset 0 0 15px rgba(59, 130, 246, 0.1)'
                             }}
