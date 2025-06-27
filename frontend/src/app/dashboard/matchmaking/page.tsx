@@ -289,7 +289,7 @@ export default function MatchmakingPage() {
                                                 <button className="flex-1 py-3 bg-synqit-primary hover:bg-synqit-primary/80 text-white rounded-lg transition-colors duration-200 font-medium text-sm">
                                                     Accept Partnership
                                                 </button>
-                                                <Link href={`/dashboard/explore/${request.id}`} className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm">
+                                                <Link href={`/dashboard/matchmaking/${request.id}`} className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm">
                                                     View Profile
                                                 </Link>
                                             </>
@@ -298,7 +298,7 @@ export default function MatchmakingPage() {
                                                 <button className="flex-1 py-3 bg-synqit-muted hover:bg-synqit-muted/80 text-white rounded-lg transition-colors duration-200 font-medium text-sm">
                                                     Cancel Request
                                                 </button>
-                                                <Link href={`/dashboard/explore/${request.id}`} className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm">
+                                                <Link href={`/dashboard/matchmaking/${request.id}`} className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm">
                                                     View Profile
                                                 </Link>
                                             </>
