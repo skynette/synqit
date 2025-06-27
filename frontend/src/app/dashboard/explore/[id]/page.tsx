@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 
 interface ProjectDetailProps {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 const projectData: { [key: string]: any } = {
@@ -328,25 +328,27 @@ const projectData: { [key: string]: any } = {
 export default function ProjectDetailPage({ params }: ProjectDetailProps) {
     const router = useRouter()
     const [isFollowing, setIsFollowing] = useState(false)
+    const [projectId, setProjectId] = useState<string | null>(null)
     
-    const project = projectData[params.id]
+    // Use effect to handle the async params
+    useEffect(() => {
+        params.then(({ id }) => {
+            setProjectId(id)
+        })
+    }, [params])
     
-    if (!project) {
+    if (!projectId) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-white mb-4">Project Not Found</h1>
-                    <button 
-                        onClick={() => router.back()}
-                        className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2 rounded-lg transition-colors"
-                    >
-                        Go Back
-                    </button>
+                    <p className="text-white">Loading...</p>
                 </div>
             </div>
         )
     }
-
+    
+    const project = projectData[projectId]
+    
     return (
         <div className="min-h-screen bg-synqit-background p-6">
             {/* Back Button */}

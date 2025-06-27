@@ -90,10 +90,12 @@ export function HowSynqitWorksSection() {
                             <div className="relative bg-synqit-surface/10 border border-synqit-border/20 rounded-2xl p-8 md:p-12">
                                 {/* Stick SVG */}
                                 <div className={`hidden md:block absolute top-0 h-full z-10 py-6 w-16 ${(index % 2 === 0) ? 'left-0 pl-6' : 'left-1/2 -translate-x-1/2'}`}>
-                                    <img
+                                    <Image
                                         src={`/icons/stick-${index + 1}.svg`}
                                         alt=""
-                                        className="h-full"
+                                        width={64}
+                                        height={320}
+                                        className="h-full w-full object-contain"
                                         draggable={false}
                                     />
                                 </div>
