@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
+import { NotificationDrawer } from "@/components/ui/notification-drawer"
 import type React from "react"
 
 // Dashboard navigation items interface
@@ -232,11 +233,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                 </button>
 
                                 {/* Notifications */}
-                                <button className="p-2 text-white/60 hover:text-white hover:bg-[#2a2f3e] rounded-lg transition-colors">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5-5V7a4 4 0 00-8 0v5l-5 5h5m7 0a3 3 0 11-6 0" />
-                                    </svg>
-                                </button>
+                                <NotificationDrawer>
+                                    <button className="p-2 text-white/60 hover:text-white hover:bg-[#2a2f3e] rounded-lg transition-colors">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5-5V7a4 4 0 00-8 0v5l-5 5h5m7 0a3 3 0 11-6 0" />
+                                        </svg>
+                                    </button>
+                                </NotificationDrawer>
 
                                 {/* User Profile */}
                                 <button className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition-all">
