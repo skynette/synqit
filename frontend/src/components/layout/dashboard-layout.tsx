@@ -18,7 +18,7 @@ interface DashboardNavItem {
 const dashboardNavItems: DashboardNavItem[] = [
     {
         name: "Explore",
-        href: "/dashboard/explore",
+        href: "/dashboard",
         icon: (
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
@@ -76,7 +76,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         if (pathname.includes('/profile')) return 'Profile'
         
         const currentItem = dashboardNavItems.find(item => 
-            pathname === item.href || (item.href !== '/dashboard/explore' && pathname.startsWith(item.href))
+            pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
         )
         return currentItem?.name || 'Dashboard'
     }
@@ -116,7 +116,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     {/* Navigation */}
                     <ul className="space-y-2 font-medium">
                         {dashboardNavItems.map((item) => {
-                            const isActive = pathname === item.href || (item.href !== '/dashboard/explore' && pathname.startsWith(item.href))
+                            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
                             
                             return (
                                 <li key={item.name}>
