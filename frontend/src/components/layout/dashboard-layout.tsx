@@ -73,6 +73,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
     // Get page title based on current route
     const getPageTitle = () => {
+        if (pathname.includes('/profile')) return 'Profile'
+        
         const currentItem = dashboardNavItems.find(item => 
             pathname === item.href || (item.href !== '/dashboard/explore' && pathname.startsWith(item.href))
         )
@@ -122,8 +124,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                         href={item.href}
                                         className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 group ${
                                             isActive
-                                                ? 'bg-synqit-primary text-synqit-primary-foreground shadow-lg'
-                                                : 'text-white/80 hover:bg-synqit-primary/80 hover:text-white hover:shadow-md'
+                                                ? 'bg-synqit-primary/20 text-white shadow-lg'
+                                                : 'text-white/80 hover:bg-synqit-primary/20 hover:text-white hover:shadow-md'
                                         }`}
                                     >
                                         <div className="flex items-center">
@@ -160,38 +162,86 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Main Content */}
             <div className="lg:ml-64">
                 {/* Header */}
-                <header className="sticky top-0 z-30 bg-synqit-surface/90 backdrop-blur-md border-b border-synqit-border">
-                    <div className="px-6 py-4">
+                <header className="sticky top-0 z-30 bg-[#1a1f2e] border-b border-synqit-border">
+                    <div className="px-6 py-3">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
+                            {/* Left side - Platform Icons */}
+                            <div className="flex items-center space-x-3">
                                 {/* Mobile menu button */}
                                 <button className="lg:hidden p-2 text-white/80 hover:text-white hover:bg-synqit-accent/20 rounded-lg transition-colors">
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
                                 </button>
-                                <h1 className="text-2xl font-bold text-white">{getPageTitle()}</h1>
+
+                                {/* Platform/Service Icons */}
+                                <div className="hidden lg:flex items-center space-x-3">
+                                    {/* Polkadot */}
+                                    <button className="flex items-center space-x-2 bg-[#2a2f3e] hover:bg-[#3a3f4e] px-3 py-2 rounded-full transition-colors">
+                                        <div className="w-5 h-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+                                            <div className="w-3 h-3 bg-white rounded-full opacity-80"></div>
+                                        </div>
+                                        <span className="text-white text-sm font-medium">Polkadot</span>
+                                    </button>
+
+                                    {/* The Graph */}
+                                    <button className="flex items-center space-x-2 bg-[#2a2f3e] hover:bg-[#3a3f4e] px-3 py-2 rounded-full transition-colors">
+                                        <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                                            <span className="text-white text-xs font-bold">G</span>
+                                        </div>
+                                        <span className="text-white text-sm font-medium">The Graph</span>
+                                    </button>
+
+                                    {/* Lens */}
+                                    <button className="flex items-center space-x-2 bg-[#2a2f3e] hover:bg-[#3a3f4e] px-3 py-2 rounded-full transition-colors">
+                                        <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                                            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                        </div>
+                                        <span className="text-white text-sm font-medium">Lens</span>
+                                    </button>
+
+                                    {/* Super Rare */}
+                                    <button className="flex items-center space-x-2 bg-[#2a2f3e] hover:bg-[#3a3f4e] px-3 py-2 rounded-full transition-colors">
+                                        <div className="w-5 h-5 bg-gradient-to-r from-blue-400 to-purple-400 rounded flex items-center justify-center">
+                                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+                                            </svg>
+                                        </div>
+                                        <span className="text-white text-sm font-medium">Super Rare</span>
+                                    </button>
+
+                                    {/* Another Platform */}
+                                    <button className="flex items-center justify-center bg-[#2a2f3e] hover:bg-[#3a3f4e] w-10 h-10 rounded-full transition-colors">
+                                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                {/* Page Title - visible on mobile */}
+                                <h1 className="lg:hidden text-xl font-bold text-white">{getPageTitle()}</h1>
                             </div>
                             
-                            <div className="flex items-center space-x-4">
+                            {/* Right side - User Actions */}
+                            <div className="flex items-center space-x-3">
+                                {/* Home */}
+                                <button className="p-2 text-white/60 hover:text-white hover:bg-[#2a2f3e] rounded-lg transition-colors">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                </button>
+
                                 {/* Notifications */}
-                                <button className="p-2 text-white/80 hover:text-white hover:bg-synqit-accent/20 rounded-lg transition-colors">
+                                <button className="p-2 text-white/60 hover:text-white hover:bg-[#2a2f3e] rounded-lg transition-colors">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5-5V7a4 4 0 00-8 0v5l-5 5h5m7 0a3 3 0 11-6 0" />
                                     </svg>
                                 </button>
 
-                                {/* Search */}
-                                <div className="relative hidden md:block">
-                                    <input
-                                        type="text"
-                                        placeholder="Search..."
-                                        className="w-64 pl-10 pr-4 py-2 bg-synqit-input border border-synqit-border rounded-lg text-white placeholder:text-synqit-muted-foreground focus:outline-none focus:ring-2 focus:ring-synqit-primary focus:border-transparent"
-                                    />
-                                    <svg className="absolute left-3 top-2.5 w-4 h-4 text-synqit-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
+                                {/* User Profile */}
+                                <button className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition-all">
+                                    <span className="text-white text-sm font-medium">U</span>
+                                </button>
                             </div>
                         </div>
                     </div>
