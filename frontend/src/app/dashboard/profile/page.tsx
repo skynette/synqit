@@ -26,7 +26,7 @@ export default function ProfilePage() {
         <div className="w-full">
             {/* Header */}
             <div className="mb-6">
-                <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-[#1a1f2e]">
+                <button className="flex items-center space-x-2 text-synqit-muted-foreground hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-synqit-surface">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
@@ -37,8 +37,8 @@ export default function ProfilePage() {
             {/* Page Title and Settings Icon */}
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold text-white">Profile Settings</h1>
-                <button className="p-2.5 bg-[#1a1f2e] hover:bg-[#252b3b] rounded-lg transition-colors">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <button className="p-2.5 bg-synqit-surface hover:bg-synqit-surface/80 rounded-lg transition-colors">
+                    <svg className="w-5 h-5 text-synqit-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -46,13 +46,13 @@ export default function ProfilePage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex space-x-8 border-b border-gray-800 mb-8">
+            <div className="flex space-x-8 border-b border-synqit-border mb-8">
                 <button
                     onClick={() => setActiveTab("detail")}
                     className={`pb-4 text-sm font-medium transition-colors relative ${
                         activeTab === "detail"
-                            ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-500"
-                            : "text-gray-500 hover:text-gray-300"
+                            ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-synqit-primary"
+                            : "text-synqit-muted-foreground hover:text-white"
                     }`}
                 >
                     Project Detail
@@ -61,8 +61,8 @@ export default function ProfilePage() {
                     onClick={() => setActiveTab("security")}
                     className={`pb-4 text-sm font-medium transition-colors relative ${
                         activeTab === "security"
-                            ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-500"
-                            : "text-gray-500 hover:text-gray-300"
+                            ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-synqit-primary"
+                            : "text-synqit-muted-foreground hover:text-white"
                     }`}
                 >
                     Security & Account Management
@@ -73,13 +73,13 @@ export default function ProfilePage() {
             {activeTab === "security" && (
                 <div className="space-y-0">
                     {/* Security Header with Save Button */}
-                    <div className="grid grid-cols-12 gap-8 pb-8 border-b border-gray-800">
+                    <div className="grid grid-cols-12 gap-8 pb-8 border-b border-synqit-border">
                         <div className="col-span-4">
                             <h2 className="text-xl font-semibold text-white">Security & Account Management</h2>
-                            <p className="text-sm text-gray-500 mt-1">Set up your security & Account Management</p>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">Set up your security & Account Management</p>
                         </div>
                         <div className="col-span-8 flex justify-end items-start">
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                            <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
                                 Save
                             </button>
                         </div>
@@ -90,17 +90,17 @@ export default function ProfilePage() {
                         <div className="col-span-4">
                             <div className="flex items-center space-x-2 mb-2">
                                 <h3 className="text-base font-medium text-white">Change Password</h3>
-                                <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-4 h-4 text-synqit-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                 </svg>
                             </div>
-                            <p className="text-sm text-gray-500">Change/Setup your password</p>
+                            <p className="text-sm text-synqit-muted-foreground">Change/Setup your password</p>
                         </div>
                         <div className="col-span-8">
                             <div className="space-y-5 max-w-lg">
                                 {/* Old Password */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Old Password</label>
+                                    <label className="block text-sm font-medium text-white mb-2">Old Password</label>
                                     <div className="relative">
                                         <input
                                             type={showOldPassword ? "text" : "password"}
@@ -130,7 +130,7 @@ export default function ProfilePage() {
 
                                 {/* New Password */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">New Password</label>
+                                    <label className="block text-sm font-medium text-white mb-2">New Password</label>
                                     <div className="relative">
                                         <input
                                             type={showNewPassword ? "text" : "password"}
@@ -158,14 +158,14 @@ export default function ProfilePage() {
                                     </div>
                                     {passwordData.newPassword && (
                                         <div className="mt-3">
-                                            <div className={`h-1 w-full rounded-full bg-gray-700 overflow-hidden`}>
+                                            <div className={`h-1 w-full rounded-full bg-synqit-border overflow-hidden`}>
                                                 <div 
                                                     className={`h-full transition-all duration-300 ${
                                                         isPasswordValid ? 'bg-green-500 w-full' : 'bg-yellow-500 w-1/2'
                                                     }`}
                                                 />
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-2">
+                                            <p className="text-xs text-synqit-muted-foreground mt-2">
                                                 Password must contain at least Capital letter, Special character & Number
                                             </p>
                                         </div>
@@ -174,7 +174,7 @@ export default function ProfilePage() {
 
                                 {/* Confirm Password */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+                                    <label className="block text-sm font-medium text-white mb-2">Confirm Password</label>
                                     <div className="relative">
                                         <input
                                             type={showConfirmPassword ? "text" : "password"}
@@ -201,11 +201,11 @@ export default function ProfilePage() {
                                         </button>
                                     </div>
                                     {passwordData.confirmPassword && !passwordsMatch && (
-                                        <p className="text-xs text-red-500 mt-2">Does not match the new password</p>
+                                        <p className="text-xs text-destructive mt-2">Does not match the new password</p>
                                     )}
                                 </div>
 
-                                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                <button className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                     Update Password
                                 </button>
                             </div>
@@ -224,7 +224,7 @@ export default function ProfilePage() {
                             <button
                                 onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                    twoFactorEnabled ? 'bg-blue-600' : 'bg-gray-700'
+                                    twoFactorEnabled ? 'bg-synqit-primary' : 'bg-synqit-muted'
                                 }`}
                             >
                                 <span
@@ -245,7 +245,7 @@ export default function ProfilePage() {
                             </p>
                         </div>
                         <div className="col-span-8">
-                            <button className="w-full max-w-lg bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                            <button className="w-full max-w-lg bg-destructive hover:bg-destructive/80 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                 Delete Account
                             </button>
                         </div>
@@ -253,13 +253,13 @@ export default function ProfilePage() {
 
                     {/* Bottom Actions */}
                     <div className="flex justify-end space-x-4 pt-8">
-                        <button className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2.5 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+                        <button className="bg-synqit-muted hover:bg-synqit-muted/80 text-white px-6 py-2.5 rounded-lg font-medium flex items-center space-x-2 transition-colors">
                             <span>Cancel</span>
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center space-x-2 transition-colors">
+                        <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2.5 rounded-lg font-medium flex items-center space-x-2 transition-colors">
                             <span>Save Settings</span>
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -274,10 +274,10 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-12 gap-8">
                         <div className="col-span-4">
                             <h2 className="text-xl font-semibold text-white">Project Detail</h2>
-                            <p className="text-sm text-gray-500 mt-1">Configure your project settings</p>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">Configure your project settings</p>
                         </div>
                         <div className="col-span-8">
-                            <p className="text-gray-400">Project detail settings will be available here.</p>
+                            <p className="text-synqit-muted-foreground">Project detail settings will be available here.</p>
                         </div>
                     </div>
                 </div>
