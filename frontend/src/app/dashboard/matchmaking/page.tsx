@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 
 interface PartnerRequest {
     id: string
@@ -60,11 +61,55 @@ const partnerRequests: PartnerRequest[] = [
         tags: ["RWA", "DeFi"],
         isNew: true,
         requestStatus: 'incoming'
+    },
+    {
+        id: "shortlet",
+        name: "ShortletLagos",
+        logo: "/images/shortlet-lagos.png",
+        companyLogo: "/icons/shortlet-lagos.png",
+        description: "Starts with a collection of 10,000 avatars that give you membership access.",
+        requestType: "Partnership",
+        partnerAvatars: [
+            "/avatars/avatar1.png",
+            "/avatars/avatar2.png",
+            "/avatars/avatar3.png",
+            "/avatars/avatar4.png",
+            "/avatars/avatar5.png",
+            "/avatars/avatar6.png",
+            "/avatars/avatar7.png",
+            "/avatars/avatar8.png",
+            "/avatars/avatar9.png",
+        ],
+        tags: ["RWA", "DeFi"],
+        isNew: false,
+        requestStatus: 'outgoing'
+    },
+    {
+        id: "arweave",
+        name: "Arweave",
+        logo: "/images/arweave.png",
+        companyLogo: "/icons/arweave.png",
+        description: "Starts with a collection of 10,000 avatars that give you membership access.",
+        requestType: "Partnership",
+        partnerAvatars: [
+            "/avatars/avatar1.png",
+            "/avatars/avatar2.png",
+            "/avatars/avatar3.png",
+            "/avatars/avatar4.png",
+            "/avatars/avatar5.png",
+            "/avatars/avatar6.png",
+            "/avatars/avatar7.png",
+            "/avatars/avatar8.png",
+            "/avatars/avatar9.png",
+        ],
+        tags: ["RWA", "DeFi"],
+        isNew: false,
+        requestStatus: 'outgoing'
     }
 ]
 
 export default function MatchmakingPage() {
-    const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing'>('incoming')
+    const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing'>('outgoing')
     
     const filteredRequests = partnerRequests.filter(request => request.requestStatus === activeTab)
 
@@ -141,13 +186,25 @@ export default function MatchmakingPage() {
                     {filteredRequests.length > 0 ? (
                         filteredRequests.map((request) => (
                             <div key={request.id} className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl overflow-hidden flex flex-col relative">
-                                {/* New Request Badge */}
-                                {request.isNew && (
+                                {/* New Request Badge for Incoming */}
+                                {request.isNew && request.requestStatus === 'incoming' && (
                                     <div className="absolute top-4 right-4 z-10">
                                         <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                                             New Request
                                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.5 6L12 10.5 8.5 8 12 5.5 15.5 8zM8.5 16L12 13.5 15.5 16 12 18.5 8.5 16z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Awaiting Response Badge for Outgoing */}
+                                {request.requestStatus === 'outgoing' && (
+                                    <div className="absolute top-4 right-4 z-10">
+                                        <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                                            Awaiting Response
+                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.9L16.2,16.2Z"/>
                                             </svg>
                                         </div>
                                     </div>
@@ -232,18 +289,18 @@ export default function MatchmakingPage() {
                                                 <button className="flex-1 py-3 bg-synqit-primary hover:bg-synqit-primary/80 text-white rounded-lg transition-colors duration-200 font-medium text-sm">
                                                     Accept Partnership
                                                 </button>
-                                                <button className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm">
+                                                <Link href={`/dashboard/explore/${request.id}`} className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm">
                                                     View Profile
-                                                </button>
+                                                </Link>
                                             </>
                                         ) : (
                                             <>
                                                 <button className="flex-1 py-3 bg-synqit-muted hover:bg-synqit-muted/80 text-white rounded-lg transition-colors duration-200 font-medium text-sm">
                                                     Cancel Request
                                                 </button>
-                                                <button className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm">
+                                                <Link href={`/dashboard/explore/${request.id}`} className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm">
                                                     View Profile
-                                                </button>
+                                                </Link>
                                             </>
                                         )}
                                     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 
 interface Partner {
     id: string
@@ -425,9 +426,11 @@ export default function ExplorePage() {
                             </div>
 
                             {/* View Details Button */}
-                            <button className="w-full py-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg transition-colors duration-200 font-medium text-sm">
-                                View Details
-                            </button>
+                            <Link href={`/dashboard/explore/${partner.id}`}>
+                                <button className="w-full py-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg transition-colors duration-200 font-medium text-sm">
+                                    View Details
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 ))}
