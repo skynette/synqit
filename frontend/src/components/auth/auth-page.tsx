@@ -8,6 +8,53 @@ import { Navbar } from "@/components/layout/navbar"
 import { useAuth } from "@/hooks/use-auth"
 import type { LoginRequest, RegisterRequest } from "@/lib/api-client"
 
+// Validation functions
+const validateEmail = (email: string): string | null => {
+    if (!email) return "Email is required"
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) return "Please enter a valid email address"
+    return null
+}
+
+const validatePassword = (password: string): string | null => {
+    if (!password) return "Password is required"
+    if (password.length < 8) return "Password must be at least 8 characters long"
+    
+    const hasUpperCase = /[A-Z]/.test(password)
+    const hasLowerCase = /[a-z]/.test(password)
+    const hasNumbers = /\d/.test(password)
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+        return "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    }
+    
+    return null
+}
+
+const validateName = (name: string, fieldName: string): string | null => {
+    if (!name) return `${fieldName} is required`
+    if (name.length < 2) return `${fieldName} must be at least 2 characters long`
+    if (name.length > 50) return `${fieldName} must be less than 50 characters`
+    if (!/^[a-zA-Z\s'-]+$/.test(name)) return `${fieldName} can only contain letters, spaces, hyphens, and apostrophes`
+    return null
+}
+
+// Parse API validation errors
+const parseValidationErrors = (error: any): Record<string, string> => {
+    const fieldErrors: Record<string, string> = {}
+    
+    if (error?.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        error.response.data.errors.forEach((err: any) => {
+            if (err.path && err.msg) {
+                fieldErrors[err.path] = err.msg
+            }
+        })
+    }
+    
+    return fieldErrors
+}
+
 // Auth Layout Component
 interface AuthLayoutProps {
     children: React.ReactNode
@@ -39,21 +86,56 @@ function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
     })
     const [agreeToTerms, setAgreeToTerms] = useState(false)
     const [focusedField, setFocusedField] = useState<string>("")
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+    // Parse API errors when error changes
+    const apiErrors = parseValidationErrors(error)
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: value
         })
+
+        // Clear field error when user starts typing
+        if (fieldErrors[name] || apiErrors[name]) {
+            setFieldErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }))
+        }
+    }
+
+    const validateForm = (): boolean => {
+        const errors: Record<string, string> = {}
+
+        // Validate email
+        const emailError = validateEmail(formData.email)
+        if (emailError) errors.email = emailError
+
+        // Validate password
+        if (!formData.password) errors.password = "Password is required"
+
+        setFieldErrors(errors)
+        return Object.keys(errors).length === 0
     }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
+        
         if (!agreeToTerms) {
             alert('Please agree to the terms of service')
             return
         }
-        onSubmit(formData)
+
+        if (validateForm()) {
+            onSubmit(formData)
+        }
+    }
+
+    const getFieldError = (fieldName: string) => {
+        return fieldErrors[fieldName] || apiErrors[fieldName] || ''
     }
 
     return (
@@ -62,7 +144,7 @@ function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
                 Login to your Synqit Account
             </h1>
 
-            {error && (
+            {error && !apiErrors.email && !apiErrors.password && (
                 <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
                     <p className="text-red-400 text-sm">
                         {error.response?.data?.message || 'Login failed. Please try again.'}
@@ -72,35 +154,45 @@ function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Input */}
-                <div className={`${focusedField === 'email' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Enter Email/Username"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('email')}
-                        onBlur={() => setFocusedField('')}
-                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
-                        required
-                        disabled={isLoading}
-                    />
+                <div>
+                    <div className={`${focusedField === 'email' ? 'gradient-border' : 'gray-border'} ${getFieldError('email') ? 'border-red-500' : ''} rounded-lg mb-1`}>
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Enter Email/Username"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            onFocus={() => setFocusedField('email')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                    {getFieldError('email') && (
+                        <p className="text-red-400 text-xs mt-1 px-1">{getFieldError('email')}</p>
+                    )}
                 </div>
 
                 {/* Password Input */}
-                <div className={`${focusedField === 'password' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Enter Password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('password')}
-                        onBlur={() => setFocusedField('')}
-                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
-                        required
-                        disabled={isLoading}
-                    />
+                <div>
+                    <div className={`${focusedField === 'password' ? 'gradient-border' : 'gray-border'} ${getFieldError('password') ? 'border-red-500' : ''} rounded-lg mb-1`}>
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Enter Password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            onFocus={() => setFocusedField('password')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                    {getFieldError('password') && (
+                        <p className="text-red-400 text-xs mt-1 px-1">{getFieldError('password')}</p>
+                    )}
                 </div>
 
                 {/* Forgotten Password */}
@@ -168,12 +260,55 @@ function SignUpForm({ onSubmit, isLoading, error }: SignUpFormProps) {
     })
     const [agreeToTerms, setAgreeToTerms] = useState(false)
     const [focusedField, setFocusedField] = useState<string>("")
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+    // Parse API errors when error changes
+    const apiErrors = parseValidationErrors(error)
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: value
         })
+
+        // Clear field error when user starts typing
+        if (fieldErrors[name] || apiErrors[name]) {
+            setFieldErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }))
+        }
+    }
+
+    const validateForm = (): boolean => {
+        const errors: Record<string, string> = {}
+
+        // Validate first name
+        const firstNameError = validateName(formData.firstName, 'First name')
+        if (firstNameError) errors.firstName = firstNameError
+
+        // Validate last name
+        const lastNameError = validateName(formData.lastName, 'Last name')
+        if (lastNameError) errors.lastName = lastNameError
+
+        // Validate email
+        const emailError = validateEmail(formData.email)
+        if (emailError) errors.email = emailError
+
+        // Validate password
+        const passwordError = validatePassword(formData.password)
+        if (passwordError) errors.password = passwordError
+
+        // Validate confirm password
+        if (!formData.confirmPassword) {
+            errors.confirmPassword = "Please confirm your password"
+        } else if (formData.password !== formData.confirmPassword) {
+            errors.confirmPassword = "Passwords do not match"
+        }
+
+        setFieldErrors(errors)
+        return Object.keys(errors).length === 0
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -184,26 +319,22 @@ function SignUpForm({ onSubmit, isLoading, error }: SignUpFormProps) {
             return
         }
 
-        if (formData.password !== formData.confirmPassword) {
-            alert('Passwords do not match')
-            return
-        }
+        if (validateForm()) {
+            const registerData: RegisterRequest = {
+                email: formData.email,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                password: formData.password,
+                userType: formData.userType,
+                bio: formData.bio || undefined,
+            }
 
-        if (formData.password.length < 8) {
-            alert('Password must be at least 8 characters long')
-            return
+            onSubmit(registerData)
         }
+    }
 
-        const registerData: RegisterRequest = {
-            email: formData.email,
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            password: formData.password,
-            userType: formData.userType,
-            bio: formData.bio || undefined,
-        }
-
-        onSubmit(registerData)
+    const getFieldError = (fieldName: string) => {
+        return fieldErrors[fieldName] || apiErrors[fieldName] || ''
     }
 
     return (
@@ -212,7 +343,7 @@ function SignUpForm({ onSubmit, isLoading, error }: SignUpFormProps) {
                 Create an Account with Synqit
             </h1>
 
-            {error && (
+            {error && Object.keys(apiErrors).length === 0 && (
                 <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
                     <p className="text-red-400 text-sm">
                         {error.response?.data?.message || 'Registration failed. Please try again.'}
@@ -223,101 +354,131 @@ function SignUpForm({ onSubmit, isLoading, error }: SignUpFormProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name Fields */}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className={`${focusedField === 'firstName' ? 'gradient-border' : 'gray-border'} rounded-lg`}>
-                        <input
-                            type="text"
-                            name="firstName"
-                            placeholder="First Name"
-                            value={formData.firstName}
-                            onChange={handleInputChange}
-                            onFocus={() => setFocusedField('firstName')}
-                            onBlur={() => setFocusedField('')}
-                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
-                            required
-                            disabled={isLoading}
-                        />
+                    <div>
+                        <div className={`${focusedField === 'firstName' ? 'gradient-border' : 'gray-border'} ${getFieldError('firstName') ? 'border-red-500' : ''} rounded-lg mb-1`}>
+                            <input
+                                type="text"
+                                name="firstName"
+                                placeholder="First Name"
+                                value={formData.firstName}
+                                onChange={handleInputChange}
+                                onFocus={() => setFocusedField('firstName')}
+                                onBlur={() => setFocusedField('')}
+                                className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                                required
+                                disabled={isLoading}
+                            />
+                        </div>
+                        {getFieldError('firstName') && (
+                            <p className="text-red-400 text-xs mt-1 px-1">{getFieldError('firstName')}</p>
+                        )}
                     </div>
-                    <div className={`${focusedField === 'lastName' ? 'gradient-border' : 'gray-border'} rounded-lg`}>
-                        <input
-                            type="text"
-                            name="lastName"
-                            placeholder="Last Name"
-                            value={formData.lastName}
-                            onChange={handleInputChange}
-                            onFocus={() => setFocusedField('lastName')}
-                            onBlur={() => setFocusedField('')}
-                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
-                            required
-                            disabled={isLoading}
-                        />
+                    <div>
+                        <div className={`${focusedField === 'lastName' ? 'gradient-border' : 'gray-border'} ${getFieldError('lastName') ? 'border-red-500' : ''} rounded-lg mb-1`}>
+                            <input
+                                type="text"
+                                name="lastName"
+                                placeholder="Last Name"
+                                value={formData.lastName}
+                                onChange={handleInputChange}
+                                onFocus={() => setFocusedField('lastName')}
+                                onBlur={() => setFocusedField('')}
+                                className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                                required
+                                disabled={isLoading}
+                            />
+                        </div>
+                        {getFieldError('lastName') && (
+                            <p className="text-red-400 text-xs mt-1 px-1">{getFieldError('lastName')}</p>
+                        )}
                     </div>
                 </div>
 
                 {/* Email Input */}
-                <div className={`${focusedField === 'email' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Enter Email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('email')}
-                        onBlur={() => setFocusedField('')}
-                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
-                        required
-                        disabled={isLoading}
-                    />
+                <div>
+                    <div className={`${focusedField === 'email' ? 'gradient-border' : 'gray-border'} ${getFieldError('email') ? 'border-red-500' : ''} rounded-lg mb-1`}>
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Enter Email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            onFocus={() => setFocusedField('email')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                    {getFieldError('email') && (
+                        <p className="text-red-400 text-xs mt-1 px-1">{getFieldError('email')}</p>
+                    )}
                 </div>
 
                 {/* User Type Selection */}
-                <div className={`${focusedField === 'userType' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
-                    <select
-                        name="userType"
-                        value={formData.userType}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('userType')}
-                        onBlur={() => setFocusedField('')}
-                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white border-none focus:outline-none"
-                        required
-                        disabled={isLoading}
-                    >
-                        <option value="STARTUP">Startup</option>
-                        <option value="INVESTOR">Investor</option>
-                        <option value="ECOSYSTEM_PLAYER">Ecosystem Player</option>
-                        <option value="INDIVIDUAL">Individual</option>
-                    </select>
+                <div>
+                    <div className={`${focusedField === 'userType' ? 'gradient-border' : 'gray-border'} ${getFieldError('userType') ? 'border-red-500' : ''} rounded-lg mb-1`}>
+                        <select
+                            name="userType"
+                            value={formData.userType}
+                            onChange={handleInputChange}
+                            onFocus={() => setFocusedField('userType')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white border-none focus:outline-none"
+                            required
+                            disabled={isLoading}
+                        >
+                            <option value="STARTUP">Startup</option>
+                            <option value="INVESTOR">Investor</option>
+                            <option value="ECOSYSTEM_PLAYER">Ecosystem Player</option>
+                            <option value="INDIVIDUAL">Individual</option>
+                        </select>
+                    </div>
+                    {getFieldError('userType') && (
+                        <p className="text-red-400 text-xs mt-1 px-1">{getFieldError('userType')}</p>
+                    )}
                 </div>
 
                 {/* Password Input */}
-                <div className={`${focusedField === 'password' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Enter Password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('password')}
-                        onBlur={() => setFocusedField('')}
-                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
-                        required
-                        disabled={isLoading}
-                    />
+                <div>
+                    <div className={`${focusedField === 'password' ? 'gradient-border' : 'gray-border'} ${getFieldError('password') ? 'border-red-500' : ''} rounded-lg mb-1`}>
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Enter Password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            onFocus={() => setFocusedField('password')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                    {getFieldError('password') && (
+                        <p className="text-red-400 text-xs mt-1 px-1">{getFieldError('password')}</p>
+                    )}
                 </div>
 
                 {/* Confirm Password Input */}
-                <div className={`${focusedField === 'confirmPassword' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
-                    <input
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Confirm Password"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField('confirmPassword')}
-                        onBlur={() => setFocusedField('')}
-                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
-                        required
-                        disabled={isLoading}
-                    />
+                <div>
+                    <div className={`${focusedField === 'confirmPassword' ? 'gradient-border' : 'gray-border'} ${getFieldError('confirmPassword') ? 'border-red-500' : ''} rounded-lg mb-1`}>
+                        <input
+                            type="password"
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={formData.confirmPassword}
+                            onChange={handleInputChange}
+                            onFocus={() => setFocusedField('confirmPassword')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                    {getFieldError('confirmPassword') && (
+                        <p className="text-red-400 text-xs mt-1 px-1">{getFieldError('confirmPassword')}</p>
+                    )}
                 </div>
 
                 {/* Sign Up Button */}
