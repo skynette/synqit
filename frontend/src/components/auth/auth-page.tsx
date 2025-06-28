@@ -5,6 +5,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
 import { Navbar } from "@/components/layout/navbar"
+import { useAuth } from "@/hooks/use-auth"
+import type { LoginRequest, RegisterRequest } from "@/lib/api-client"
 
 // Auth Layout Component
 interface AuthLayoutProps {
@@ -25,11 +27,13 @@ function AuthLayout({ children }: AuthLayoutProps) {
 
 // Login Form Component
 interface LoginFormProps {
-    onSubmit: (data: any) => void
+    onSubmit: (data: LoginRequest) => void
+    isLoading: boolean
+    error: any
 }
 
-function LoginForm({ onSubmit }: LoginFormProps) {
-    const [formData, setFormData] = useState({
+function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
+    const [formData, setFormData] = useState<LoginRequest>({
         email: '',
         password: ''
     })
@@ -45,11 +49,11 @@ function LoginForm({ onSubmit }: LoginFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
+        if (!agreeToTerms) {
+            alert('Please agree to the terms of service')
+            return
+        }
         onSubmit(formData)
-    }
-
-    const getBorderColor = (fieldName: string, fieldValue: string) => {
-        return focusedField === fieldName || fieldValue ? '#4C82ED' : '#6B7280'
     }
 
     return (
@@ -57,6 +61,14 @@ function LoginForm({ onSubmit }: LoginFormProps) {
             <h1 className="text-2xl font-bold text-white mb-8">
                 Login to your Synqit Account
             </h1>
+
+            {error && (
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    <p className="text-red-400 text-sm">
+                        {error.response?.data?.message || 'Login failed. Please try again.'}
+                    </p>
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Input */}
@@ -71,6 +83,7 @@ function LoginForm({ onSubmit }: LoginFormProps) {
                         onBlur={() => setFocusedField('')}
                         className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
+                        disabled={isLoading}
                     />
                 </div>
 
@@ -86,6 +99,7 @@ function LoginForm({ onSubmit }: LoginFormProps) {
                         onBlur={() => setFocusedField('')}
                         className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
+                        disabled={isLoading}
                     />
                 </div>
 
@@ -99,9 +113,17 @@ function LoginForm({ onSubmit }: LoginFormProps) {
                 {/* Login Button */}
                 <button
                     type="submit"
-                    className="w-full bg-[#4C82ED] hover:bg-[#3d6bdc] text-white py-3 rounded-lg font-medium transition-colors"
+                    disabled={isLoading || !agreeToTerms}
+                    className="w-full bg-[#4C82ED] hover:bg-[#3d6bdc] disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
                 >
-                    LOGIN
+                    {isLoading ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            LOGGING IN...
+                        </div>
+                    ) : (
+                        'LOGIN'
+                    )}
                 </button>
 
                 {/* Terms Checkbox */}
@@ -112,6 +134,7 @@ function LoginForm({ onSubmit }: LoginFormProps) {
                         checked={agreeToTerms}
                         onChange={(e) => setAgreeToTerms(e.target.checked)}
                         className="mt-1 w-4 h-4 bg-[#2a3142] border border-synqit-border rounded"
+                        disabled={isLoading}
                     />
                     <label htmlFor="terms-login" className="text-sm text-gray-400">
                         By continuing, you agree to the{' '}
@@ -128,20 +151,25 @@ function LoginForm({ onSubmit }: LoginFormProps) {
 
 // Sign Up Form Component
 interface SignUpFormProps {
-    onSubmit: (data: any) => void
+    onSubmit: (data: RegisterRequest) => void
+    isLoading: boolean
+    error: any
 }
 
-function SignUpForm({ onSubmit }: SignUpFormProps) {
+function SignUpForm({ onSubmit, isLoading, error }: SignUpFormProps) {
     const [formData, setFormData] = useState({
         email: '',
-        username: '',
+        firstName: '',
+        lastName: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        userType: 'STARTUP' as const,
+        bio: ''
     })
     const [agreeToTerms, setAgreeToTerms] = useState(false)
     const [focusedField, setFocusedField] = useState<string>("")
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
@@ -150,7 +178,32 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        onSubmit(formData)
+        
+        if (!agreeToTerms) {
+            alert('Please agree to the terms of service')
+            return
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            alert('Passwords do not match')
+            return
+        }
+
+        if (formData.password.length < 8) {
+            alert('Password must be at least 8 characters long')
+            return
+        }
+
+        const registerData: RegisterRequest = {
+            email: formData.email,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            password: formData.password,
+            userType: formData.userType,
+            bio: formData.bio || undefined,
+        }
+
+        onSubmit(registerData)
     }
 
     return (
@@ -159,7 +212,47 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
                 Create an Account with Synqit
             </h1>
 
+            {error && (
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    <p className="text-red-400 text-sm">
+                        {error.response?.data?.message || 'Registration failed. Please try again.'}
+                    </p>
+                </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Name Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className={`${focusedField === 'firstName' ? 'gradient-border' : 'gray-border'} rounded-lg`}>
+                        <input
+                            type="text"
+                            name="firstName"
+                            placeholder="First Name"
+                            value={formData.firstName}
+                            onChange={handleInputChange}
+                            onFocus={() => setFocusedField('firstName')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className={`${focusedField === 'lastName' ? 'gradient-border' : 'gray-border'} rounded-lg`}>
+                        <input
+                            type="text"
+                            name="lastName"
+                            placeholder="Last Name"
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                            onFocus={() => setFocusedField('lastName')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+                </div>
+
                 {/* Email Input */}
                 <div className={`${focusedField === 'email' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
                     <input
@@ -172,22 +265,27 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
                         onBlur={() => setFocusedField('')}
                         className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
+                        disabled={isLoading}
                     />
                 </div>
 
-                {/* Username Input */}
-                <div className={`${focusedField === 'username' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="Enter Username"
-                        value={formData.username}
+                {/* User Type Selection */}
+                <div className={`${focusedField === 'userType' ? 'gradient-border' : 'gray-border'} rounded-lg mb-4`}>
+                    <select
+                        name="userType"
+                        value={formData.userType}
                         onChange={handleInputChange}
-                        onFocus={() => setFocusedField('username')}
+                        onFocus={() => setFocusedField('userType')}
                         onBlur={() => setFocusedField('')}
-                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
+                        className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white border-none focus:outline-none"
                         required
-                    />
+                        disabled={isLoading}
+                    >
+                        <option value="STARTUP">Startup</option>
+                        <option value="INVESTOR">Investor</option>
+                        <option value="ECOSYSTEM_PLAYER">Ecosystem Player</option>
+                        <option value="INDIVIDUAL">Individual</option>
+                    </select>
                 </div>
 
                 {/* Password Input */}
@@ -202,6 +300,7 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
                         onBlur={() => setFocusedField('')}
                         className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
+                        disabled={isLoading}
                     />
                 </div>
 
@@ -217,15 +316,24 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
                         onBlur={() => setFocusedField('')}
                         className="w-full h-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none"
                         required
+                        disabled={isLoading}
                     />
                 </div>
 
                 {/* Sign Up Button */}
                 <button
                     type="submit"
-                    className="w-full bg-[#4C82ED] hover:bg-[#3d6bdc] text-white py-3 rounded-lg font-medium transition-colors"
+                    disabled={isLoading || !agreeToTerms}
+                    className="w-full bg-[#4C82ED] hover:bg-[#3d6bdc] disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
                 >
-                    SIGN UP
+                    {isLoading ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            CREATING ACCOUNT...
+                        </div>
+                    ) : (
+                        'SIGN UP'
+                    )}
                 </button>
 
                 {/* Terms Checkbox */}
@@ -236,6 +344,7 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
                         checked={agreeToTerms}
                         onChange={(e) => setAgreeToTerms(e.target.checked)}
                         className="mt-1 w-4 h-4 bg-[#2a3142] border border-synqit-border rounded"
+                        disabled={isLoading}
                     />
                     <label htmlFor="terms-signup" className="text-sm text-gray-400">
                         By continuing, you agree to the{' '}
@@ -362,13 +471,22 @@ function SocialLoginSection() {
 // Main Auth Page Component
 export function AuthPage() {
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login')
+    const { 
+        login, 
+        register, 
+        isLoggingIn, 
+        isRegistering, 
+        loginError, 
+        registerError,
+        resetLoginError,
+        resetRegisterError 
+    } = useAuth()
 
-    const handleLoginSubmit = (data: any) => {
-        console.log('Login form submitted:', data)
-    }
-
-    const handleSignUpSubmit = (data: any) => {
-        console.log('Sign up form submitted:', data)
+    const handleTabChange = (tab: 'login' | 'signup') => {
+        setActiveTab(tab)
+        // Reset errors when switching tabs
+        resetLoginError()
+        resetRegisterError()
     }
 
     return (
@@ -377,7 +495,7 @@ export function AuthPage() {
                 {/* Tab Navigation */}
                 <div className="flex mb-8 bg-transparent border border-synqit-border rounded-full p-1">
                     <button
-                        onClick={() => setActiveTab('login')}
+                        onClick={() => handleTabChange('login')}
                         className={`flex-1 py-3 px-6 rounded-full font-medium transition-all duration-300 ${activeTab === 'login'
                             ? 'bg-[#4C82ED] text-white shadow-lg'
                             : 'bg-transparent text-gray-400 hover:text-white'
@@ -386,7 +504,7 @@ export function AuthPage() {
                         Login
                     </button>
                     <button
-                        onClick={() => setActiveTab('signup')}
+                        onClick={() => handleTabChange('signup')}
                         className={`flex-1 py-3 px-6 rounded-full font-medium transition-all duration-300 ${activeTab === 'signup'
                             ? 'bg-[#4C82ED] text-white shadow-lg'
                             : 'bg-transparent text-gray-400 hover:text-white'
@@ -400,9 +518,17 @@ export function AuthPage() {
                 <div className="bg-blue-800/5 border border-synqit-border rounded-3xl p-8">
                     {/* Dynamic Form Content */}
                     {activeTab === 'login' ? (
-                        <LoginForm onSubmit={handleLoginSubmit} />
+                        <LoginForm 
+                            onSubmit={login} 
+                            isLoading={isLoggingIn}
+                            error={loginError}
+                        />
                     ) : (
-                        <SignUpForm onSubmit={handleSignUpSubmit} />
+                        <SignUpForm 
+                            onSubmit={register} 
+                            isLoading={isRegistering}
+                            error={registerError}
+                        />
                     )}
 
                     {/* Social Login Section - Shared between both forms */}

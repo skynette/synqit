@@ -1,5 +1,5 @@
-import { EnhancedAuthPage } from '@/components/auth/enhanced-auth-page'
+import { AuthPage } from '@/components/auth/auth-page'
 
 export default function Auth() {
-    return <EnhancedAuthPage />
+    return <AuthPage />
 }
