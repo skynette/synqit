@@ -1,7 +1,16 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
 import { SynqitLogo } from "@/components/ui/synqit-logo"
+import { 
+    Drawer, 
+    DrawerContent, 
+    DrawerTrigger, 
+    DrawerClose,
+    DrawerHeader,
+    DrawerTitle
+} from "@/components/ui/drawer"
 
 const navigationItems = [
     { name: "About", href: "/#about" },
@@ -12,6 +21,12 @@ const navigationItems = [
 ]
 
 export function Navbar() {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+    const handleMobileNavClick = () => {
+        setMobileMenuOpen(false)
+    }
+
     return (
         <>
             {/* Desktop Navbar - Island Style */}
@@ -55,17 +70,69 @@ export function Navbar() {
             <nav className="md:hidden fixed top-0 left-0 right-0 z-50 bg-[#0a0f1c]/95 backdrop-blur-md border-b border-synqit-border">
                 <div className="px-4 py-3">
                     <div className="flex items-center justify-between">
-                        {/* Hamburger Menu */}
-                        <button className="text-white p-2">
-                            <div className="grid grid-cols-3 gap-1 w-6 h-6">
-                                {Array.from({ length: 9 }).map((_, i) => (
-                                    <div key={i} className="w-1.5 h-1.5 bg-white rounded-sm" />
-                                ))}
-                            </div>
-                        </button>
+                        {/* Mobile Menu Drawer */}
+                        <Drawer open={mobileMenuOpen} onOpenChange={setMobileMenuOpen} direction="left">
+                            <DrawerTrigger asChild>
+                                <button className="text-white p-2 hover:bg-white/10 rounded-md transition-colors">
+                                    <div className="grid grid-cols-3 gap-1 w-6 h-6">
+                                        {Array.from({ length: 9 }).map((_, i) => (
+                                            <div key={i} className="w-1.5 h-1.5 bg-white rounded-sm" />
+                                        ))}
+                                    </div>
+                                </button>
+                            </DrawerTrigger>
+                            
+                            <DrawerContent className="bg-[#0a0f1c] border-synqit-border">
+                                <DrawerHeader className="border-b border-synqit-border">
+                                    <div className="flex items-center justify-between">
+                                        <DrawerTitle asChild>
+                                            <SynqitLogo className="w-20" />
+                                        </DrawerTitle>
+                                        <DrawerClose asChild>
+                                            <button className="text-white/60 hover:text-white p-2 rounded-md transition-colors">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </DrawerClose>
+                                    </div>
+                                </DrawerHeader>
+                                
+                                <div className="flex flex-col py-6">
+                                    {/* Navigation Items */}
+                                    <div className="space-y-1 px-4">
+                                        {navigationItems.map((item) => (
+                                            <a
+                                                key={item.name}
+                                                href={item.href}
+                                                onClick={handleMobileNavClick}
+                                                className="block py-4 px-4 text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 text-lg font-medium"
+                                            >
+                                                {item.name}
+                                            </a>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* Mobile Login Button */}
+                                    <div className="px-4 mt-8">
+                                        <Link
+                                            href="/auth"
+                                            onClick={handleMobileNavClick}
+                                            className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-lg text-center transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25"
+                                        >
+                                            LOGIN
+                                        </Link>
+                                    </div>
+                                    
+                                    {/* Bottom spacing */}
+                                    <div className="flex-1 min-h-[2rem]" />
+                                </div>
+                            </DrawerContent>
+                        </Drawer>
+
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-2">
-                            <SynqitLogo className="" />
+                            <SynqitLogo className="w-16" />
                         </Link>
                     </div>
                 </div>
