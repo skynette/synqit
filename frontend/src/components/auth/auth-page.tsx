@@ -197,7 +197,7 @@ function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
 
                 {/* Forgotten Password */}
                 <div className="text-right">
-                    <Link href="/forgot-password" className="text-gray-400 text-sm hover:text-white transition-colors">
+                    <Link href="/auth/forgot-password" className="text-gray-400 text-sm hover:text-white transition-colors">
                         Forgotten Password?
                     </Link>
                 </div>

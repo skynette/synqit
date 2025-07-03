@@ -76,6 +76,32 @@ export interface RegisterRequest {
   walletAddress?: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ChangeEmailRequest {
+  newEmail: string;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
+}
+
 export interface AuthResponse {
   status: 'success' | 'error';
   message: string;
@@ -87,6 +113,12 @@ export interface AuthResponse {
   errors?: any[];
 }
 
+export interface ApiResponse {
+  status: 'success' | 'error';
+  message: string;
+  data?: any;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -94,11 +126,14 @@ export interface User {
   lastName: string;
   userType: string;
   subscriptionTier: string;
+  isEmailVerified: boolean;
   isVerified: boolean;
   bio?: string;
   walletAddress?: string;
   createdAt: string;
   lastLoginAt?: string;
+  failedLoginAttempts: number;
+  lockedUntil?: string;
 }
 
 // Auth API methods
@@ -110,6 +145,36 @@ export const authApi = {
 
   register: async (data: RegisterRequest): Promise<AuthResponse> => {
     const response = await apiClient.post('/auth/register', data);
+    return response.data;
+  },
+
+  verifyEmail: async (data: VerifyEmailRequest): Promise<ApiResponse> => {
+    const response = await apiClient.post('/auth/verify-email', data);
+    return response.data;
+  },
+
+  resendVerification: async (data: ResendVerificationRequest): Promise<ApiResponse> => {
+    const response = await apiClient.post('/auth/resend-verification', data);
+    return response.data;
+  },
+
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<ApiResponse> => {
+    const response = await apiClient.post('/auth/forgot-password', data);
+    return response.data;
+  },
+
+  resetPassword: async (data: ResetPasswordRequest): Promise<ApiResponse> => {
+    const response = await apiClient.post('/auth/reset-password', data);
+    return response.data;
+  },
+
+  changePassword: async (data: ChangePasswordRequest): Promise<ApiResponse> => {
+    const response = await apiClient.post('/auth/change-password', data);
+    return response.data;
+  },
+
+  changeEmail: async (data: ChangeEmailRequest): Promise<ApiResponse> => {
+    const response = await apiClient.post('/auth/change-email', data);
     return response.data;
   },
 

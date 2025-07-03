@@ -20,6 +20,25 @@ model User {
   profileImage    String?
   bio             String?
   walletAddress   String?  @unique // Web3 wallet for future features
+  
+  // Email verification
+  isEmailVerified Boolean  @default(false)
+  emailVerificationToken String? @unique
+  emailVerificationExpiry DateTime?
+  
+  // Password reset
+  passwordResetToken String? @unique
+  passwordResetExpiry DateTime?
+  
+  // Security tracking
+  failedLoginAttempts Int @default(0)
+  lockedUntil DateTime?
+  
+  // 2FA fields (for future implementation)
+  twoFactorSecret String?
+  twoFactorEnabled Boolean @default(false)
+  twoFactorBackupCodes String[]
+  
   isVerified      Boolean  @default(false)
   userType        UserType @default(STARTUP)
   

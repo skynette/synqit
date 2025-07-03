@@ -60,6 +60,75 @@ export const validateLogin = [
 ];
 
 /**
+ * Email verification validation
+ */
+export const validateEmailVerification = [
+  body('token')
+    .isLength({ min: 10 })
+    .withMessage('Valid verification token is required'),
+];
+
+/**
+ * Resend verification email validation
+ */
+export const validateResendVerification = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+];
+
+/**
+ * Password reset request validation
+ */
+export const validatePasswordReset = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+];
+
+/**
+ * Reset password validation
+ */
+export const validateResetPassword = [
+  body('token')
+    .isLength({ min: 10 })
+    .withMessage('Valid reset token is required'),
+  
+  body('newPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).*$/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+];
+
+/**
+ * Change password validation
+ */
+export const validateChangePassword = [
+  body('currentPassword')
+    .notEmpty()
+    .withMessage('Current password is required'),
+  
+  body('newPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).*$/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+];
+
+/**
+ * Change email validation
+ */
+export const validateChangeEmail = [
+  body('newEmail')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+];
+
+/**
  * Company creation validation
  */
 export const validateCompany = [

@@ -9,7 +9,7 @@ export default function DashboardLayoutWrapper({
     children: React.ReactNode
 }) {
     return (
-        <AuthMiddleware requireAuth={true}>
+        <AuthMiddleware requireAuth={true} requireEmailVerification={true}>
             <DashboardLayout>
                 {children}
             </DashboardLayout>

@@ -49,10 +49,63 @@ export interface LoginRequest {
 }
 
 /**
+ * Email verification request body
+ */
+export interface EmailVerificationRequest {
+  token: string;
+}
+
+/**
+ * Resend verification email request body
+ */
+export interface ResendVerificationRequest {
+  email: string;
+}
+
+/**
+ * Password reset request body
+ */
+export interface PasswordResetRequest {
+  email: string;
+}
+
+/**
+ * Reset password request body
+ */
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+/**
+ * Change password request body
+ */
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+/**
+ * Change email request body
+ */
+export interface ChangeEmailRequest {
+  newEmail: string;
+}
+
+/**
  * Auth response
  */
 export interface AuthResponse {
   user: Omit<User, 'password'>;
   token: string;
   expiresAt: Date;
+}
+
+/**
+ * Standard API response
+ */
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+  data?: any;
 } 
