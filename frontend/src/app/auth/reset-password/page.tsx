@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
@@ -277,8 +277,8 @@ function ResetPasswordForm({ onSubmit, isLoading, error, token }: ResetPasswordF
     )
 }
 
-// Main Reset Password Page Component
-export default function ResetPasswordPage() {
+// Reset Password Page Content with Search Params
+function ResetPasswordPageContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [token, setToken] = useState<string | null>(null)
@@ -314,5 +314,27 @@ export default function ResetPasswordPage() {
                 </div>
             </div>
         </AuthLayout>
+    )
+}
+
+// Main Reset Password Page Component with Suspense
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={
+            <AuthLayout>
+                <div className="w-full max-w-md">
+                    <div className="bg-blue-800/5 border border-synqit-border rounded-3xl p-8">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                            <p className="text-gray-400">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </AuthLayout>
+        }>
+            <ResetPasswordPageContent />
+        </Suspense>
     )
 } 
