@@ -13,14 +13,15 @@ export class EmailService {
    * Send email verification email
    */
   static async sendVerificationEmail(email: string, token: string, firstName: string): Promise<void> {
-    const verificationUrl = `${this.baseUrl}/auth/verify-email?token=${token}`;
+    // Use original email format for sending
+    const verificationLink = `${process.env.FRONTEND_URL}/auth/verify-email?token=${token}`;
     
     try {
       await this.resend.emails.send({
         from: this.fromEmail,
         to: email,
         subject: 'Verify your email address - Synqit',
-        html: this.getVerificationEmailTemplate(firstName, verificationUrl),
+        html: this.getVerificationEmailTemplate(firstName, verificationLink),
       });
     } catch (error) {
       console.error('Error sending verification email:', error);
@@ -32,14 +33,15 @@ export class EmailService {
    * Send password reset email
    */
   static async sendPasswordResetEmail(email: string, token: string, firstName: string): Promise<void> {
-    const resetUrl = `${this.baseUrl}/auth/reset-password?token=${token}`;
+    // Use original email format for sending
+    const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${token}`;
     
     try {
       await this.resend.emails.send({
         from: this.fromEmail,
         to: email,
         subject: 'Reset your password - Synqit',
-        html: this.getPasswordResetEmailTemplate(firstName, resetUrl),
+        html: this.getPasswordResetEmailTemplate(firstName, resetLink),
       });
     } catch (error) {
       console.error('Error sending password reset email:', error);

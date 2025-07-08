@@ -15,6 +15,24 @@ export class AuthService {
   private static readonly LOCKOUT_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
 
   /**
+   * Find user by email, handling case sensitivity consistently
+   */
+  private static async findUserByEmail(email: string): Promise<User | null> {
+    // Always use lowercase for consistency in lookups
+    const lowerEmail = email.toLowerCase();
+    
+    // Find user by exact lowercase match
+    return await prisma.user.findFirst({
+      where: {
+        email: {
+          equals: lowerEmail,
+          mode: 'insensitive' // This ensures case-insensitive matching
+        }
+      }
+    });
+  }
+
+  /**
    * Register a new user with email verification
    */
   static async register(data: RegisterRequest): Promise<AuthResponse> {
@@ -26,10 +44,8 @@ export class AuthService {
       throw new Error(`Password validation failed: ${passwordValidation.errors.join(', ')}`);
     }
     
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-    });
+    // Check if user exists (case-insensitive)
+    const existingUser = await this.findUserByEmail(email);
     
     if (existingUser) {
       throw new Error('User with this email already exists');
@@ -52,10 +68,10 @@ export class AuthService {
     // Generate email verification token
     const { token: verificationToken, expiresAt: verificationExpiry } = TokenUtils.generateEmailVerificationToken();
     
-    // Create user
+    // Create user with original email format
     const user = await prisma.user.create({
       data: {
-        email: email.toLowerCase(),
+        email: email, // Store original email format
         password: hashedPassword,
         firstName,
         lastName,
@@ -68,8 +84,8 @@ export class AuthService {
       },
     });
     
-    // Send verification email
-    await EmailService.sendVerificationEmail(user.email, verificationToken, firstName);
+    // Send verification email to original email
+    await EmailService.sendVerificationEmail(email, verificationToken, firstName);
     
     // Create session (user can login but will be reminded to verify email)
     const sessionToken = generateToken({
@@ -198,10 +214,8 @@ export class AuthService {
   static async login(data: LoginRequest): Promise<AuthResponse> {
     const { email, password } = data;
     
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-    });
+    // Find user (case-insensitive)
+    const user = await this.findUserByEmail(email);
     
     if (!user) {
       throw new Error('Invalid email or password');

@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes, createHash } from 'crypto';
 
 /**
  * Token utilities for email verification and password reset
@@ -8,7 +8,7 @@ export class TokenUtils {
    * Generate a secure random token
    */
   static generateSecureToken(): string {
-    return crypto.randomBytes(32).toString('hex');
+    return randomBytes(32).toString('hex');
   }
 
   /**
@@ -44,7 +44,7 @@ export class TokenUtils {
    * Hash token for secure storage (optional, for additional security)
    */
   static hashToken(token: string): string {
-    return crypto.createHash('sha256').update(token).digest('hex');
+    return createHash('sha256').update(token).digest('hex');
   }
 
   /**
