@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { prisma } from '../lib/database';
+import { prisma, withRetry } from '../lib/database';
 import { hashPassword, verifyPassword, validatePasswordStrength } from '../utils/password';
 import { generateToken, getTokenExpiry } from '../utils/jwt';
 import { TokenUtils } from '../utils/tokens';
@@ -459,16 +459,22 @@ export class AuthService {
    * Validate session
    */
   static async validateSession(sessionId: string): Promise<User | null> {
-    const session = await prisma.userSession.findUnique({
-      where: { 
-        id: sessionId,
-        isActive: true,
-        expiresAt: { gt: new Date() },
-      },
-      include: { user: true },
-    });
-    
-    return session?.user || null;
+    try {
+      const session = await withRetry(() => prisma.userSession.findUnique({
+        where: { 
+          id: sessionId,
+          isActive: true,
+          expiresAt: { gt: new Date() },
+        },
+        include: { user: true },
+      }));
+      
+      return session?.user || null;
+    } catch (error) {
+      console.error('Session validation error:', error);
+      // Return null instead of throwing to prevent abrupt logouts
+      return null;
+    }
   }
   
   /**
