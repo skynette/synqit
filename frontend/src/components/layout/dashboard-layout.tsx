@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
 import { NotificationDrawer } from "@/components/ui/notification-drawer"
+import { useState, useEffect } from "react"
 import type React from "react"
 
 // Dashboard navigation items interface
@@ -71,6 +72,12 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
     const pathname = usePathname()
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+
+    // Close mobile nav when route changes
+    useEffect(() => {
+        setIsMobileNavOpen(false)
+    }, [pathname])
 
     // Get page title based on current route
     const getPageTitle = () => {
@@ -86,9 +93,29 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="min-h-screen relative">
             <BackgroundPattern />
             
+            {/* Mobile Nav Overlay */}
+            {isMobileNavOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+                    onClick={() => setIsMobileNavOpen(false)}
+                />
+            )}
+            
             {/* Sidebar */}
-            <aside className="fixed left-0 top-0 z-40 w-64 h-screen transition-transform -translate-x-full lg:translate-x-0">
+            <aside className={`fixed left-0 top-0 z-40 w-64 h-screen transition-transform ${
+                isMobileNavOpen ? 'translate-x-0' : '-translate-x-full'
+            } lg:translate-x-0`}>
                 <div className="h-full px-3 py-4 bg-synqit-surface/90 backdrop-blur-md border-r border-synqit-border">
+                    {/* Mobile Close Button */}
+                    <button 
+                        className="lg:hidden absolute right-2 top-2 p-2 text-white/80 hover:text-white hover:bg-synqit-accent/20 rounded-lg transition-colors"
+                        onClick={() => setIsMobileNavOpen(false)}
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
                     {/* Header with Logo and Profile */}
                     <div className="flex items-center justify-between mb-8 px-4">
                         <div className="flex items-center space-x-2">
@@ -169,7 +196,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                             {/* Left side - Platform Icons */}
                             <div className="flex items-center space-x-3">
                                 {/* Mobile menu button */}
-                                <button className="lg:hidden p-2 text-white/80 hover:text-white hover:bg-synqit-accent/20 rounded-lg transition-colors">
+                                <button 
+                                    onClick={() => setIsMobileNavOpen(true)}
+                                    className="lg:hidden p-2 text-white/80 hover:text-white hover:bg-synqit-accent/20 rounded-lg transition-colors"
+                                >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
