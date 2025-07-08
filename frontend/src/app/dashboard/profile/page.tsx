@@ -10,14 +10,36 @@ export default function ProfilePage() {
         newPassword: "",
         confirmPassword: ""
     })
+    const [projectData, setProjectData] = useState({
+        projectName: "My Awesome Project",
+        projectLink: "my-awesome-project",
+        description: "This is a placeholder description for my Web3 project. It will showcase innovative solutions and partnerships in the decentralized ecosystem.",
+        category: "Technology",
+        blockchain: "Ethereum",
+        partnershipType: "Strategic",
+        teamEmail: "",
+        officialEmail: "",
+        websiteLink: "",
+        facebook: "",
+        twitter: "",
+        discord: "",
+        phoneCountryCode: "🇳🇬 +234",
+        phoneNumber: "",
+        collaborationPreferences: "Open to all"
+    })
+    const [notifications, setNotifications] = useState({
+        reports: true,
+        sound: true,
+        vibrations: false
+    })
     const [showOldPassword, setShowOldPassword] = useState(false)
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
 
-    const isPasswordValid = passwordData.newPassword.length >= 8 && 
-        /[A-Z]/.test(passwordData.newPassword) && 
-        /[!@#$%^&*(),.?":{}|<>]/.test(passwordData.newPassword) && 
+    const isPasswordValid = passwordData.newPassword.length >= 8 &&
+        /[A-Z]/.test(passwordData.newPassword) &&
+        /[!@#$%^&*(),.?":{}|<>]/.test(passwordData.newPassword) &&
         /[0-9]/.test(passwordData.newPassword)
 
     const passwordsMatch = passwordData.newPassword === passwordData.confirmPassword && passwordData.confirmPassword.length > 0
@@ -37,7 +59,7 @@ export default function ProfilePage() {
             {/* Page Title and Settings Icon */}
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold text-white">Profile Settings</h1>
-                                    <button className="p-2.5 bg-synqit-surface hover:bg-synqit-surface/80 rounded-lg transition-colors">
+                <button className="p-2.5 bg-synqit-surface hover:bg-synqit-surface/80 rounded-lg transition-colors">
                     <svg className="w-5 h-5 text-synqit-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -49,21 +71,19 @@ export default function ProfilePage() {
             <div className="flex space-x-8 border-b border-synqit-border mb-8">
                 <button
                     onClick={() => setActiveTab("detail")}
-                    className={`pb-4 text-sm font-medium transition-colors relative ${
-                        activeTab === "detail"
-                            ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-synqit-primary"
-                            : "text-synqit-muted-foreground hover:text-white"
-                    }`}
+                    className={`pb-4 text-sm font-medium transition-colors relative ${activeTab === "detail"
+                        ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-synqit-primary"
+                        : "text-synqit-muted-foreground hover:text-white"
+                        }`}
                 >
                     Project Detail
                 </button>
                 <button
                     onClick={() => setActiveTab("security")}
-                    className={`pb-4 text-sm font-medium transition-colors relative ${
-                        activeTab === "security"
-                            ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-synqit-primary"
-                            : "text-synqit-muted-foreground hover:text-white"
-                    }`}
+                    className={`pb-4 text-sm font-medium transition-colors relative ${activeTab === "security"
+                        ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-synqit-primary"
+                        : "text-synqit-muted-foreground hover:text-white"
+                        }`}
                 >
                     Security & Account Management
                 </button>
@@ -109,7 +129,7 @@ export default function ProfilePage() {
                                             className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-lg text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
                                             placeholder="••••••••••••••••"
                                         />
-                                        <button 
+                                        <button
                                             type="button"
                                             onClick={() => setShowOldPassword(!showOldPassword)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
@@ -139,7 +159,7 @@ export default function ProfilePage() {
                                             className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-lg text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
                                             placeholder="••••••••••••••••"
                                         />
-                                        <button 
+                                        <button
                                             type="button"
                                             onClick={() => setShowNewPassword(!showNewPassword)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
@@ -159,10 +179,9 @@ export default function ProfilePage() {
                                     {passwordData.newPassword && (
                                         <div className="mt-3">
                                             <div className={`h-1 w-full rounded-full bg-synqit-border overflow-hidden`}>
-                                                <div 
-                                                    className={`h-full transition-all duration-300 ${
-                                                        isPasswordValid ? 'bg-green-500 w-full' : 'bg-yellow-500 w-1/2'
-                                                    }`}
+                                                <div
+                                                    className={`h-full transition-all duration-300 ${isPasswordValid ? 'bg-green-500 w-full' : 'bg-yellow-500 w-1/2'
+                                                        }`}
                                                 />
                                             </div>
                                             <p className="text-xs text-synqit-muted-foreground mt-2">
@@ -183,7 +202,7 @@ export default function ProfilePage() {
                                             className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-lg text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
                                             placeholder="••••••••••••••••"
                                         />
-                                        <button 
+                                        <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
@@ -223,14 +242,12 @@ export default function ProfilePage() {
                         <div className="col-span-8 flex items-start">
                             <button
                                 onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                    twoFactorEnabled ? 'bg-synqit-primary' : 'bg-synqit-muted'
-                                }`}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${twoFactorEnabled ? 'bg-synqit-primary' : 'bg-synqit-muted'
+                                    }`}
                             >
                                 <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                        twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'
-                                    }`}
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'
+                                        }`}
                                 />
                             </button>
                         </div>
@@ -270,15 +287,451 @@ export default function ProfilePage() {
             )}
 
             {activeTab === "detail" && (
-                <div className="space-y-6">
-                    <div className="grid grid-cols-12 gap-8">
+                <div className="space-y-0">
+                    {/* Project Details Header with Save Button */}
+                    <div className="grid grid-cols-12 gap-8 pb-8 border-b border-synqit-border">
                         <div className="col-span-4">
-                            <h2 className="text-xl font-semibold text-white">Project Detail</h2>
-                            <p className="text-sm text-synqit-muted-foreground mt-1">Configure your project settings</p>
+                            <h2 className="text-xl font-semibold text-white">Project Details</h2>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">You can change your Project details here seamlessly.</p>
+                        </div>
+                        <div className="col-span-8 flex justify-end items-start">
+                            <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-colors">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Project Name Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="text-base font-medium text-white">Project Name</h3>
+                                <svg className="w-4 h-4 text-synqit-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <p className="text-sm text-synqit-muted-foreground">This is the Project Name that will be visible for everyone</p>
                         </div>
                         <div className="col-span-8">
-                            <p className="text-synqit-muted-foreground">Project detail settings will be available here.</p>
+                            <div className="space-y-5 max-w-lg">
+                                <div>
+                                    <input
+                                        type="text"
+                                        value={projectData.projectName}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, projectName: e.target.value }))}
+                                        className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Enter project name"
+                                    />
+                                </div>
+                                <div className="flex">
+                                    <div className="px-3 py-2 bg-[#1a1f2e] border border-gray-700 rounded-l-full text-synqit-muted-foreground text-sm flex items-center">
+                                        https://synqit.com/
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={projectData.projectLink}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, projectLink: e.target.value }))}
+                                        className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 border-l-0 rounded-r-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="project-link"
+                                    />
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    {/* Project Description Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Project Description</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">This will be your main story. Keep it very very long</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg">
+                                <textarea
+                                    className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-2xl text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    rows={6}
+                                    placeholder="Enter project description"
+                                    value={projectData.description}
+                                    onChange={(e) => setProjectData(prev => ({ ...prev, description: e.target.value }))}
+                                />
+                                <div className="mt-2 text-right">
+                                    <span className="text-sm text-synqit-muted-foreground">{projectData.description.length}/5000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Industry/Category Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Industry/Category</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">Choose project category (Multi select)</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg flex gap-3">
+                                <select
+                                    value={projectData.category}
+                                    onChange={(e) => setProjectData(prev => ({ ...prev, category: e.target.value }))}
+                                    className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option>Category</option>
+                                    <option>Technology</option>
+                                    <option>Finance</option>
+                                    <option>Healthcare</option>
+                                </select>
+                                <select
+                                    value={projectData.blockchain}
+                                    onChange={(e) => setProjectData(prev => ({ ...prev, blockchain: e.target.value }))}
+                                    className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option>Blockchain</option>
+                                    <option>Ethereum</option>
+                                    <option>Bitcoin</option>
+                                    <option>Solana</option>
+                                </select>
+                                <select
+                                    value={projectData.partnershipType}
+                                    onChange={(e) => setProjectData(prev => ({ ...prev, partnershipType: e.target.value }))}
+                                    className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option>Partnership Type</option>
+                                    <option>Strategic</option>
+                                    <option>Technical</option>
+                                    <option>Marketing</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Project Profile Picture Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Project Profile Picture</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">This is will be your card profile picture</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="flex items-center space-x-6 max-w-lg">
+                                <div className="w-24 h-24 rounded-full bg-[#1a1f2e] border-2 border-dashed border-gray-700 flex items-center justify-center">
+                                    <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm text-synqit-primary mb-1">Browse your file to upload!</p>
+                                    <p className="text-xs text-synqit-muted-foreground mb-3">Supported Format: SVG, JPG, PNG (10mb each)</p>
+                                    <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center space-x-2">
+                                        <span>Browse File</span>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Project Banner Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Project Banner</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">This is will be your card cover profile</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg">
+                                <div className="w-full h-40 bg-[#1a1f2e] border-2 border-dashed border-gray-700 rounded-2xl flex flex-col items-center justify-center">
+                                    <p className="text-sm text-synqit-primary mb-1">Browse your file to upload!</p>
+                                    <p className="text-xs text-synqit-muted-foreground mb-3">Supported Format: SVG, JPG, PNG (10mb each)</p>
+                                    <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center space-x-2">
+                                        <span>Browse File</span>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Team & Collaboration Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Team & Collaboration</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">Set up Team & Collaboration</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg">
+                                <div className="flex">
+                                    <div className="px-3 py-2 bg-[#1a1f2e] border border-gray-700 rounded-l-full text-synqit-muted-foreground text-sm flex items-center">
+                                        Email Address
+                                    </div>
+                                    <input
+                                        type="email"
+                                        value={projectData.teamEmail}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, teamEmail: e.target.value }))}
+                                        className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 border-l-0 rounded-r-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="email@example.com"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Collaboration Preferences Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Collaboration Preferences</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">Collaboration preference (Multi select)</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg">
+                                <select
+                                    value={projectData.collaborationPreferences}
+                                    onChange={(e) => setProjectData(prev => ({ ...prev, collaborationPreferences: e.target.value }))}
+                                    className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option>Collaboration Preferences</option>
+                                    <option>Open to all</option>
+                                    <option>By invitation</option>
+                                    <option>Closed</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Official Email Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Official Email</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">Enter your website/portfolio Link</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg">
+                                <div className="flex">
+                                    <div className="px-3 py-2 bg-[#1a1f2e] border border-gray-700 rounded-l-full text-synqit-muted-foreground text-sm flex items-center">
+                                        Email Address
+                                    </div>
+                                    <input
+                                        type="email"
+                                        value={projectData.officialEmail}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, officialEmail: e.target.value }))}
+                                        className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 border-l-0 rounded-r-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="email@example.com"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Website / Portfolio Link Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="text-base font-medium text-white">Website / Portfolio Link</h3>
+                                <svg className="w-4 h-4 text-synqit-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <p className="text-sm text-synqit-muted-foreground">Enter your website/portfolio Link</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg">
+                                <div className="flex">
+                                    <div className="px-3 py-2 bg-[#1a1f2e] border border-gray-700 rounded-l-full text-synqit-muted-foreground text-sm flex items-center">
+                                        https://
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={projectData.websiteLink}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, websiteLink: e.target.value }))}
+                                        className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 border-l-0 rounded-r-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="example.com"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Social Media Links Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="text-base font-medium text-white">Social Media Links</h3>
+                                <svg className="w-4 h-4 text-synqit-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <p className="text-sm text-synqit-muted-foreground">Links for your social media.</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg space-y-4">
+                                <div className="flex">
+                                    <div className="px-3 py-2 bg-[#1a1f2e] border border-gray-700 rounded-l-full text-synqit-muted-foreground text-sm flex items-center">
+                                        facebook.com/
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={projectData.facebook}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, facebook: e.target.value }))}
+                                        className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 border-l-0 rounded-r-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="username"
+                                    />
+                                </div>
+                                <div className="flex">
+                                    <div className="px-3 py-2 bg-[#1a1f2e] border border-gray-700 rounded-l-full text-synqit-muted-foreground text-sm flex items-center">
+                                        twitter.com/
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={projectData.twitter}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, twitter: e.target.value }))}
+                                        className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 border-l-0 rounded-r-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="username"
+                                    />
+                                </div>
+                                <div className="flex">
+                                    <div className="px-3 py-2 bg-[#1a1f2e] border border-gray-700 rounded-l-full text-synqit-muted-foreground text-sm flex items-center">
+                                        discord.com/
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={projectData.discord}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, discord: e.target.value }))}
+                                        className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 border-l-0 rounded-r-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="username"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Phone Number Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Phone Number</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">Enter Phone number</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg">
+                                <div className="flex">
+                                    <div className="relative">
+                                        <select
+                                            value={projectData.phoneCountryCode}
+                                            onChange={(e) => setProjectData(prev => ({ ...prev, phoneCountryCode: e.target.value }))}
+                                            className="appearance-none px-4 py-3 pr-10 bg-[#1a1f2e] border border-gray-700 rounded-l-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        >
+                                            <option>🇳🇬 +234</option>
+                                            <option>🇺🇸 +1</option>
+                                            <option>🇬🇧 +44</option>
+                                        </select>
+                                        <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                    <input
+                                        type="tel"
+                                        value={projectData.phoneNumber}
+                                        onChange={(e) => setProjectData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                                        className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-gray-700 border-l-0 rounded-r-full text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="(000) 000-0000"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Notifications Section */}
+                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
+                        <div className="col-span-4">
+                            <h3 className="text-base font-medium text-white">Notifications</h3>
+                            <p className="text-sm text-synqit-muted-foreground mt-1">This is where you'll receive notifications</p>
+                        </div>
+                        <div className="col-span-8">
+                            <div className="max-w-lg space-y-6">
+                                {/* Reports */}
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h4 className="text-sm font-medium text-white flex items-center gap-2">
+                                            <button
+                                                onClick={() => setNotifications(prev => ({ ...prev, reports: !prev.reports }))}
+                                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${notifications.reports
+                                                        ? 'bg-synqit-primary border-synqit-primary'
+                                                        : 'bg-transparent border-gray-600'
+                                                    }`}
+                                            >
+                                                {notifications.reports && (
+                                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                )}
+                                            </button>
+                                            Reports
+                                        </h4>
+                                        <p className="text-xs text-synqit-muted-foreground ml-7">Enable reports notifications</p>
+                                    </div>
+                                </div>
+
+                                {/* Sound */}
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h4 className="text-sm font-medium text-white flex items-center gap-2">
+                                            <button
+                                                onClick={() => setNotifications(prev => ({ ...prev, sound: !prev.sound }))}
+                                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${notifications.sound
+                                                        ? 'bg-synqit-primary border-synqit-primary'
+                                                        : 'bg-transparent border-gray-600'
+                                                    }`}
+                                            >
+                                                {notifications.sound && (
+                                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                )}
+                                            </button>
+                                            Sound
+                                        </h4>
+                                        <p className="text-xs text-synqit-muted-foreground ml-7">Enable sound notifications</p>
+                                    </div>
+                                </div>
+
+                                {/* Vibrations */}
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h4 className="text-sm font-medium text-white flex items-center gap-2">
+                                            <button
+                                                onClick={() => setNotifications(prev => ({ ...prev, vibrations: !prev.vibrations }))}
+                                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${notifications.vibrations
+                                                        ? 'bg-synqit-primary border-synqit-primary'
+                                                        : 'bg-transparent border-gray-600'
+                                                    }`}
+                                            >
+                                                {notifications.vibrations && (
+                                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                )}
+                                            </button>
+                                            Vibrations
+                                        </h4>
+                                        <p className="text-xs text-synqit-muted-foreground ml-7">Enable vibrations effect</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Actions */}
+                    <div className="flex justify-end space-x-4 pt-8">
+                        <button className="bg-synqit-muted hover:bg-synqit-muted/80 text-white px-6 py-2.5 rounded-full font-medium flex items-center space-x-2 transition-colors">
+                            <span>Cancel</span>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2.5 rounded-full font-medium flex items-center space-x-2 transition-colors">
+                            <span>Save Settings</span>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             )}
