@@ -124,7 +124,12 @@ export class AuthService {
     });
 
     if (!user) {
-      return { success: false, message: 'Invalid verification token' };
+      return { success: false, message: 'Invalid or expired verification token' };
+    }
+
+    // Check if user is already verified
+    if (user.isEmailVerified) {
+      return { success: true, message: 'Email verified successfully' };
     }
 
     // Check if token is expired
@@ -143,7 +148,12 @@ export class AuthService {
     });
 
     // Send welcome email
-    await EmailService.sendWelcomeEmail(user.email, user.firstName);
+    try {
+      await EmailService.sendWelcomeEmail(user.email, user.firstName);
+    } catch (error) {
+      // Don't fail verification if welcome email fails
+      console.warn('Failed to send welcome email:', error);
+    }
 
     return { success: true, message: 'Email verified successfully' };
   }

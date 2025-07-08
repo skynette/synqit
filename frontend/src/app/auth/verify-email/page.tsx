@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
@@ -47,15 +47,15 @@ function EmailVerification({
     verifyError, 
     resendError 
 }: EmailVerificationProps) {
-    const [hasAttemptedVerification, setHasAttemptedVerification] = useState(false)
+    const hasAttemptedVerificationRef = useRef(false)
 
     // Auto-verify if token is present in URL
     useEffect(() => {
-        if (token && !hasAttemptedVerification) {
-            setHasAttemptedVerification(true)
+        if (token && !hasAttemptedVerificationRef.current) {
+            hasAttemptedVerificationRef.current = true
             onVerify({ token })
         }
-    }, [token, hasAttemptedVerification, onVerify])
+    }, [token]) // Removed onVerify from dependencies to prevent double calls
 
     const handleResendVerification = () => {
         if (user?.email) {
