@@ -85,11 +85,12 @@ model Company {
   website         String?
   logoUrl         String?
   foundedYear     Int?
-  teamSize        TeamSize?
-  
   // Web3 specific fields
   blockchainPreferences BlockchainPreference[]
-  fundingStage    FundingStage?
+  projectType     ProjectType?
+  projectStage    ProjectStage?
+  tokenAvailability TokenAvailability?
+  developmentFocus String?       // Main focus area
   totalFunding    Decimal?      @db.Decimal(15, 2)
   isLookingForFunding Boolean   @default(false)
   isLookingForPartners Boolean  @default(true)
@@ -251,38 +252,40 @@ enum SubscriptionTier {
   ENTERPRISE
 }
 
-enum TeamSize {
-  SOLO
-  SMALL_2_10
-  MEDIUM_11_50
-  LARGE_51_200
-  ENTERPRISE_200_PLUS
+enum ProjectType {
+  AI
+  DEFI
+  GAMEFI
+  NFT
+  DAO
+  WEB3_TOOLS
+  OTHER
 }
 
-enum FundingStage {
-  PRE_SEED
-  SEED
-  SERIES_A
-  SERIES_B
-  SERIES_C
-  SERIES_D_PLUS
-  IPO
-  PROFITABLE
+enum ProjectStage {
+  IDEA_STAGE
+  MVP
+  BETA_TESTING
+  LIVE
+  TESTING
+  SCALING
+}
+
+enum TokenAvailability {
+  NO_TOKEN_YET
+  PRIVATE_SALE_ONGOING
+  PUBLIC_SALE_LIVE
+  LISTED_ON_EXCHANGES
 }
 
 enum Blockchain {
   ETHEREUM
-  BITCOIN
   SOLANA
-  POLYGON
+  MVP
   BINANCE_SMART_CHAIN
+  POLYGON
   AVALANCHE
-  CARDANO
-  POLKADOT
-  COSMOS
-  ARBITRUM
-  OPTIMISM
-  BASE
+  TORONET
   OTHER
 }
 

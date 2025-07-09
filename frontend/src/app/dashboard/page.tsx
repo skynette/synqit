@@ -99,14 +99,14 @@ const partners: Partner[] = [
 ]
 
 const filterOptions = {
-    projectType: ["Metaverse", "DeFi", "NFT", "Gaming", "Infrastructure"],
-    projectStage: ["Idea Stage", "Development", "Launch", "Scaling"],
-    blockchain: ["Ethereum", "Polygon", "Solana", "Binance", "Avalanche"],
-    tokenAvailability: ["No Token Yet", "Token Available", "Coming Soon"],
+    projectType: ["N/A", "AI", "DeFi", "GameFi", "NFT", "DAO", "Web3 Tools"],
+    projectStage: ["N/A", "Idea Stage", "MVP", "Beta Testing", "Live", "Testing", "Scaling"],
+    blockchain: ["N/A", "Ethereum", "Solana", "MVP", "Binance Smart Chain", "Polygon", "Avalanche", "Toronet"],
+    tokenAvailability: ["N/A", "No Token Yet", "Private Sale Ongoing", "Public Sale Live", "Listed on Exchanges"],
     rewardModel: ["Airdrops", "Revenue Share", "Token Allocation", "Equity"],
     fundingStatus: ["Pre-Seed", "Seed", "Series A", "Series B"],
     teamSize: ["1-10", "11-50", "51-100", "100+"],
-    mainFocus: ["DeFi", "GameFi", "SocialFi", "Infrastructure"]
+    developmentFocus: ["DeFi", "GameFi", "SocialFi", "Infrastructure", "AI", "Web3 Tools"]
 }
 
 const tabs = [
@@ -123,14 +123,14 @@ const tabs = [
 export default function ExplorePage() {
     const [searchQuery, setSearchQuery] = useState("")
     const [filters, setFilters] = useState({
-        projectType: "Metaverse",
-        projectStage: "Idea Stage", 
-        blockchain: "Ethereum",
-        tokenAvailability: "No Token Yet",
+        projectType: "N/A",
+        projectStage: "N/A", 
+        blockchain: "N/A",
+        tokenAvailability: "N/A",
         rewardModel: "Airdrops",
         fundingStatus: "Pre-Seed",
         teamSize: "1-10",
-        mainFocus: "DeFi"
+        developmentFocus: "DeFi"
     })
     const [activeTab, setActiveTab] = useState("Trending Now")
     const [currentPage, setCurrentPage] = useState(1)
@@ -301,15 +301,15 @@ export default function ExplorePage() {
                                 </select>
                             </div>
 
-                            {/* Main Focus */}
+                            {/* Development Focus */}
                             <div className="min-w-[180px]">
-                                <label className="block text-gray-300 text-sm font-medium mb-2">Main Focus</label>
+                                <label className="block text-gray-300 text-sm font-medium mb-2">Development Focus</label>
                                 <select 
-                                    value={filters.mainFocus}
-                                    onChange={(e) => setFilters({...filters, mainFocus: e.target.value})}
+                                    value={filters.developmentFocus}
+                                    onChange={(e) => setFilters({...filters, developmentFocus: e.target.value})}
                                     className="w-full bg-[#1a1f2e] border border-gray-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
-                                    {filterOptions.mainFocus.map(option => (
+                                    {filterOptions.developmentFocus.map(option => (
                                         <option key={option} value={option}>{option}</option>
                                     ))}
                                 </select>

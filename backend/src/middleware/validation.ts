@@ -152,15 +152,26 @@ export const validateCompany = [
     .isInt({ min: 1900, max: new Date().getFullYear() })
     .withMessage('Founded year must be between 1900 and current year'),
   
-  body('teamSize')
+  body('projectType')
     .optional()
-    .isIn(['SOLO', 'SMALL_2_10', 'MEDIUM_11_50', 'LARGE_51_200', 'ENTERPRISE_200_PLUS'])
-    .withMessage('Invalid team size'),
+    .isIn(['AI', 'DEFI', 'GAMEFI', 'NFT', 'DAO', 'WEB3_TOOLS', 'OTHER'])
+    .withMessage('Invalid project type'),
   
-  body('fundingStage')
+  body('projectStage')
     .optional()
-    .isIn(['PRE_SEED', 'SEED', 'SERIES_A', 'SERIES_B', 'SERIES_C', 'SERIES_D_PLUS', 'IPO', 'PROFITABLE'])
-    .withMessage('Invalid funding stage'),
+    .isIn(['IDEA_STAGE', 'MVP', 'BETA_TESTING', 'LIVE', 'TESTING', 'SCALING'])
+    .withMessage('Invalid project stage'),
+  
+  body('tokenAvailability')
+    .optional()
+    .isIn(['NO_TOKEN_YET', 'PRIVATE_SALE_ONGOING', 'PUBLIC_SALE_LIVE', 'LISTED_ON_EXCHANGES'])
+    .withMessage('Invalid token availability'),
+  
+  body('developmentFocus')
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage('Development focus must not exceed 100 characters'),
   
   body('blockchainPreferences')
     .optional()
@@ -169,6 +180,6 @@ export const validateCompany = [
   
   body('blockchainPreferences.*')
     .optional()
-    .isIn(['ETHEREUM', 'BITCOIN', 'SOLANA', 'POLYGON', 'BINANCE_SMART_CHAIN', 'AVALANCHE', 'CARDANO', 'POLKADOT', 'COSMOS', 'ARBITRUM', 'OPTIMISM', 'BASE', 'OTHER'])
+    .isIn(['ETHEREUM', 'SOLANA', 'MVP', 'BINANCE_SMART_CHAIN', 'POLYGON', 'AVALANCHE', 'TORONET', 'OTHER'])
     .withMessage('Invalid blockchain preference'),
 ]; 
