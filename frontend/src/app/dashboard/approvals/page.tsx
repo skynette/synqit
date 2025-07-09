@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 interface ApprovedPartner {
     id: string
@@ -63,6 +64,7 @@ const filterOptions = {
 }
 
 export default function ApprovalsPage() {
+    const router = useRouter()
     const [searchQuery, setSearchQuery] = useState("")
     const [filters, setFilters] = useState({
         category: "All Categories",
@@ -222,7 +224,10 @@ export default function ApprovalsPage() {
                             </button>
 
                             {/* View Profile Button */}
-                            <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2.5 rounded-lg transition-colors duration-200 font-medium text-sm">
+                            <button 
+                                onClick={() => router.push(`/dashboard/matchmaking/audius`)}
+                                className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2.5 rounded-lg transition-colors duration-200 font-medium text-sm"
+                            >
                                 View Profile
                             </button>
                         </div>
