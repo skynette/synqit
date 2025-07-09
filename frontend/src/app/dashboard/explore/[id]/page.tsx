@@ -604,6 +604,162 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
                                     </div>
                                 ))}
                             </div>
+
+                            {/* Preferred Partner Type */}
+                            <div className="mt-6">
+                                <h4 className="text-white font-medium flex items-center gap-2 mb-3">
+                                    <span role="img" aria-label="target">🎯</span> Preferred Partner Type:
+                                </h4>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                        </svg>
+                                        <span className="text-synqit-muted-foreground">Cross-Marketing</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                        </svg>
+                                        <span className="text-synqit-muted-foreground">Platform Integration</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                        </svg>
+                                        <span className="text-synqit-muted-foreground">Joint Events & AMAs</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Requirements */}
+                            <div className="mt-6">
+                                <h4 className="text-white font-medium flex items-center gap-2 mb-3">
+                                    <span role="img" aria-label="clipboard">📋</span> Requirements to Join:
+                                </h4>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-synqit-muted-foreground" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                        </svg>
+                                        <span className="text-synqit-muted-foreground">Must be a verified Web3 project</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-synqit-muted-foreground" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                        </svg>
+                                        <span className="text-synqit-muted-foreground">Have an active community (Telegram, Discord, Twitter)</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-synqit-muted-foreground" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                        </svg>
+                                        <span className="text-synqit-muted-foreground">Must align with Mintrise's ecosystem goals</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* How to Apply */}
+                            <div className="mt-6">
+                                <h4 className="text-white font-medium flex items-center gap-2 mb-3">
+                                    <span role="img" aria-label="phone">📞</span> How to Apply:
+                                </h4>
+                                <div className="space-y-2">
+                                    <p className="text-synqit-muted-foreground">Click "Request Partnership" to send a connection request</p>
+                                    <p className="text-synqit-muted-foreground">Mintrise will review and approve based on alignment</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Partnership Status & Activity */}
+                    <div className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4">Partnership Status & Activity</h3>
+                        
+                        {/* Events and Announcements */}
+                        <div className="space-y-3 mb-6">
+                            <div className="flex items-center gap-2 text-synqit-muted-foreground">
+                                <span role="img" aria-label="calendar">📅</span>
+                                <span>Upcoming Joint Events: (Event List)</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-synqit-muted-foreground">
+                                <span role="img" aria-label="announcement">📢</span>
+                                <span>Recent Announcements: Follow social media account to get updated</span>
+                            </div>
+                        </div>
+
+                        {/* Active Collaborations */}
+                        <div className="mb-6">
+                            <div className="flex items-center gap-2 mb-3">
+                                <span role="img" aria-label="star">⭐</span>
+                                <span className="text-white">Active Collaborations:</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {[
+                                    { name: 'ShortletLagos', avatar: '/avatars/avatar1.png' },
+                                    { name: 'Mintrise', avatar: '/avatars/avatar2.png' },
+                                    { name: 'We3oost', avatar: '/avatars/avatar3.png' },
+                                    { name: 'TechExplore', avatar: '/avatars/avatar4.png' },
+                                    { name: 'We3oost', avatar: '/avatars/avatar5.png' }
+                                ].map((collab, index) => (
+                                    <button
+                                        key={index}
+                                        className="flex items-center gap-2 bg-synqit-input hover:bg-synqit-input/80 rounded-full px-4 py-2 transition-colors"
+                                    >
+                                        <div className="w-6 h-6 relative rounded-full overflow-hidden">
+                                            <Image
+                                                src={collab.avatar}
+                                                alt={collab.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                        <span className="text-synqit-muted-foreground text-sm">{collab.name}</span>
+                                        <svg className="w-4 h-4 text-synqit-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Call-to-Action */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <span role="img" aria-label="rocket">🚀</span>
+                                <h4 className="text-white font-medium">Call-to-Action (CTA)</h4>
+                            </div>
+                            <p className="text-synqit-muted-foreground">
+                                Partner with Mintrise & Shape the Future of Web3 Real Estate!
+                            </p>
+                            <button className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                Apply for Partnership
+                            </button>
+                            <p className="text-synqit-muted-foreground text-sm">
+                                Not ready yet? Follow Mintrise for updates!
+                            </p>
+                            
+                            {/* Social Media Links */}
+                            <div className="flex items-center gap-4 pt-2">
+                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
+                                    <Image src="/icons/twitter.svg" alt="Twitter" width={24} height={24} />
+                                </a>
+                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
+                                    <Image src="/icons/telegram.svg" alt="Telegram" width={24} height={24} />
+                                </a>
+                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
+                                    <Image src="/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} />
+                                </a>
+                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
+                                    <Image src="/icons/discord.svg" alt="Discord" width={24} height={24} />
+                                </a>
+                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
+                                    <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
+                                </a>
+                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
+                                    <Image src="/icons/youtube.svg" alt="YouTube" width={24} height={24} />
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

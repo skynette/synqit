@@ -201,7 +201,7 @@ export default function ExplorePage() {
             <div className="space-y-4">
                 {/* Filter Row with horizontal scroll */}
                 <div className="relative">
-                    <div className="flex items-start gap-4 overflow-x-auto scrollbar-hide pb-2">
+                    <div className="flex items-start gap-4 overflow-x-auto pb-2 custom-scrollbar">
                         <div className="flex gap-3 flex-nowrap">
                             {/* Project Type */}
                             <div className="min-w-[180px]">
@@ -317,7 +317,7 @@ export default function ExplorePage() {
                         </div>
 
                         {/* Action buttons - fixed position */}
-                        <div className="flex gap-3 items-end flex-shrink-0 ml-4">
+                        <div className="flex gap-3 mt-6 flex-shrink-0 ml-4">
                             <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm transition-colors whitespace-nowrap">
                                 Apply Filter
                             </button>
@@ -333,7 +333,7 @@ export default function ExplorePage() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar">
                 {tabs.map((tab) => (
                     <button
                         key={tab}
