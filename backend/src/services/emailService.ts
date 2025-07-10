@@ -6,7 +6,7 @@ import { Resend } from 'resend';
  */
 export class EmailService {
   private static resend = new Resend(process.env.RESEND_API_KEY);
-  private static fromEmail = process.env.FROM_EMAIL || 'Synqit <onboarding@resend.dev>';
+  private static fromEmail = process.env.FROM_EMAIL || 'Synqit <noreply@notifications.synqit.com>';
   private static baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
   /**
