@@ -16,15 +16,25 @@ export class EmailService {
     // Use original email format for sending
     const verificationLink = `${process.env.FRONTEND_URL}/auth/verify-email?token=${token}`;
     
+    console.log('Attempting to send verification email to:', email);
+    console.log('From email:', this.fromEmail);
+    console.log('Resend API Key exists:', !!process.env.RESEND_API_KEY);
+    console.log('Verification link:', verificationLink);
+    
     try {
-      await this.resend.emails.send({
+      const result = await this.resend.emails.send({
         from: this.fromEmail,
         to: email,
         subject: 'Verify your email address - Synqit',
         html: this.getVerificationEmailTemplate(firstName, verificationLink),
       });
+      
+      console.log('Email sent successfully:', result);
     } catch (error) {
-      console.error('Error sending verification email:', error);
+      console.error('Detailed error sending verification email:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       throw new Error('Failed to send verification email');
     }
   }
