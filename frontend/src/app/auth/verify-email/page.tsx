@@ -49,11 +49,19 @@ function EmailVerification({
 }: EmailVerificationProps) {
     const hasAttemptedVerificationRef = useRef(false)
 
-    // Auto-verify if token is present in URL
+    // Auto-verify if token is present in URL with persistence
     useEffect(() => {
         if (token && !hasAttemptedVerificationRef.current) {
-            hasAttemptedVerificationRef.current = true
-            onVerify({ token })
+            // Check if we've already attempted verification for this token
+            const verificationKey = `synqit_verified_${token}`
+            const hasVerified = sessionStorage.getItem(verificationKey)
+            
+            if (!hasVerified) {
+                hasAttemptedVerificationRef.current = true
+                // Mark as attempted in session storage
+                sessionStorage.setItem(verificationKey, 'true')
+                onVerify({ token })
+            }
         }
     }, [token]) // Removed onVerify from dependencies to prevent double calls
 
@@ -212,7 +220,8 @@ function VerifyEmailPageContent() {
         verifyEmailError,
         resendVerificationError,
         resetVerifyEmailError,
-        resetResendVerificationError
+        resetResendVerificationError,
+        userError
     } = useAuth()
 
     useEffect(() => {
@@ -235,6 +244,33 @@ function VerifyEmailPageContent() {
     const handleResend = (data: ResendVerificationRequest) => {
         resetResendVerificationError()
         resendVerification(data)
+    }
+
+    // Show error state if user data fails to load
+    if (userError) {
+        return (
+            <AuthLayout>
+                <div className="w-full max-w-md">
+                    <div className="bg-blue-800/5 border border-synqit-border rounded-3xl p-8">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-xl font-bold text-white mb-2">Connection Error</h2>
+                            <p className="text-gray-400 mb-4">Failed to load user data. Please check your connection and try again.</p>
+                            <button 
+                                onClick={() => window.location.reload()} 
+                                className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                            >
+                                Refresh Page
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </AuthLayout>
+        )
     }
 
     // Show loading if we don't have user data yet

@@ -78,9 +78,11 @@ export function useAuth() {
     },
   })
 
-  // Email verification mutation
+  // Email verification mutation with retry logic
   const verifyEmailMutation = useMutation({
     mutationFn: authApi.verifyEmail,
+    retry: 3, // Retry up to 3 times
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff: 2s, 4s, 8s...
     onSuccess: (data) => {
       if (data.status === 'success') {
         queryClient.invalidateQueries({ queryKey: ['user'] })
@@ -95,9 +97,11 @@ export function useAuth() {
     },
   })
 
-  // Resend verification mutation
+  // Resend verification mutation with retry logic
   const resendVerificationMutation = useMutation({
     mutationFn: authApi.resendVerification,
+    retry: 2, // Retry up to 2 times for resend
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 10000), // Exponential backoff: 2s, 4s
     onSuccess: (data) => {
       if (data.status === 'success') {
         // toast.success('Verification email sent successfully!')
