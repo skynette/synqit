@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import authRoutes from './auth';
+import dashboardRoutes from './dashboard';
+import profileRoutes from './profile';
 
 const router = Router();
 
@@ -22,6 +24,12 @@ router.get('/health', (req, res) => {
 // Authentication routes
 router.use('/auth', authRoutes);
 
+// Dashboard routes
+router.use('/dashboard', dashboardRoutes);
+
+// Profile routes
+router.use('/profile', profileRoutes);
+
 // API info
 router.get('/', (req, res) => {
   res.status(200).json({
@@ -32,6 +40,8 @@ router.get('/', (req, res) => {
     endpoints: {
       health: '/api/health',
       auth: '/api/auth',
+      dashboard: '/api/dashboard',
+      profile: '/api/profile',
     },
   });
 });

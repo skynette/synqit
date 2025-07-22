@@ -8,7 +8,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Import utilities and middleware
-import { connectDatabase, disconnectDatabase } from './lib/database';
+import { 
+  connectDatabase, 
+  disconnectDatabase,
+  startDatabaseHealthCheck,
+  stopDatabaseHealthCheck 
+} from './lib/database';
 import { generalLimiter, authLimiter } from './middleware/rateLimiter';
 import { AuthService } from './services/authService';
 import apiRoutes from './routes';
@@ -110,6 +115,9 @@ async function startServer() {
     // Connect to database
     await connectDatabase();
     
+    // Start database health checks
+    startDatabaseHealthCheck();
+    
     // Clean up expired sessions on startup
     await AuthService.cleanupExpiredSessions();
     
@@ -124,6 +132,7 @@ async function startServer() {
     // Graceful shutdown
     process.on('SIGTERM', async () => {
       console.log('📴 SIGTERM received, shutting down gracefully...');
+      stopDatabaseHealthCheck();
       server.close(async () => {
         await disconnectDatabase();
         process.exit(0);
@@ -132,10 +141,17 @@ async function startServer() {
     
     process.on('SIGINT', async () => {
       console.log('📴 SIGINT received, shutting down gracefully...');
+      stopDatabaseHealthCheck();
       server.close(async () => {
         await disconnectDatabase();
         process.exit(0);
       });
+    });
+    
+    // Handle unhandled promise rejections
+    process.on('unhandledRejection', (error: Error) => {
+      console.error('❌ Unhandled Promise Rejection:', error);
+      // Don't exit the process, just log the error
     });
     
   } catch (error) {

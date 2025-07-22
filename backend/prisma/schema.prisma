@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,60 +7,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User model - Core user entity
 model User {
-  id              String   @id @default(cuid())
-  email           String   @unique
-  password        String   // Hashed password
-  firstName       String
-  lastName        String
-  profileImage    String?
-  bio             String?
-  walletAddress   String?  @unique // Web3 wallet for future features
-  
-  // Email verification
-  isEmailVerified Boolean  @default(false)
-  emailVerificationToken String? @unique
-  emailVerificationExpiry DateTime?
-  
-  // Password reset
-  passwordResetToken String? @unique
-  passwordResetExpiry DateTime?
-  
-  // Security tracking
-  failedLoginAttempts Int @default(0)
-  lockedUntil DateTime?
-  
-  // 2FA fields (for future implementation)
-  twoFactorSecret String?
-  twoFactorEnabled Boolean @default(false)
-  twoFactorBackupCodes String[]
-  
-  isVerified      Boolean  @default(false)
-  userType        UserType @default(STARTUP)
-  
-  // Subscription info
-  subscriptionTier SubscriptionTier @default(FREE)
-  subscriptionExpiresAt DateTime?
-  
-  // Timestamps
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  lastLoginAt     DateTime?
-  
-  // Relations
-  company         Company?
-  sentMessages    Message[] @relation("MessageSender")
-  receivedMessages Message[] @relation("MessageReceiver")
-  sentPartnershipRequests Partnership[] @relation("PartnershipRequester")
-  receivedPartnershipRequests Partnership[] @relation("PartnershipReceiver")
-  notifications   Notification[]
-  sessions        UserSession[]
-  
+  id                          String           @id @default(cuid())
+  email                       String           @unique
+  password                    String
+  firstName                   String
+  lastName                    String
+  profileImage                String?
+  bio                         String?
+  walletAddress               String?          @unique
+  isVerified                  Boolean          @default(false)
+  userType                    UserType         @default(STARTUP)
+  subscriptionTier            SubscriptionTier @default(FREE)
+  subscriptionExpiresAt       DateTime?
+  createdAt                   DateTime         @default(now())
+  updatedAt                   DateTime         @updatedAt
+  lastLoginAt                 DateTime?
+  emailVerificationExpiry     DateTime?
+  emailVerificationToken      String?          @unique
+  failedLoginAttempts         Int              @default(0)
+  isEmailVerified             Boolean          @default(false)
+  lockedUntil                 DateTime?
+  passwordResetExpiry         DateTime?
+  passwordResetToken          String?          @unique
+  twoFactorBackupCodes        String[]
+  twoFactorEnabled            Boolean          @default(false)
+  twoFactorSecret             String?
+  company                     Company?
+  receivedMessages            Message[]        @relation("MessageReceiver")
+  sentMessages                Message[]        @relation("MessageSender")
+  notifications               Notification[]
+  receivedPartnershipRequests Partnership[]    @relation("PartnershipReceiver")
+  sentPartnershipRequests     Partnership[]    @relation("PartnershipRequester")
+  sessions                    UserSession[]
+
   @@map("users")
 }
 
-// User session for JWT token management
 model UserSession {
   id        String   @id @default(cuid())
   userId    String
@@ -71,174 +51,119 @@ model UserSession {
   expiresAt DateTime
   createdAt DateTime @default(now())
   isActive  Boolean  @default(true)
-  
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@map("user_sessions")
 }
 
-// Company/Organization model
 model Company {
-  id              String   @id @default(cuid())
-  name            String
-  description     String
-  website         String?
-  logoUrl         String?
-  foundedYear     Int?
-  // Web3 specific fields
+  id                    String                 @id @default(cuid())
+  name                  String
+  description           String
+  website               String?
+  logoUrl               String?
+  foundedYear           Int?
+  teamSize              TeamSize?
+  fundingStage          FundingStage?
+  totalFunding          Decimal?               @db.Decimal(15, 2)
+  isLookingForFunding   Boolean                @default(false)
+  isLookingForPartners  Boolean                @default(true)
+  contactEmail          String?
+  twitterHandle         String?
+  discordServer         String?
+  telegramGroup         String?
+  country               String?
+  city                  String?
+  timezone              String?
+  isVerified            Boolean                @default(false)
+  verificationLevel     VerificationLevel      @default(BASIC)
+  trustScore            Float                  @default(0.0)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  ownerId               String                 @unique
   blockchainPreferences BlockchainPreference[]
-  projectType     ProjectType?
-  projectStage    ProjectStage?
-  tokenAvailability TokenAvailability?
-  developmentFocus String?       // Main focus area
-  totalFunding    Decimal?      @db.Decimal(15, 2)
-  isLookingForFunding Boolean   @default(false)
-  isLookingForPartners Boolean  @default(true)
-  
-  // Contact and social
-  contactEmail    String?
-  twitterHandle   String?
-  discordServer   String?
-  telegramGroup   String?
-  
-  // Location
-  country         String?
-  city            String?
-  timezone        String?
-  
-  // Verification and trust
-  isVerified      Boolean  @default(false)
-  verificationLevel VerificationLevel @default(BASIC)
-  trustScore      Float    @default(0.0) // 0-100 trust score
-  
-  // Timestamps
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  // Relations
-  ownerId         String   @unique
-  owner           User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  
-  sentPartnerships Partnership[] @relation("PartnershipCompanyRequester")
-  receivedPartnerships Partnership[] @relation("PartnershipCompanyReceiver")
-  
+  owner                 User                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  receivedPartnerships  Partnership[]          @relation("PartnershipCompanyReceiver")
+  sentPartnerships      Partnership[]          @relation("PartnershipCompanyRequester")
+
   @@map("companies")
 }
 
-// Blockchain preferences for companies
 model BlockchainPreference {
-  id          String    @id @default(cuid())
-  companyId   String
-  blockchain  Blockchain
-  isPrimary   Boolean   @default(false)
-  
-  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  
+  id         String     @id @default(cuid())
+  companyId  String
+  blockchain Blockchain
+  isPrimary  Boolean    @default(false)
+  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
   @@unique([companyId, blockchain])
   @@map("blockchain_preferences")
 }
 
-// Partnership requests and connections
 model Partnership {
-  id              String   @id @default(cuid())
-  
-  // Requester info
-  requesterId     String
+  id                 String            @id @default(cuid())
+  requesterId        String
   requesterCompanyId String
-  
-  // Receiver info  
-  receiverId      String
-  receiverCompanyId String
-  
-  // Partnership details
-  partnershipType PartnershipType
-  title           String
-  description     String
-  proposedTerms   String?
-  
-  // Status and verification
-  status          PartnershipStatus @default(PENDING)
-  isVerified      Boolean          @default(false)
-  verificationHash String?         // For future on-chain verification
-  
-  // AI matching score
-  matchScore      Float?           // 0-100 compatibility score
-  matchReason     String?          // AI explanation for the match
-  
-  // Timestamps
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  respondedAt     DateTime?
-  verifiedAt      DateTime?
-  
-  // Relations
-  requester       User     @relation("PartnershipRequester", fields: [requesterId], references: [id])
-  receiver        User     @relation("PartnershipReceiver", fields: [receiverId], references: [id])
-  requesterCompany Company @relation("PartnershipCompanyRequester", fields: [requesterCompanyId], references: [id])
-  receiverCompany Company  @relation("PartnershipCompanyReceiver", fields: [receiverCompanyId], references: [id])
-  
-  messages        Message[]
-  
+  receiverId         String
+  receiverCompanyId  String
+  partnershipType    PartnershipType
+  title              String
+  description        String
+  proposedTerms      String?
+  status             PartnershipStatus @default(PENDING)
+  isVerified         Boolean           @default(false)
+  verificationHash   String?
+  matchScore         Float?
+  matchReason        String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  respondedAt        DateTime?
+  verifiedAt         DateTime?
+  messages           Message[]
+  receiverCompany    Company           @relation("PartnershipCompanyReceiver", fields: [receiverCompanyId], references: [id])
+  receiver           User              @relation("PartnershipReceiver", fields: [receiverId], references: [id])
+  requesterCompany   Company           @relation("PartnershipCompanyRequester", fields: [requesterCompanyId], references: [id])
+  requester          User              @relation("PartnershipRequester", fields: [requesterId], references: [id])
+
   @@map("partnerships")
 }
 
-// Messaging system
 model Message {
-  id              String   @id @default(cuid())
-  content         String
-  messageType     MessageType @default(TEXT)
-  
-  // Sender and receiver
-  senderId        String
-  receiverId      String
-  
-  // Optional partnership context
-  partnershipId   String?
-  
-  // Message status
-  isRead          Boolean  @default(false)
-  isDeleted       Boolean  @default(false)
-  
-  // Timestamps
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  readAt          DateTime?
-  
-  // Relations
-  sender          User     @relation("MessageSender", fields: [senderId], references: [id])
-  receiver        User     @relation("MessageReceiver", fields: [receiverId], references: [id])
-  partnership     Partnership? @relation(fields: [partnershipId], references: [id])
-  
+  id            String       @id @default(cuid())
+  content       String
+  messageType   MessageType  @default(TEXT)
+  senderId      String
+  receiverId    String
+  partnershipId String?
+  isRead        Boolean      @default(false)
+  isDeleted     Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  readAt        DateTime?
+  partnership   Partnership? @relation(fields: [partnershipId], references: [id])
+  receiver      User         @relation("MessageReceiver", fields: [receiverId], references: [id])
+  sender        User         @relation("MessageSender", fields: [senderId], references: [id])
+
   @@map("messages")
 }
 
-// Notification system
 model Notification {
-  id              String   @id @default(cuid())
-  userId          String
-  title           String
-  content         String
+  id               String           @id @default(cuid())
+  userId           String
+  title            String
+  content          String
   notificationType NotificationType
-  
-  // Optional references
-  partnershipId   String?
-  messageId       String?
-  
-  // Status
-  isRead          Boolean  @default(false)
-  isDeleted       Boolean  @default(false)
-  
-  // Timestamps
-  createdAt       DateTime @default(now())
-  readAt          DateTime?
-  
-  // Relations
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  partnershipId    String?
+  messageId        String?
+  isRead           Boolean          @default(false)
+  isDeleted        Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  readAt           DateTime?
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("notifications")
 }
 
-// Enums
 enum UserType {
   STARTUP
   INVESTOR
@@ -252,40 +177,19 @@ enum SubscriptionTier {
   ENTERPRISE
 }
 
-enum ProjectType {
-  AI
-  DEFI
-  GAMEFI
-  NFT
-  DAO
-  WEB3_TOOLS
-  OTHER
-}
-
-enum ProjectStage {
-  IDEA_STAGE
-  MVP
-  BETA_TESTING
-  LIVE
-  TESTING
-  SCALING
-}
-
-enum TokenAvailability {
-  NO_TOKEN_YET
-  PRIVATE_SALE_ONGOING
-  PUBLIC_SALE_LIVE
-  LISTED_ON_EXCHANGES
-}
-
 enum Blockchain {
   ETHEREUM
+  BITCOIN
   SOLANA
-  MVP
-  BINANCE_SMART_CHAIN
   POLYGON
+  BINANCE_SMART_CHAIN
   AVALANCHE
-  TORONET
+  CARDANO
+  POLKADOT
+  COSMOS
+  ARBITRUM
+  OPTIMISM
+  BASE
   OTHER
 }
 
@@ -335,4 +239,23 @@ enum NotificationType {
   SUBSCRIPTION_EXPIRED
   MATCH_SUGGESTION
   SYSTEM_UPDATE
-} 
+}
+
+enum FundingStage {
+  PRE_SEED
+  SEED
+  SERIES_A
+  SERIES_B
+  SERIES_C
+  SERIES_D_PLUS
+  IPO
+  PROFITABLE
+}
+
+enum TeamSize {
+  SOLO
+  SMALL_2_10
+  MEDIUM_11_50
+  LARGE_51_200
+  ENTERPRISE_200_PLUS
+}
