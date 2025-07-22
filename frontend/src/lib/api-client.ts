@@ -194,6 +194,343 @@ export const authApi = {
   },
 };
 
+// Profile API Types
+export interface UserProfile {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  profileImage?: string;
+  bio?: string;
+  walletAddress?: string;
+  isEmailVerified: boolean;
+  userType: string;
+  subscriptionTier: string;
+  twoFactorEnabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt?: string;
+}
+
+export interface CompanyProfile {
+  id: string;
+  name: string;
+  description: string;
+  website?: string;
+  logoUrl?: string;
+  foundedYear?: number;
+  projectType?: string;
+  projectStage?: string;
+  tokenAvailability?: string;
+  developmentFocus?: string;
+  totalFunding?: number;
+  isLookingForFunding: boolean;
+  isLookingForPartners: boolean;
+  contactEmail?: string;
+  twitterHandle?: string;
+  discordServer?: string;
+  telegramGroup?: string;
+  country?: string;
+  city?: string;
+  timezone?: string;
+  blockchainPreferences: Array<{
+    blockchain: string;
+    isPrimary: boolean;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UpdateUserProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  walletAddress?: string;
+  profileImage?: string;
+}
+
+export interface UpdateCompanyProfileRequest {
+  name?: string;
+  description?: string;
+  website?: string;
+  logoUrl?: string;
+  foundedYear?: number;
+  projectType?: string;
+  projectStage?: string;
+  tokenAvailability?: string;
+  developmentFocus?: string;
+  totalFunding?: number;
+  isLookingForFunding?: boolean;
+  isLookingForPartners?: boolean;
+  contactEmail?: string;
+  twitterHandle?: string;
+  discordServer?: string;
+  telegramGroup?: string;
+  country?: string;
+  city?: string;
+  timezone?: string;
+}
+
+
+export interface Toggle2FARequest {
+  enabled: boolean;
+}
+
+export interface DeleteAccountRequest {
+  password: string;
+}
+
+export interface BlockchainPreference {
+  blockchain: string;
+  isPrimary: boolean;
+}
+
+export interface UpdateBlockchainPreferencesRequest {
+  preferences: BlockchainPreference[];
+}
+
+// Profile API methods
+export const profileApi = {
+  // User profile
+  getUserProfile: async (): Promise<UserProfile> => {
+    const response = await apiClient.get('/profile/user');
+    return response.data.data;
+  },
+
+  updateUserProfile: async (data: UpdateUserProfileRequest): Promise<UserProfile> => {
+    const response = await apiClient.put('/profile/user', data);
+    return response.data.data;
+  },
+
+  // Company profile
+  getCompanyProfile: async (): Promise<CompanyProfile | null> => {
+    try {
+      const response = await apiClient.get('/profile/company');
+      return response.data.data;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  },
+
+  updateCompanyProfile: async (data: UpdateCompanyProfileRequest): Promise<CompanyProfile> => {
+    const response = await apiClient.put('/profile/company', data);
+    return response.data.data;
+  },
+
+  // Security
+  changePassword: async (data: ChangePasswordRequest): Promise<void> => {
+    await apiClient.post('/profile/change-password', data);
+  },
+
+  toggle2FA: async (data: Toggle2FARequest): Promise<{ twoFactorEnabled: boolean }> => {
+    const response = await apiClient.post('/profile/toggle-2fa', data);
+    return response.data.data;
+  },
+
+  deleteAccount: async (data: DeleteAccountRequest): Promise<void> => {
+    await apiClient.delete('/profile/delete-account', { data });
+  },
+
+  // Blockchain preferences
+  getBlockchainPreferences: async (): Promise<BlockchainPreference[]> => {
+    const response = await apiClient.get('/profile/blockchain-preferences');
+    return response.data.data;
+  },
+
+  updateBlockchainPreferences: async (data: UpdateBlockchainPreferencesRequest): Promise<BlockchainPreference[]> => {
+    const response = await apiClient.put('/profile/blockchain-preferences', data);
+    return response.data.data;
+  },
+
+  // File uploads (placeholder for now)
+  uploadProfileImage: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post('/profile/user/upload-profile-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.data.url;
+  },
+
+  uploadCompanyLogo: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post('/profile/company/upload-logo', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.data.url;
+  },
+
+  uploadCompanyBanner: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post('/profile/company/upload-banner', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.data.url;
+  },
+};
+
+// Dashboard API Types
+export interface DashboardStats {
+  totalPartnerships: number;
+  activePartnerships: number;
+  pendingRequests: number;
+  messages: number;
+  notifications: number;
+  profileViews: number;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  description: string;
+  logoUrl?: string;
+  website?: string;
+  projectType?: string;
+  projectStage?: string;
+  isLookingForFunding: boolean;
+  isLookingForPartners: boolean;
+  twitterHandle?: string;
+  discordServer?: string;
+  country?: string;
+  blockchains: string[];
+  tags: string[];
+  totalFunding?: number;
+  foundedYear?: number;
+  userId: string;
+}
+
+export interface Partnership {
+  id: string;
+  companyId: string;
+  partnerId: string;
+  status: 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  proposedBy: string;
+  proposalMessage?: string;
+  responseMessage?: string;
+  startDate?: string;
+  endDate?: string;
+  createdAt: string;
+  updatedAt: string;
+  company?: Company;
+  partner?: Company;
+}
+
+export interface Message {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+  sender?: User;
+  receiver?: User;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  relatedId?: string;
+  createdAt: string;
+}
+
+export interface DashboardFilters {
+  search?: string;
+  projectType?: string;
+  projectStage?: string;
+  blockchain?: string;
+  country?: string;
+  isLookingForFunding?: boolean;
+  isLookingForPartners?: boolean;
+  tags?: string[];
+  tokenAvailability?: string;
+  rewardModel?: string;
+  fundingStatus?: string;
+  teamSize?: string;
+  developmentFocus?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: 'name' | 'createdAt' | 'totalFunding';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+// Dashboard API methods
+export const dashboardApi = {
+  // Stats
+  getStats: async (): Promise<DashboardStats> => {
+    const response = await apiClient.get('/dashboard/stats');
+    return response.data.data;
+  },
+
+  // Companies
+  getCompanies: async (filters?: DashboardFilters): Promise<PaginatedResponse<Company>> => {
+    const response = await apiClient.get('/dashboard/companies', { params: filters });
+    return response.data.data;
+  },
+
+  getCompanyById: async (id: string): Promise<Company> => {
+    const response = await apiClient.get(`/dashboard/companies/${id}`);
+    return response.data.data;
+  },
+
+  // Partnerships
+  getPartnerships: async (): Promise<Partnership[]> => {
+    const response = await apiClient.get('/dashboard/partnerships');
+    return response.data.data;
+  },
+
+  getPartnershipById: async (id: string): Promise<Partnership> => {
+    const response = await apiClient.get(`/dashboard/partnerships/${id}`);
+    return response.data.data;
+  },
+
+  // Messages
+  getMessages: async (): Promise<Message[]> => {
+    const response = await apiClient.get('/dashboard/messages');
+    return response.data.data;
+  },
+
+  // Notifications
+  getNotifications: async (): Promise<Notification[]> => {
+    const response = await apiClient.get('/dashboard/notifications');
+    return response.data.data;
+  },
+
+  markNotificationAsRead: async (id: string): Promise<void> => {
+    await apiClient.put(`/dashboard/notifications/${id}/read`);
+  },
+
+  // Profile
+  getDashboardProfile: async (): Promise<UserProfile & { company?: CompanyProfile }> => {
+    const response = await apiClient.get('/dashboard/profile');
+    return response.data.data;
+  },
+};
+
 // Health check
 export const healthApi = {
   check: async () => {

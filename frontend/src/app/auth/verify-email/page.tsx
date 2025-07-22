@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, Suspense } from "react"
+import { useState, useEffect, useRef, Suspense, useCallback } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
@@ -63,7 +63,7 @@ function EmailVerification({
                 onVerify({ token })
             }
         }
-    }, [token]) // Removed onVerify from dependencies to prevent double calls
+    }, [token, onVerify])
 
     const handleResendVerification = () => {
         if (user?.email) {
@@ -236,15 +236,15 @@ function VerifyEmailPageContent() {
         }
     }, [user, router])
 
-    const handleVerify = (data: VerifyEmailRequest) => {
+    const handleVerify = useCallback((data: VerifyEmailRequest) => {
         resetVerifyEmailError()
         verifyEmail(data)
-    }
+    }, [resetVerifyEmailError, verifyEmail])
 
-    const handleResend = (data: ResendVerificationRequest) => {
+    const handleResend = useCallback((data: ResendVerificationRequest) => {
         resetResendVerificationError()
         resendVerification(data)
-    }
+    }, [resetResendVerificationError, resendVerification])
 
     // Show error state if user data fails to load
     if (userError) {

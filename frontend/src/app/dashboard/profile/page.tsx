@@ -1,9 +1,26 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { 
+  useUserProfile, 
+  useCompanyProfile, 
+  useUpdateUserProfile, 
+  useUpdateCompanyProfile, 
+  useChangePassword, 
+  useToggle2FA 
+} from "@/hooks/use-profile"
 
 export default function ProfilePage() {
+    // API hooks
+    const { data: userProfile, isLoading: userLoading } = useUserProfile()
+    const { data: companyProfile, isLoading: companyLoading } = useCompanyProfile()
+    const updateUserProfile = useUpdateUserProfile()
+    const updateCompanyProfile = useUpdateCompanyProfile()
+    const changePassword = useChangePassword()
+    const toggle2FA = useToggle2FA()
+
+    // Local state
     const [activeTab, setActiveTab] = useState<"detail" | "security">("security")
     const [passwordData, setPasswordData] = useState({
         oldPassword: "",
@@ -11,12 +28,12 @@ export default function ProfilePage() {
         confirmPassword: ""
     })
     const [projectData, setProjectData] = useState({
-        projectName: "My Awesome Project",
-        projectLink: "my-awesome-project",
-        description: "This is a placeholder description for my Web3 project. It will showcase innovative solutions and partnerships in the decentralized ecosystem.",
-        category: "Technology",
-        blockchain: "Ethereum",
-        partnershipType: "Strategic",
+        projectName: "",
+        projectLink: "",
+        description: "",
+        category: "",
+        blockchain: "",
+        partnershipType: "",
         teamEmail: "",
         officialEmail: "",
         websiteLink: "",
@@ -35,7 +52,37 @@ export default function ProfilePage() {
     const [showOldPassword, setShowOldPassword] = useState(false)
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-    const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
+
+    // Initialize project data when company profile loads
+    useEffect(() => {
+        if (companyProfile) {
+            setProjectData(prev => ({
+                ...prev,
+                projectName: companyProfile.name || "",
+                projectLink: companyProfile.name?.toLowerCase().replace(/\s+/g, '-') || "",
+                description: companyProfile.description || "",
+                category: companyProfile.projectType || "",
+                blockchain: companyProfile.blockchainPreferences?.[0]?.blockchain || "",
+                partnershipType: "Strategic",
+                teamEmail: companyProfile.contactEmail || "",
+                officialEmail: companyProfile.contactEmail || "",
+                websiteLink: companyProfile.website || "",
+                facebook: "",
+                twitter: companyProfile.twitterHandle || "",
+                discord: companyProfile.discordServer || "",
+                phoneCountryCode: "🇳🇬 +234",
+                phoneNumber: "",
+                collaborationPreferences: companyProfile.isLookingForPartners ? "Open to all" : "Closed"
+            }))
+        }
+    }, [companyProfile])
+
+    // Loading state
+    if (userLoading || companyLoading) {
+        return <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+    }
 
     const isPasswordValid = passwordData.newPassword.length >= 8 &&
         /[A-Z]/.test(passwordData.newPassword) &&
@@ -43,6 +90,46 @@ export default function ProfilePage() {
         /[0-9]/.test(passwordData.newPassword)
 
     const passwordsMatch = passwordData.newPassword === passwordData.confirmPassword && passwordData.confirmPassword.length > 0
+
+    // Handler functions
+    const handlePasswordChange = async () => {
+        if (!isPasswordValid || !passwordsMatch) return
+        
+        try {
+            await changePassword.mutateAsync({
+                currentPassword: passwordData.oldPassword,
+                newPassword: passwordData.newPassword
+            })
+            setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" })
+        } catch (error) {
+            console.error('Password change failed:', error)
+        }
+    }
+
+    const handleToggle2FA = async () => {
+        try {
+            await toggle2FA.mutateAsync({ enabled: !userProfile?.twoFactorEnabled })
+        } catch (error) {
+            console.error('2FA toggle failed:', error)
+        }
+    }
+
+    const handleSaveProjectDetails = async () => {
+        try {
+            await updateCompanyProfile.mutateAsync({
+                name: projectData.projectName,
+                description: projectData.description,
+                projectType: projectData.category as any,
+                contactEmail: projectData.teamEmail,
+                website: projectData.websiteLink,
+                twitterHandle: projectData.twitter,
+                discordServer: projectData.discord,
+                isLookingForPartners: projectData.collaborationPreferences === "Open to all"
+            })
+        } catch (error) {
+            console.error('Project details save failed:', error)
+        }
+    }
 
     return (
         <div className="w-full">
@@ -224,8 +311,12 @@ export default function ProfilePage() {
                                     )}
                                 </div>
 
-                                <button className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                                    Update Password
+                                <button 
+                                    onClick={handlePasswordChange}
+                                    disabled={!isPasswordValid || !passwordsMatch || changePassword.isPending}
+                                    className="w-full bg-synqit-primary hover:bg-synqit-primary/80 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                                >
+                                    {changePassword.isPending ? 'Updating...' : 'Update Password'}
                                 </button>
                             </div>
                         </div>
@@ -241,12 +332,13 @@ export default function ProfilePage() {
                         </div>
                         <div className="col-span-8 flex items-start">
                             <button
-                                onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${twoFactorEnabled ? 'bg-synqit-primary' : 'bg-synqit-muted'
+                                onClick={handleToggle2FA}
+                                disabled={toggle2FA.isPending}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${userProfile?.twoFactorEnabled ? 'bg-synqit-primary' : 'bg-synqit-muted'
                                     }`}
                             >
                                 <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${userProfile?.twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'
                                         }`}
                                 />
                             </button>
@@ -421,8 +513,12 @@ export default function ProfilePage() {
                                     )}
                                 </div>
 
-                                <button className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                                    Update Password
+                                <button 
+                                    onClick={handlePasswordChange}
+                                    disabled={!isPasswordValid || !passwordsMatch || changePassword.isPending}
+                                    className="w-full bg-synqit-primary hover:bg-synqit-primary/80 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                                >
+                                    {changePassword.isPending ? 'Updating...' : 'Update Password'}
                                 </button>
                             </div>
                         </div>
@@ -438,12 +534,13 @@ export default function ProfilePage() {
                         </div>
                         <div className="col-span-8 flex items-start">
                             <button
-                                onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${twoFactorEnabled ? 'bg-synqit-primary' : 'bg-synqit-muted'
+                                onClick={handleToggle2FA}
+                                disabled={toggle2FA.isPending}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${userProfile?.twoFactorEnabled ? 'bg-synqit-primary' : 'bg-synqit-muted'
                                     }`}
                             >
                                 <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${userProfile?.twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'
                                         }`}
                                 />
                             </button>
@@ -492,8 +589,12 @@ export default function ProfilePage() {
                             <p className="text-xs md:text-sm text-synqit-muted-foreground mt-1">You can change your Project details here seamlessly.</p>
                         </div>
                         <div className="col-span-1 md:col-span-8 flex justify-end items-start">
-                            <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-medium transition-colors">
-                                Save
+                            <button 
+                                onClick={handleSaveProjectDetails}
+                                disabled={updateCompanyProfile.isPending}
+                                className="bg-synqit-primary hover:bg-synqit-primary/80 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 md:px-6 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-medium transition-colors"
+                            >
+                                {updateCompanyProfile.isPending ? 'Saving...' : 'Save'}
                             </button>
                         </div>
                     </div>
@@ -924,8 +1025,12 @@ export default function ProfilePage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-                        <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-full font-medium flex items-center justify-center space-x-2 transition-colors text-xs md:text-base">
-                            <span>Save Settings</span>
+                        <button 
+                            onClick={handleSaveProjectDetails}
+                            disabled={updateCompanyProfile.isPending}
+                            className="bg-synqit-primary hover:bg-synqit-primary/80 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 md:px-6 py-2 md:py-2.5 rounded-full font-medium flex items-center justify-center space-x-2 transition-colors text-xs md:text-base"
+                        >
+                            <span>{updateCompanyProfile.isPending ? 'Saving...' : 'Save Settings'}</span>
                             <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
