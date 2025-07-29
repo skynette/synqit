@@ -531,6 +531,187 @@ export const dashboardApi = {
   },
 };
 
+// Project API Types
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  website?: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  foundedYear?: number;
+  projectType?: 'AI' | 'DEFI' | 'GAMEFI' | 'NFT' | 'DAO' | 'WEB3_TOOLS' | 'INFRASTRUCTURE' | 'METAVERSE' | 'SOCIAL' | 'OTHER';
+  projectStage?: 'IDEA_STAGE' | 'MVP' | 'BETA_TESTING' | 'LIVE' | 'SCALING' | 'MATURE';
+  teamSize?: 'SOLO' | 'SMALL_2_10' | 'MEDIUM_11_50' | 'LARGE_51_200' | 'ENTERPRISE_200_PLUS';
+  fundingStage?: 'PRE_SEED' | 'SEED' | 'SERIES_A' | 'SERIES_B' | 'SERIES_C' | 'SERIES_D_PLUS' | 'IPO' | 'PROFITABLE';
+  totalFunding?: number;
+  isLookingForFunding: boolean;
+  isLookingForPartners: boolean;
+  tokenAvailability?: 'NO_TOKEN_YET' | 'PRIVATE_SALE_ONGOING' | 'PUBLIC_SALE_LIVE' | 'LISTED_ON_EXCHANGES' | 'FULLY_DISTRIBUTED';
+  developmentFocus?: string;
+  contactEmail?: string;
+  twitterHandle?: string;
+  discordServer?: string;
+  telegramGroup?: string;
+  githubUrl?: string;
+  whitepaperUrl?: string;
+  country?: string;
+  city?: string;
+  timezone?: string;
+  isVerified: boolean;
+  verificationLevel: 'BASIC' | 'VERIFIED' | 'PREMIUM_VERIFIED' | 'ENTERPRISE_VERIFIED';
+  trustScore: number;
+  viewCount: number;
+  createdAt: string;
+  updatedAt: string;
+  ownerId: string;
+  blockchainPreferences: Array<{
+    id: string;
+    blockchain: string;
+    isPrimary: boolean;
+  }>;
+  tags: Array<{
+    id: string;
+    tag: string;
+  }>;
+  owner: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    profileImage?: string;
+    userType: string;
+    subscriptionTier: string;
+    isVerified: boolean;
+    createdAt: string;
+  };
+}
+
+export interface CreateProjectData {
+  name: string;
+  description: string;
+  website?: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  foundedYear?: number;
+  projectType?: 'AI' | 'DEFI' | 'GAMEFI' | 'NFT' | 'DAO' | 'WEB3_TOOLS' | 'INFRASTRUCTURE' | 'METAVERSE' | 'SOCIAL' | 'OTHER';
+  projectStage?: 'IDEA_STAGE' | 'MVP' | 'BETA_TESTING' | 'LIVE' | 'SCALING' | 'MATURE';
+  teamSize?: 'SOLO' | 'SMALL_2_10' | 'MEDIUM_11_50' | 'LARGE_51_200' | 'ENTERPRISE_200_PLUS';
+  fundingStage?: 'PRE_SEED' | 'SEED' | 'SERIES_A' | 'SERIES_B' | 'SERIES_C' | 'SERIES_D_PLUS' | 'IPO' | 'PROFITABLE';
+  totalFunding?: number;
+  isLookingForFunding?: boolean;
+  isLookingForPartners?: boolean;
+  tokenAvailability?: 'NO_TOKEN_YET' | 'PRIVATE_SALE_ONGOING' | 'PUBLIC_SALE_LIVE' | 'LISTED_ON_EXCHANGES' | 'FULLY_DISTRIBUTED';
+  developmentFocus?: string;
+  contactEmail?: string;
+  twitterHandle?: string;
+  discordServer?: string;
+  telegramGroup?: string;
+  githubUrl?: string;
+  whitepaperUrl?: string;
+  country?: string;
+  city?: string;
+  timezone?: string;
+  blockchainPreferences?: ('ETHEREUM' | 'BITCOIN' | 'SOLANA' | 'POLYGON' | 'BINANCE_SMART_CHAIN' | 'AVALANCHE' | 'CARDANO' | 'POLKADOT' | 'COSMOS' | 'ARBITRUM' | 'OPTIMISM' | 'BASE' | 'OTHER')[];
+  tags?: string[];
+}
+
+export interface UpdateProjectData extends Partial<CreateProjectData> {
+  id?: string;
+}
+
+export interface ProjectFilters {
+  search?: string;
+  projectType?: string;
+  projectStage?: string;
+  blockchain?: string;
+  country?: string;
+  isLookingForFunding?: boolean;
+  isLookingForPartners?: boolean;
+  tags?: string[];
+  tokenAvailability?: string;
+  fundingStage?: string;
+  teamSize?: string;
+  developmentFocus?: string;
+  tab?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: 'name' | 'createdAt' | 'updatedAt' | 'viewCount' | 'trustScore';
+  sortOrder?: 'asc' | 'desc';
+}
+
+// Project API methods
+export const projectApi = {
+  // Get current user's project
+  getMyProject: async (): Promise<Project | null> => {
+    try {
+      const response = await apiClient.get('/project');
+      return response.data.data.project;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  },
+
+  // Create or update project
+  createOrUpdateProject: async (data: CreateProjectData | UpdateProjectData): Promise<{ status: string; data: { project: Project } }> => {
+    const response = await apiClient.post('/project', data);
+    return response.data;
+  },
+
+  // Get project by ID
+  getProjectById: async (projectId: string): Promise<Project> => {
+    const response = await apiClient.get(`/project/${projectId}`);
+    return response.data.data.project;
+  },
+
+  // Get all projects with filtering
+  getProjects: async (filters?: ProjectFilters): Promise<{
+    projects: Project[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }> => {
+    const response = await apiClient.get('/project/all', { params: filters });
+    return response.data.data;
+  },
+
+  // Delete project
+  deleteProject: async (): Promise<{ status: string; message: string }> => {
+    const response = await apiClient.delete('/project');
+    return response.data;
+  },
+
+  // Upload project logo
+  uploadLogo: async (file: File): Promise<{ status: string; data: { url: string } }> => {
+    const formData = new FormData();
+    formData.append('logo', file);
+    const response = await apiClient.post('/project/upload-logo', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  // Upload project banner
+  uploadBanner: async (file: File): Promise<{ status: string; data: { url: string } }> => {
+    const formData = new FormData();
+    formData.append('banner', file);
+    const response = await apiClient.post('/project/upload-banner', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+};
+
 // Health check
 export const healthApi = {
   check: async () => {

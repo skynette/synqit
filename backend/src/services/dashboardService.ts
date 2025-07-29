@@ -12,7 +12,7 @@ export class DashboardService {
                 acceptedPartnerships,
                 unreadMessages,
                 totalConnections,
-                userCompany
+                userProject
             ] = await Promise.all([
                 prisma.partnership.count({
                     where: {
@@ -52,7 +52,7 @@ export class DashboardService {
                         status: 'ACCEPTED'
                     }
                 }),
-                prisma.company.findUnique({
+                prisma.project.findUnique({
                     where: { ownerId: userId },
                     select: {
                         id: true,
@@ -69,8 +69,8 @@ export class DashboardService {
                 acceptedPartnerships,
                 unreadMessages,
                 totalConnections,
-                company: userCompany,
-                completionRate: userCompany ? 85 : 20 // Basic completion rate logic
+                project: userProject,
+                completionRate: userProject ? 85 : 20 // Basic completion rate logic
             };
         } catch (error) {
             console.error('Get user stats error:', error);
@@ -78,21 +78,30 @@ export class DashboardService {
         }
     }
 
-    static async getCompanies(userId: string, page: number = 1, limit: number = 50, filters: any = {}) {
+    static async getProjects(userId: string, page: number = 1, limit: number = 50, filters: any = {}) {
         try {
             const skip = (page - 1) * limit;
 
             // Build where clause based on filters
             const whereClause: any = {
-                ownerId: { not: userId }, // Exclude user's own company
-                isVerified: true // Only show verified companies
+                ownerId: { not: userId }, // Exclude user's own project
+                // Remove isVerified requirement for now
             };
 
             if (filters.search) {
                 whereClause.OR = [
                     { name: { contains: filters.search, mode: 'insensitive' } },
-                    { description: { contains: filters.search, mode: 'insensitive' } }
+                    { description: { contains: filters.search, mode: 'insensitive' } },
+                    { developmentFocus: { contains: filters.search, mode: 'insensitive' } }
                 ];
+            }
+
+            if (filters.projectType && filters.projectType !== 'N/A') {
+                whereClause.projectType = filters.projectType;
+            }
+
+            if (filters.projectStage && filters.projectStage !== 'N/A') {
+                whereClause.projectStage = filters.projectStage;
             }
 
             if (filters.teamSize && filters.teamSize !== 'N/A') {
@@ -113,15 +122,15 @@ export class DashboardService {
 
             // Apply tab-based filtering
             if (filters.tab === 'trending') {
-                // Sort by trust score and recent activity
-                whereClause.trustScore = { gte: 50 };
+                // Sort by view count and trust score
+                whereClause.viewCount = { gte: 10 };
             } else if (filters.tab === 'recent-partnership') {
-                // Companies with recent partnership activity
+                // Projects with recent partnership activity
                 whereClause.OR = [
                     {
                         sentPartnerships: {
                             some: {
-                                createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // Last 30 days
+                                createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
                             }
                         }
                     },
@@ -134,24 +143,29 @@ export class DashboardService {
                     }
                 ];
             } else if (filters.tab === 'socials') {
-                // Companies with social media presence
+                // Projects with social media presence
                 whereClause.OR = [
                     { twitterHandle: { not: null } },
                     { discordServer: { not: null } },
                     { telegramGroup: { not: null } }
                 ];
             } else if (filters.tab === 'new-projects') {
-                // Companies created in the last 90 days
+                // Projects created in the last 90 days
                 whereClause.createdAt = { gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) };
-            } else if (filters.tab === 'rwa-projects') {
-                // Real World Asset projects - companies with specific keywords or focus
+            } else if (filters.tab === 'ai-projects') {
+                // AI focused projects
                 whereClause.OR = [
-                    { description: { contains: 'RWA', mode: 'insensitive' } },
-                    { description: { contains: 'Real World Asset', mode: 'insensitive' } },
-                    { description: { contains: 'tokenization', mode: 'insensitive' } },
-                    { description: { contains: 'real estate', mode: 'insensitive' } },
-                    { description: { contains: 'commodities', mode: 'insensitive' } },
-                    { name: { contains: 'RWA', mode: 'insensitive' } }
+                    { projectType: 'AI' },
+                    { description: { contains: 'AI', mode: 'insensitive' } },
+                    { description: { contains: 'artificial intelligence', mode: 'insensitive' } },
+                    { description: { contains: 'machine learning', mode: 'insensitive' } }
+                ];
+            } else if (filters.tab === 'defi-projects') {
+                // DeFi projects
+                whereClause.OR = [
+                    { projectType: 'DEFI' },
+                    { description: { contains: 'DeFi', mode: 'insensitive' } },
+                    { description: { contains: 'decentralized finance', mode: 'insensitive' } }
                 ];
             } else if (filters.tab === 'web3-projects') {
                 // Web3 focused projects
@@ -159,35 +173,34 @@ export class DashboardService {
                     { description: { contains: 'Web3', mode: 'insensitive' } },
                     { description: { contains: 'blockchain', mode: 'insensitive' } },
                     { description: { contains: 'crypto', mode: 'insensitive' } },
-                    { description: { contains: 'DeFi', mode: 'insensitive' } },
-                    { description: { contains: 'NFT', mode: 'insensitive' } },
-                    { description: { contains: 'DAO', mode: 'insensitive' } },
-                    { blockchainPreferences: { some: {} } } // Has blockchain preferences
+                    { blockchainPreferences: { some: {} } }
+                ];
+            } else if (filters.tab === 'gamefi-projects') {
+                // GameFi projects
+                whereClause.OR = [
+                    { projectType: 'GAMEFI' },
+                    { description: { contains: 'game', mode: 'insensitive' } },
+                    { description: { contains: 'gaming', mode: 'insensitive' } }
                 ];
             } else if (filters.tab === 'vcs') {
-                // Venture Capital companies or companies looking for funding
+                // Projects looking for funding
                 whereClause.OR = [
                     { owner: { userType: 'INVESTOR' } },
                     { isLookingForFunding: true },
-                    { fundingStage: { not: null } },
-                    { description: { contains: 'invest', mode: 'insensitive' } },
-                    { description: { contains: 'venture', mode: 'insensitive' } },
-                    { description: { contains: 'fund', mode: 'insensitive' } }
+                    { fundingStage: { not: null } }
                 ];
             } else if (filters.tab === 'builders') {
-                // Companies/developers actively building
+                // Active builders
                 whereClause.OR = [
                     { owner: { userType: 'STARTUP' } },
                     { owner: { userType: 'ECOSYSTEM_PLAYER' } },
-                    { description: { contains: 'build', mode: 'insensitive' } },
-                    { description: { contains: 'develop', mode: 'insensitive' } },
-                    { description: { contains: 'create', mode: 'insensitive' } },
-                    { isLookingForPartners: true }
+                    { isLookingForPartners: true },
+                    { projectStage: { in: ['MVP', 'BETA_TESTING', 'LIVE', 'SCALING'] } }
                 ];
             }
 
-            const [companies, total] = await Promise.all([
-                prisma.company.findMany({
+            const [projects, total] = await Promise.all([
+                prisma.project.findMany({
                     where: whereClause,
                     include: {
                         owner: {
@@ -204,6 +217,11 @@ export class DashboardService {
                                 isPrimary: true
                             }
                         },
+                        tags: {
+                            select: {
+                                tag: true
+                            }
+                        },
                         _count: {
                             select: {
                                 sentPartnerships: true,
@@ -215,52 +233,65 @@ export class DashboardService {
                     take: limit,
                     orderBy: [
                         { trustScore: 'desc' },
+                        { viewCount: 'desc' },
                         { createdAt: 'desc' }
                     ]
                 }),
-                prisma.company.count({ where: whereClause })
+                prisma.project.count({ where: whereClause })
             ]);
 
             // Transform data to match frontend expectations
-            const transformedCompanies = companies.map(company => ({
-                id: company.id,
-                name: company.name,
-                logo: company.logoUrl || '/images/default-company.png',
-                companyLogo: company.logoUrl || '/icons/default-company.png',
-                description: company.description,
+            const transformedProjects = projects.map(project => ({
+                id: project.id,
+                name: project.name,
+                logo: project.logoUrl || '/images/default-project.png',
+                projectLogo: project.logoUrl || '/icons/default-project.png',
+                bannerUrl: project.bannerUrl,
+                description: project.description,
+                projectType: project.projectType,
+                projectStage: project.projectStage,
+                developmentFocus: project.developmentFocus,
                 requestType: 'Partnership',
                 partnerAvatars: [
-                    company.owner.profileImage || '/avatars/default-avatar.png'
+                    project.owner.profileImage || '/avatars/default-avatar.png'
                 ],
                 tags: [
-                    company.teamSize || 'Team',
-                    company.fundingStage || 'Funded',
-                    ...(company.blockchainPreferences.map(bp => bp.blockchain) || [])
+                    project.projectType,
+                    project.projectStage,
+                    project.teamSize,
+                    project.fundingStage,
+                    ...project.tags.map(t => t.tag),
+                    ...project.blockchainPreferences.map(bp => bp.blockchain)
                 ].filter(Boolean),
-                owner: company.owner,
-                trustScore: company.trustScore,
-                isVerified: company.isVerified,
-                partnershipCount: company._count.sentPartnerships + company._count.receivedPartnerships,
-                teamSize: company.teamSize,
-                fundingStage: company.fundingStage,
-                website: company.website,
-                foundedYear: company.foundedYear,
-                totalFunding: company.totalFunding,
-                isLookingForFunding: company.isLookingForFunding,
-                isLookingForPartners: company.isLookingForPartners,
-                contactEmail: company.contactEmail,
-                twitterHandle: company.twitterHandle,
-                discordServer: company.discordServer,
-                telegramGroup: company.telegramGroup,
-                country: company.country,
-                city: company.city,
-                blockchainPreferences: company.blockchainPreferences,
-                createdAt: company.createdAt,
-                updatedAt: company.updatedAt
+                owner: project.owner,
+                trustScore: project.trustScore,
+                isVerified: project.isVerified,
+                viewCount: project.viewCount,
+                partnershipCount: project._count.sentPartnerships + project._count.receivedPartnerships,
+                teamSize: project.teamSize,
+                fundingStage: project.fundingStage,
+                tokenAvailability: project.tokenAvailability,
+                website: project.website,
+                githubUrl: project.githubUrl,
+                whitepaperUrl: project.whitepaperUrl,
+                foundedYear: project.foundedYear,
+                totalFunding: project.totalFunding,
+                isLookingForFunding: project.isLookingForFunding,
+                isLookingForPartners: project.isLookingForPartners,
+                contactEmail: project.contactEmail,
+                twitterHandle: project.twitterHandle,
+                discordServer: project.discordServer,
+                telegramGroup: project.telegramGroup,
+                country: project.country,
+                city: project.city,
+                timezone: project.timezone,
+                blockchainPreferences: project.blockchainPreferences,
+                createdAt: project.createdAt,
+                updatedAt: project.updatedAt
             }));
 
             return {
-                companies: transformedCompanies,
+                projects: transformedProjects,
                 pagination: {
                     page,
                     limit,
@@ -271,8 +302,8 @@ export class DashboardService {
                 }
             };
         } catch (error) {
-            console.error('Get companies error:', error);
-            throw new AppError('Failed to get companies', 500);
+            console.error('Get projects error:', error);
+            throw new AppError('Failed to get projects', 500);
         }
     }
 

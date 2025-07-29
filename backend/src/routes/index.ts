@@ -2,6 +2,7 @@ import { Router } from 'express';
 import authRoutes from './auth';
 import dashboardRoutes from './dashboard';
 import profileRoutes from './profile';
+import projectRoutes from './project';
 
 const router = Router();
 
@@ -30,6 +31,9 @@ router.use('/dashboard', dashboardRoutes);
 // Profile routes
 router.use('/profile', profileRoutes);
 
+// Project routes
+router.use('/project', projectRoutes);
+
 // API info
 router.get('/', (req, res) => {
   res.status(200).json({
@@ -42,6 +46,7 @@ router.get('/', (req, res) => {
       auth: '/api/auth',
       dashboard: '/api/dashboard',
       profile: '/api/profile',
+      project: '/api/project',
     },
   });
 });

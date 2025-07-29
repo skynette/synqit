@@ -224,3 +224,65 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #4b5563;
 } 
+
+
+
+.gradient-border {
+    background: linear-gradient(135deg, #4C82ED, #7B68EE, #9A5CF0);
+    padding: 1px;
+}
+
+.gray-border {
+    background: #2a3142;
+    padding: 1px;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #4C82ED;
+    border-color: #4C82ED;
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Custom scrollbar for dropdowns */
+.max-h-48::-webkit-scrollbar {
+    width: 6px;
+}
+
+.max-h-48::-webkit-scrollbar-track {
+    background: #1a1f2e;
+}
+
+.max-h-48::-webkit-scrollbar-thumb {
+    background: #4C82ED;
+    border-radius: 3px;
+}
+
+.max-h-48::-webkit-scrollbar-thumb:hover {
+    background: #3d6bdc;
+}
+
+/* Animation for loading spinner */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

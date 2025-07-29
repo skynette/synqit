@@ -33,7 +33,7 @@ model User {
   twoFactorBackupCodes        String[]
   twoFactorEnabled            Boolean          @default(false)
   twoFactorSecret             String?
-  company                     Company?
+  project                     Project?
   receivedMessages            Message[]        @relation("MessageReceiver")
   sentMessages                Message[]        @relation("MessageSender")
   notifications               Notification[]
@@ -56,56 +56,75 @@ model UserSession {
   @@map("user_sessions")
 }
 
-model Company {
+model Project {
   id                    String                 @id @default(cuid())
   name                  String
   description           String
   website               String?
   logoUrl               String?
+  bannerUrl             String?
   foundedYear           Int?
+  projectType           ProjectType?
+  projectStage          ProjectStage?
   teamSize              TeamSize?
   fundingStage          FundingStage?
   totalFunding          Decimal?               @db.Decimal(15, 2)
   isLookingForFunding   Boolean                @default(false)
   isLookingForPartners  Boolean                @default(true)
+  tokenAvailability     TokenAvailability?
+  developmentFocus      String?
   contactEmail          String?
   twitterHandle         String?
   discordServer         String?
   telegramGroup         String?
+  githubUrl             String?
+  whitepaperUrl         String?
   country               String?
   city                  String?
   timezone              String?
   isVerified            Boolean                @default(false)
   verificationLevel     VerificationLevel      @default(BASIC)
   trustScore            Float                  @default(0.0)
+  viewCount             Int                    @default(0)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   ownerId               String                 @unique
   blockchainPreferences BlockchainPreference[]
+  tags                  ProjectTag[]
   owner                 User                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  receivedPartnerships  Partnership[]          @relation("PartnershipCompanyReceiver")
-  sentPartnerships      Partnership[]          @relation("PartnershipCompanyRequester")
+  receivedPartnerships  Partnership[]          @relation("PartnershipProjectReceiver")
+  sentPartnerships      Partnership[]          @relation("PartnershipProjectRequester")
 
-  @@map("companies")
+  @@map("projects")
 }
 
 model BlockchainPreference {
   id         String     @id @default(cuid())
-  companyId  String
+  projectId  String
   blockchain Blockchain
   isPrimary  Boolean    @default(false)
-  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  @@unique([companyId, blockchain])
+  @@unique([projectId, blockchain])
   @@map("blockchain_preferences")
+}
+
+model ProjectTag {
+  id        String   @id @default(cuid())
+  projectId String
+  tag       String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, tag])
+  @@map("project_tags")
 }
 
 model Partnership {
   id                 String            @id @default(cuid())
   requesterId        String
-  requesterCompanyId String
+  requesterProjectId String
   receiverId         String
-  receiverCompanyId  String
+  receiverProjectId  String
   partnershipType    PartnershipType
   title              String
   description        String
@@ -120,9 +139,9 @@ model Partnership {
   respondedAt        DateTime?
   verifiedAt         DateTime?
   messages           Message[]
-  receiverCompany    Company           @relation("PartnershipCompanyReceiver", fields: [receiverCompanyId], references: [id])
+  receiverProject    Project           @relation("PartnershipProjectReceiver", fields: [receiverProjectId], references: [id])
   receiver           User              @relation("PartnershipReceiver", fields: [receiverId], references: [id])
-  requesterCompany   Company           @relation("PartnershipCompanyRequester", fields: [requesterCompanyId], references: [id])
+  requesterProject   Project           @relation("PartnershipProjectRequester", fields: [requesterProjectId], references: [id])
   requester          User              @relation("PartnershipRequester", fields: [requesterId], references: [id])
 
   @@map("partnerships")
@@ -258,4 +277,34 @@ enum TeamSize {
   MEDIUM_11_50
   LARGE_51_200
   ENTERPRISE_200_PLUS
+}
+
+enum ProjectType {
+  AI
+  DEFI
+  GAMEFI
+  NFT
+  DAO
+  WEB3_TOOLS
+  INFRASTRUCTURE
+  METAVERSE
+  SOCIAL
+  OTHER
+}
+
+enum ProjectStage {
+  IDEA_STAGE
+  MVP
+  BETA_TESTING
+  LIVE
+  SCALING
+  MATURE
+}
+
+enum TokenAvailability {
+  NO_TOKEN_YET
+  PRIVATE_SALE_ONGOING
+  PUBLIC_SALE_LIVE
+  LISTED_ON_EXCHANGES
+  FULLY_DISTRIBUTED
 }
