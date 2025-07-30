@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { projectApi } from "@/lib/api-client"
+import type { Project } from "@/lib/api-client"
 
 interface ProjectDetailProps {
     params: Promise<{
@@ -10,344 +12,73 @@ interface ProjectDetailProps {
     }>
 }
 
-const projectData: { [key: string]: any } = {
-    arweave: {
-        id: "arweave",
-        name: "Arweave",
-        logo: "/icons/arweave.png",
-        banner: "/images/arweave.png",
-        verified: true,
-        description: "Mintrise is a Web3-based Real World Asset (RWA) investment platform designed to bridge traditional...",
-        stats: {
-            followers: "61.2K",
-            following: "13.3K"
-        },
-        requestType: "Partnership",
-        partnerAvatars: [
-            "/avatars/avatar1.png",
-            "/avatars/avatar2.png",
-            "/avatars/avatar3.png",
-            "/avatars/avatar4.png",
-            "/avatars/avatar5.png",
-            "/avatars/avatar6.png",
-            "/avatars/avatar7.png",
-            "/avatars/avatar8.png",
-            "/avatars/avatar9.png",
-        ],
-        tags: ["RWA", "DeFi"],
-        additionalTags: 2,
-        about: "Arweave is a decentralized storage protocol that offers permanent and tamper-proof data storage on the blockchain. Unlike traditional cloud services, Arweave enables users to store information permanently with a single upfront payment, ensuring data persistence, security, and accessibility over time.",
-        partnerships: {
-            description: "Arweave is being used in countless different ways. Take your first steps with the power of permanent data storage by uploading a file, making your own homepage on the permaweb or simply learning more about Arweave and its ecosystem.",
-            blockchain: "Arweave Blockchain",
-            industry: "🏘️ Real Estate | 🏢 DeFi | 💎 RWA"
-        },
-        website: {
-            title: "A Web3-powered investment platform transforming real-world a...",
-            description: "Arweave is a decentralized storage protocol that offers permanent and tamper-proof data storage on the blockchain. Unlike traditional cloud...",
-            url: "Visit Mintrise Website",
-            preview: "/images/web3-collab-1.png"
-        },
-        partnershipDetails: {
-            eligibility: "Who Can Partner With Us?",
-            criteria: [
-                {
-                    category: "Marketing Projects",
-                    description: "Looking for strategic co-branding"
-                },
-                {
-                    category: "DeFi Protocols", 
-                    description: "Seeking integrations (staking, lending, etc.)"
-                },
-                {
-                    category: "Web3 Communities",
-                    description: "Interested in joint AMAs & collaborations"
-                }
-            ]
-        },
-        howToApply: [
-            {
-                step: 1,
-                title: "Apply to Collaborate Above",
-                description: ""
-            },
-            {
-                step: 2,
-                title: "Wait for an email if you match our preference",
-                description: ""
-            },
-            {
-                step: 3,
-                title: "Complete the onboarding",
-                description: ""
-            },
-            {
-                step: 4,
-                title: "Join Team",
-                description: "and have fun!",
-                highlight: true
-            }
-        ]
-    },
-    shortlet: {
-        id: "shortlet",
-        name: "ShortletLagos",
-        logo: "/icons/shortlet-lagos.png",
-        banner: "/images/shortlet-lagos.png",
-        verified: true,
-        description: "Starts with a collection of 10,000 avatars that give you membership access.",
-        stats: {
-            followers: "25.4K",
-            following: "8.7K"
-        },
-        requestType: "Partnership",
-        partnerAvatars: [
-            "/avatars/avatar1.png",
-            "/avatars/avatar2.png",
-            "/avatars/avatar3.png",
-            "/avatars/avatar4.png",
-            "/avatars/avatar5.png",
-            "/avatars/avatar6.png",
-            "/avatars/avatar7.png",
-            "/avatars/avatar8.png",
-            "/avatars/avatar9.png",
-        ],
-        tags: ["RWA", "DeFi"],
-        additionalTags: 1,
-        about: "ShortletLagos is pioneering the future of short-term rental investments through blockchain technology. We combine real estate investment opportunities with Web3 infrastructure to create a new paradigm for property investment and management.",
-        partnerships: {
-            description: "ShortletLagos offers unique partnership opportunities in the intersection of real estate and blockchain. We're looking for partners who can help us expand our ecosystem and bring innovative solutions to property investment.",
-            blockchain: "Ethereum Blockchain",
-            industry: "🏘️ Real Estate | 🏢 DeFi | 💎 RWA"
-        },
-        website: {
-            title: "Revolutionizing property investment through Web3 technology...",
-            description: "Shortlet Lagos combines traditional real estate with blockchain technology to create seamless investment opportunities...",
-            url: "Visit ShortletLagos Website",
-            preview: "/images/web3-collab-2.png"
-        },
-        partnershipDetails: {
-            eligibility: "Who Can Partner With Us?",
-            criteria: [
-                {
-                    category: "Real Estate Projects",
-                    description: "Looking for property development partnerships"
-                },
-                {
-                    category: "DeFi Protocols", 
-                    description: "Seeking yield farming and staking integrations"
-                },
-                {
-                    category: "Investment Communities",
-                    description: "Interested in joint investment opportunities"
-                }
-            ]
-        },
-        howToApply: [
-            {
-                step: 1,
-                title: "Apply to Collaborate Above",
-                description: ""
-            },
-            {
-                step: 2,
-                title: "Wait for our investment team review",
-                description: ""
-            },
-            {
-                step: 3,
-                title: "Complete the KYC process",
-                description: ""
-            },
-            {
-                step: 4,
-                title: "Start Investing",
-                description: "and earn returns!",
-                highlight: true
-            }
-        ]
-    },
-    aave: {
-        id: "aave",
-        name: "Aave",
-        logo: "/icons/aave.png",
-        banner: "/images/aave.png",
-        verified: true,
-        description: "Aave is a decentralized non-custodial liquidity market protocol where users can participate as depositors or borrowers.",
-        stats: {
-            followers: "124.8K",
-            following: "45.2K"
-        },
-        requestType: "Partnership",
-        partnerAvatars: [
-            "/avatars/avatar1.png",
-            "/avatars/avatar2.png",
-            "/avatars/avatar3.png",
-            "/avatars/avatar4.png",
-            "/avatars/avatar5.png",
-            "/avatars/avatar6.png",
-            "/avatars/avatar7.png",
-            "/avatars/avatar8.png",
-            "/avatars/avatar9.png",
-        ],
-        tags: ["RWA", "DeFi"],
-        additionalTags: 2,
-        about: "Aave is a decentralized finance protocol that allows people to lend and borrow crypto. Lenders earn interest by depositing digital assets into specially created liquidity pools. Borrowers can then use their crypto as collateral to take out a flash loan using this liquidity.",
-        partnerships: {
-            description: "Aave Protocol offers various partnership opportunities including integrations, liquidity partnerships, governance collaborations, and ecosystem development initiatives.",
-            blockchain: "Multi-chain (Ethereum, Polygon, Avalanche)",
-            industry: "🏢 DeFi | 🔗 Lending | 💰 Liquidity"
-        },
-        website: {
-            title: "Open source and non-custodial liquidity protocol...",
-            description: "Aave is a decentralized finance protocol that allows people to lend and borrow crypto without intermediaries...",
-            url: "Visit Aave Protocol",
-            preview: "/images/web3-collab-3.png"
-        },
-        partnershipDetails: {
-            eligibility: "Who Can Partner With Us?",
-            criteria: [
-                {
-                    category: "DeFi Protocols",
-                    description: "Looking for yield optimization partnerships"
-                },
-                {
-                    category: "Asset Managers", 
-                    description: "Seeking institutional liquidity providers"
-                },
-                {
-                    category: "Developer Teams",
-                    description: "Interested in building on Aave ecosystem"
-                }
-            ]
-        },
-        howToApply: [
-            {
-                step: 1,
-                title: "Apply to Collaborate Above",
-                description: ""
-            },
-            {
-                step: 2,
-                title: "Technical evaluation by our team",
-                description: ""
-            },
-            {
-                step: 3,
-                title: "Complete integration testing",
-                description: ""
-            },
-            {
-                step: 4,
-                title: "Go Live",
-                description: "and start earning!",
-                highlight: true
-            }
-        ]
-    },
-    audius: {
-        id: "audius",
-        name: "Audius",
-        logo: "/icons/audius.png",
-        banner: "/images/audius.png",
-        verified: true,
-        description: "Audius is a decentralized music platform that puts power back into the hands of artists and fans.",
-        stats: {
-            followers: "89.3K",
-            following: "12.6K"
-        },
-        requestType: "Partnership",
-        partnerAvatars: [
-            "/avatars/avatar1.png",
-            "/avatars/avatar2.png",
-            "/avatars/avatar3.png",
-            "/avatars/avatar4.png",
-            "/avatars/avatar5.png",
-            "/avatars/avatar6.png",
-            "/avatars/avatar7.png",
-            "/avatars/avatar8.png",
-            "/avatars/avatar9.png",
-        ],
-        tags: ["RWA", "DeFi"],
-        additionalTags: 3,
-        about: "Audius is a blockchain-based decentralized protocol for sharing and streaming audio content. It is secured by an incentive-aligned network of node operators, providing a censorship-resistant alternative to existing streaming platforms.",
-        partnerships: {
-            description: "Audius offers partnership opportunities for artists, labels, developers, and Web3 projects looking to integrate music and audio experiences into their platforms.",
-            blockchain: "Solana & Ethereum",
-            industry: "🎵 Music | 🎨 Creator Economy | 🎧 Streaming"
-        },
-        website: {
-            title: "Empowering artists through decentralized music streaming...",
-            description: "Audius is giving artists the power to share their music freely and fans the ability to directly support creators...",
-            url: "Visit Audius Platform",
-            preview: "/images/web3-collab-4.png"
-        },
-        partnershipDetails: {
-            eligibility: "Who Can Partner With Us?",
-            criteria: [
-                {
-                    category: "Music Artists & Labels",
-                    description: "Looking for innovative distribution partnerships"
-                },
-                {
-                    category: "Gaming Platforms", 
-                    description: "Seeking music integration partnerships"
-                },
-                {
-                    category: "Creator Economy Apps",
-                    description: "Interested in audio content collaborations"
-                }
-            ]
-        },
-        howToApply: [
-            {
-                step: 1,
-                title: "Apply to Collaborate Above",
-                description: ""
-            },
-            {
-                step: 2,
-                title: "Creative brief and portfolio review",
-                description: ""
-            },
-            {
-                step: 3,
-                title: "Complete platform onboarding",
-                description: ""
-            },
-            {
-                step: 4,
-                title: "Start Creating",
-                description: "and get discovered!",
-                highlight: true
-            }
-        ]
-    }
-}
 
 export default function ProjectDetailPage({ params }: ProjectDetailProps) {
     const router = useRouter()
     const [isFollowing, setIsFollowing] = useState(false)
-    const [projectId, setProjectId] = useState<string | null>(null)
+    const [project, setProject] = useState<Project | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     
-    // Use effect to handle the async params
     useEffect(() => {
-        params.then(({ id }) => {
-            setProjectId(id)
-        })
+        async function fetchProject() {
+            try {
+                const { id } = await params
+                const projectData = await projectApi.getProjectById(id)
+                setProject(projectData)
+            } catch (err: any) {
+                console.error('Error fetching project:', err)
+                if (err.response?.status === 404) {
+                    setError('Project not found')
+                } else {
+                    setError('Failed to load project')
+                }
+            } finally {
+                setLoading(false)
+            }
+        }
+        
+        fetchProject()
     }, [params])
     
-    if (!projectId) {
+    if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <p className="text-white">Loading...</p>
+            <div className="min-h-screen bg-synqit-background p-6">
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <div className="w-8 h-8 border-2 border-synqit-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-white">Loading project...</p>
+                    </div>
                 </div>
             </div>
         )
     }
     
-    const project = projectData[projectId]
+    if (error || !project) {
+        return (
+            <div className="min-h-screen bg-synqit-background p-6">
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold text-white mb-4">
+                            {error === 'Project not found' ? 'Project Not Found' : 'Something went wrong'}
+                        </h1>
+                        <p className="text-synqit-muted-foreground mb-6">
+                            {error === 'Project not found' 
+                                ? "The project you're looking for doesn't exist or has been removed."
+                                : "We couldn't load the project details. Please try again later."
+                            }
+                        </p>
+                        <button 
+                            onClick={() => router.push('/dashboard/explore')}
+                            className="bg-synqit-primary hover:bg-synqit-primary/80 text-white py-3 px-6 rounded-lg font-medium transition-colors"
+                        >
+                            Back to Explore
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
     
     return (
         <div className="min-h-screen bg-synqit-background p-6">
@@ -372,28 +103,40 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
                         <div className="text-center">
                             {/* Banner */}
                             <div className="relative h-20 w-full bg-white rounded-lg mb-4">
-                                <Image
-                                    src={project.banner}
-                                    alt={`${project.name} banner`}
-                                    fill
-                                    className="object-contain p-2"
-                                />
+                                {project.bannerUrl ? (
+                                    <Image
+                                        src={project.bannerUrl}
+                                        alt={`${project.name} banner`}
+                                        fill
+                                        className="object-contain p-2"
+                                    />
+                                ) : (
+                                    <div className="flex items-center justify-center h-full text-gray-400">
+                                        No banner image
+                                    </div>
+                                )}
                             </div>
 
                             {/* Logo and Name */}
                             <div className="flex items-center justify-center gap-3 mb-4">
                                 <div className="w-12 h-12 relative rounded-full bg-white p-2">
-                                    <Image
-                                        src={project.logo}
-                                        alt={`${project.name} logo`}
-                                        fill
-                                        className="object-contain"
-                                    />
+                                    {project.logoUrl ? (
+                                        <Image
+                                            src={project.logoUrl}
+                                            alt={`${project.name} logo`}
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    ) : (
+                                        <div className="flex items-center justify-center h-full text-gray-400 text-xs">
+                                            {project.name.charAt(0).toUpperCase()}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
                                         <h1 className="text-xl font-bold text-white">{project.name}</h1>
-                                        {project.verified && (
+                                        {project.isVerified && (
                                             <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                                                 Verified
                                             </span>
@@ -408,13 +151,15 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
                                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.5 7.5h-3A1.5 1.5 0 0 0 14.04 8.37L11.5 16H14v6h6z"/>
                                     </svg>
-                                    <span className="text-sm font-medium">{project.stats.followers}</span>
+                                    <span className="text-sm font-medium">{project.trustScore || 0}</span>
+                                    <span className="text-xs text-synqit-muted-foreground">Trust Score</span>
                                 </div>
                                 <div className="flex items-center gap-1 text-synqit-muted-foreground">
                                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                                     </svg>
-                                    <span className="text-sm font-medium">{project.stats.following}</span>
+                                    <span className="text-sm font-medium">{project.viewCount || 0}</span>
+                                    <span className="text-xs text-synqit-muted-foreground">Views</span>
                                 </div>
                             </div>
 
@@ -424,53 +169,46 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
                             </p>
                         </div>
 
-                        {/* Request Type */}
+                        {/* Project Type */}
                         <div className="flex items-center gap-2">
                             <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M8.64513 7.17116V2.97116C8.64513 1.99116 8.1143 1.79283 7.4668 2.52783L7.00013 3.05866L3.05096 7.55033C2.50846 8.16283 2.73596 8.66449 3.55263 8.66449H5.35513V12.8645C5.35513 13.8445 5.88596 14.0428 6.53346 13.3078L7.00013 12.777L10.9493 8.28533C11.4918 7.67283 11.2643 7.17116 10.4476 7.17116H8.64513Z" fill="#CFDBE4" />
                             </svg>
-                            <span className="text-sm text-synqit-muted-foreground">Request Type: {project.requestType}</span>
+                            <span className="text-sm text-synqit-muted-foreground">Project Type: {project.projectType}</span>
                         </div>
 
-                        {/* Partners */}
+                        {/* Partnership Status */}
                         <div>
                             <div className="flex items-center gap-2 mb-3">
-                                <p className="text-sm text-synqit-muted-foreground">Partners:</p>
-                                <div className="flex -space-x-2">
-                                    {project.partnerAvatars.slice(0, 6).map((avatar: string, index: number) => (
-                                        <div key={index} className="w-6 h-6 rounded-full relative overflow-hidden border-2 border-synqit-surface">
-                                            <Image
-                                                src={avatar}
-                                                alt={`Partner ${index + 1}`}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                    ))}
-                                    {project.partnerAvatars.length > 6 && (
-                                        <div className="w-6 h-6 rounded-full bg-synqit-muted border-2 border-synqit-surface flex items-center justify-center">
-                                            <span className="text-[10px] text-synqit-muted-foreground">+{project.partnerAvatars.length - 6}</span>
-                                        </div>
-                                    )}
-                                </div>
+                                <p className="text-sm text-synqit-muted-foreground">Looking for Partners:</p>
+                                <span className={`text-xs px-2 py-1 rounded-full ${
+                                    project.isLookingForPartners 
+                                        ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                                        : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                                }`}>
+                                    {project.isLookingForPartners ? 'Yes' : 'No'}
+                                </span>
                             </div>
+                            {project.isLookingForFunding && (
+                                <div className="flex items-center gap-2 mb-3">
+                                    <p className="text-sm text-synqit-muted-foreground">Looking for Funding:</p>
+                                    <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                                        Yes
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2">
-                            {project.tags.map((tag: string) => (
+                            {project.tags.map((tagObj: any) => (
                                 <span
-                                    key={tag}
+                                    key={tagObj.id}
                                     className="px-3 py-1 bg-synqit-input text-synqit-muted-foreground rounded-full text-xs"
                                 >
-                                    {tag}
+                                    {tagObj.tag}
                                 </span>
                             ))}
-                            {project.additionalTags > 0 && (
-                                <span className="px-3 py-1 bg-synqit-input text-synqit-muted-foreground rounded-full text-xs">
-                                    +{project.additionalTags}
-                                </span>
-                            )}
                         </div>
 
                         {/* Action Buttons */}
@@ -494,27 +232,30 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
                         </div>
                     </div>
 
-                    {/* How to Apply */}
+                    {/* Project Info */}
                     <div className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-6 mt-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">How to Apply for Partnership</h3>
-                        <div className="space-y-4">
-                            {project.howToApply.map((step: any) => (
-                                <div key={step.step} className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-synqit-primary/20 rounded-full flex items-center justify-center text-synqit-primary font-bold text-sm">
-                                        {step.step}
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-white text-sm">
-                                            {step.title}
-                                            {step.highlight && (
-                                                <span className="ml-2 bg-synqit-primary text-white px-2 py-1 rounded text-xs">
-                                                    {step.description}
-                                                </span>
-                                            )}
-                                        </p>
-                                    </div>
+                        <h3 className="text-lg font-semibold text-white mb-4">Project Details</h3>
+                        <div className="space-y-3">
+                            <div className="flex justify-between">
+                                <span className="text-synqit-muted-foreground">Stage:</span>
+                                <span className="text-white">{project.projectStage}</span>
+                            </div>
+                            {project.teamSize && (
+                                <div className="flex justify-between">
+                                    <span className="text-synqit-muted-foreground">Team Size:</span>
+                                    <span className="text-white">{project.teamSize}</span>
                                 </div>
-                            ))}
+                            )}
+                            {project.foundedYear && (
+                                <div className="flex justify-between">
+                                    <span className="text-synqit-muted-foreground">Founded:</span>
+                                    <span className="text-white">{project.foundedYear}</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between">
+                                <span className="text-synqit-muted-foreground">Created:</span>
+                                <span className="text-white">{new Date(project.createdAt).toLocaleDateString()}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -529,236 +270,141 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
                             <div>
                                 <h3 className="text-lg font-semibold text-white mb-2">Project Description:</h3>
                                 <p className="text-synqit-muted-foreground leading-relaxed">
-                                    {project.about}
+                                    {project.description}
                                 </p>
                             </div>
+
+                            {project.developmentFocus && (
+                                <div>
+                                    <h3 className="text-lg font-semibold text-white mb-2">Development Focus:</h3>
+                                    <p className="text-synqit-muted-foreground leading-relaxed">
+                                        {project.developmentFocus}
+                                    </p>
+                                </div>
+                            )}
 
                             <div>
-                                <h3 className="text-lg font-semibold text-white mb-4">What We Offer for Partnerships:</h3>
-                                <p className="text-synqit-muted-foreground leading-relaxed mb-4">
-                                    {project.partnerships.description}
-                                </p>
-                                <div className="space-y-2">
-                                    <p className="text-synqit-muted-foreground">
-                                        <span className="font-medium">Blockchain Used:</span> {project.partnerships.blockchain}
-                                    </p>
-                                    <p className="text-synqit-muted-foreground">
-                                        <span className="font-medium">Industry Focus:</span> {project.partnerships.industry}
-                                    </p>
+                                <h3 className="text-lg font-semibold text-white mb-4">Blockchain Preferences:</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {project.blockchainPreferences.map((blockchain: any) => (
+                                        <span
+                                            key={blockchain.id}
+                                            className={`px-3 py-1 rounded-full text-xs ${
+                                                blockchain.isPrimary
+                                                    ? 'bg-synqit-primary text-white'
+                                                    : 'bg-synqit-input text-synqit-muted-foreground'
+                                            }`}
+                                        >
+                                            {blockchain.blockchain}
+                                            {blockchain.isPrimary && ' (Primary)'}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Website Preview */}
+                    {/* Contact & Links */}
+                    {(project.website || project.twitterHandle || project.contactEmail) && (
+                        <div className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-6">
+                            <h3 className="text-lg font-semibold text-white mb-4">Contact & Links</h3>
+                            <div className="space-y-3">
+                                {project.website && (
+                                    <div className="flex items-center gap-3">
+                                        <svg className="w-5 h-5 text-synqit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                                        </svg>
+                                        <a 
+                                            href={project.website}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-synqit-primary hover:text-synqit-accent transition-colors"
+                                        >
+                                            {project.website}
+                                        </a>
+                                    </div>
+                                )}
+                                {project.twitterHandle && (
+                                    <div className="flex items-center gap-3">
+                                        <svg className="w-5 h-5 text-synqit-primary" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                                        </svg>
+                                        <span className="text-synqit-muted-foreground">@{project.twitterHandle}</span>
+                                    </div>
+                                )}
+                                {project.contactEmail && (
+                                    <div className="flex items-center gap-3">
+                                        <svg className="w-5 h-5 text-synqit-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                        <span className="text-synqit-muted-foreground">{project.contactEmail}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Owner Information */}
                     <div className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-6">
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 relative rounded-full bg-white p-2 flex-shrink-0">
-                                <Image
-                                    src={project.logo}
-                                    alt={`${project.name} logo`}
-                                    fill
-                                    className="object-contain"
-                                />
+                        <h3 className="text-lg font-semibold text-white mb-4">Project Owner</h3>
+                        
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 relative rounded-full bg-synqit-primary/20 flex items-center justify-center">
+                                {project.owner.profileImage ? (
+                                    <Image
+                                        src={project.owner.profileImage}
+                                        alt={`${project.owner.firstName} ${project.owner.lastName}`}
+                                        fill
+                                        className="object-cover rounded-full"
+                                    />
+                                ) : (
+                                    <span className="text-synqit-primary font-bold">
+                                        {project.owner.firstName.charAt(0).toUpperCase()}
+                                        {project.owner.lastName.charAt(0).toUpperCase()}
+                                    </span>
+                                )}
                             </div>
-                            <div className="flex-1">
-                                <h3 className="text-white font-semibold mb-1">{project.name}</h3>
-                                <p className="text-synqit-primary text-sm mb-2">{project.website.title}</p>
-                                <p className="text-synqit-muted-foreground text-sm mb-3">
-                                    {project.website.description}
-                                </p>
-                                <a 
-                                    href="#" 
-                                    className="text-synqit-primary hover:text-synqit-accent text-sm font-medium"
-                                >
-                                    {project.website.url}
-                                </a>
-                            </div>
-                            <div className="w-32 h-20 relative rounded-lg overflow-hidden flex-shrink-0">
-                                <Image
-                                    src={project.website.preview}
-                                    alt="Website preview"
-                                    fill
-                                    className="object-cover"
-                                />
+                            <div>
+                                <h4 className="text-white font-medium">
+                                    {project.owner.firstName} {project.owner.lastName}
+                                </h4>
+                                <p className="text-synqit-muted-foreground text-sm">{project.owner.userType}</p>
+                                {project.owner.isVerified && (
+                                    <span className="inline-block mt-1 bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">
+                                        Verified User
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Partnership Details */}
+                    {/* Partnership Opportunity */}
                     <div className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">Partnership Details</h3>
+                        <h3 className="text-lg font-semibold text-white mb-4">Partnership Opportunity</h3>
                         
                         <div className="space-y-4">
-                            <h4 className="text-white font-medium flex items-center gap-2">
-                                <svg className="w-4 h-4 text-synqit-primary" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                </svg>
-                                {project.partnershipDetails.eligibility}
-                            </h4>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span role="img" aria-label="handshake">🤝</span>
+                                <h4 className="text-white font-medium">Interested in collaborating?</h4>
+                            </div>
                             
-                            <div className="space-y-3 pl-6">
-                                {project.partnershipDetails.criteria.map((criterion: any, index: number) => (
-                                    <div key={index} className="text-synqit-muted-foreground">
-                                        <span className="font-medium">{criterion.category}</span> → {criterion.description}
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Preferred Partner Type */}
-                            <div className="mt-6">
-                                <h4 className="text-white font-medium flex items-center gap-2 mb-3">
-                                    <span role="img" aria-label="target">🎯</span> Preferred Partner Type:
-                                </h4>
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                                        </svg>
-                                        <span className="text-synqit-muted-foreground">Cross-Marketing</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                                        </svg>
-                                        <span className="text-synqit-muted-foreground">Platform Integration</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                                        </svg>
-                                        <span className="text-synqit-muted-foreground">Joint Events & AMAs</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Requirements */}
-                            <div className="mt-6">
-                                <h4 className="text-white font-medium flex items-center gap-2 mb-3">
-                                    <span role="img" aria-label="clipboard">📋</span> Requirements to Join:
-                                </h4>
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-synqit-muted-foreground" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                                        </svg>
-                                        <span className="text-synqit-muted-foreground">Must be a verified Web3 project</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-synqit-muted-foreground" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                                        </svg>
-                                        <span className="text-synqit-muted-foreground">Have an active community (Telegram, Discord, Twitter)</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <svg className="w-4 h-4 text-synqit-muted-foreground" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                                        </svg>
-                                        <span className="text-synqit-muted-foreground">Must align with Mintrise's ecosystem goals</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* How to Apply */}
-                            <div className="mt-6">
-                                <h4 className="text-white font-medium flex items-center gap-2 mb-3">
-                                    <span role="img" aria-label="phone">📞</span> How to Apply:
-                                </h4>
-                                <div className="space-y-2">
-                                    <p className="text-synqit-muted-foreground">Click "Request Partnership" to send a connection request</p>
-                                    <p className="text-synqit-muted-foreground">Mintrise will review and approve based on alignment</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Partnership Status & Activity */}
-                    <div className="bg-synqit-surface/50 backdrop-blur-sm border border-synqit-border rounded-2xl p-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">Partnership Status & Activity</h3>
-                        
-                        {/* Events and Announcements */}
-                        <div className="space-y-3 mb-6">
-                            <div className="flex items-center gap-2 text-synqit-muted-foreground">
-                                <span role="img" aria-label="calendar">📅</span>
-                                <span>Upcoming Joint Events: (Event List)</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-synqit-muted-foreground">
-                                <span role="img" aria-label="announcement">📢</span>
-                                <span>Recent Announcements: Follow social media account to get updated</span>
-                            </div>
-                        </div>
-
-                        {/* Active Collaborations */}
-                        <div className="mb-6">
-                            <div className="flex items-center gap-2 mb-3">
-                                <span role="img" aria-label="star">⭐</span>
-                                <span className="text-white">Active Collaborations:</span>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {[
-                                    { name: 'ShortletLagos', avatar: '/avatars/avatar1.png' },
-                                    { name: 'Mintrise', avatar: '/avatars/avatar2.png' },
-                                    { name: 'We3oost', avatar: '/avatars/avatar3.png' },
-                                    { name: 'TechExplore', avatar: '/avatars/avatar4.png' },
-                                    { name: 'We3oost', avatar: '/avatars/avatar5.png' }
-                                ].map((collab, index) => (
-                                    <button
-                                        key={index}
-                                        className="flex items-center gap-2 bg-synqit-input hover:bg-synqit-input/80 rounded-full px-4 py-2 transition-colors"
-                                    >
-                                        <div className="w-6 h-6 relative rounded-full overflow-hidden">
-                                            <Image
-                                                src={collab.avatar}
-                                                alt={collab.name}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                        <span className="text-synqit-muted-foreground text-sm">{collab.name}</span>
-                                        <svg className="w-4 h-4 text-synqit-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Call-to-Action */}
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                                <span role="img" aria-label="rocket">🚀</span>
-                                <h4 className="text-white font-medium">Call-to-Action (CTA)</h4>
-                            </div>
-                            <p className="text-synqit-muted-foreground">
-                                Partner with Mintrise & Shape the Future of Web3 Real Estate!
-                            </p>
-                            <button className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white py-3 px-4 rounded-lg font-medium transition-colors">
-                                Apply for Partnership
-                            </button>
-                            <p className="text-synqit-muted-foreground text-sm">
-                                Not ready yet? Follow Mintrise for updates!
+                            <p className="text-synqit-muted-foreground mb-6">
+                                Connect with {project.name} and explore partnership opportunities in the {project.projectType} space.
                             </p>
                             
-                            {/* Social Media Links */}
-                            <div className="flex items-center gap-4 pt-2">
-                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
-                                    <Image src="/icons/twitter.svg" alt="Twitter" width={24} height={24} />
-                                </a>
-                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
-                                    <Image src="/icons/telegram.svg" alt="Telegram" width={24} height={24} />
-                                </a>
-                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
-                                    <Image src="/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} />
-                                </a>
-                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
-                                    <Image src="/icons/discord.svg" alt="Discord" width={24} height={24} />
-                                </a>
-                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
-                                    <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
-                                </a>
-                                <a href="#" className="text-synqit-muted-foreground hover:text-white transition-colors">
-                                    <Image src="/icons/youtube.svg" alt="YouTube" width={24} height={24} />
-                                </a>
+                            <div className="space-y-3">
+                                <button className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                    Request Partnership
+                                </button>
+                                <button className="w-full bg-synqit-surface/50 border border-synqit-border hover:border-synqit-primary text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                    Send Message
+                                </button>
+                            </div>
+                            
+                            <div className="text-center pt-4">
+                                <p className="text-synqit-muted-foreground text-sm">
+                                    Project created on {new Date(project.createdAt).toLocaleDateString()}
+                                </p>
                             </div>
                         </div>
                     </div>
