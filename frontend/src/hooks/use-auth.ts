@@ -96,7 +96,7 @@ export function useAuth() {
           })
           
           // If user has a project, go to dashboard; otherwise go to onboarding
-          if (projectData?.data?.project) {
+          if (projectData) {
             router.push('/dashboard')
           } else {
             router.push('/onboarding')
