@@ -9,8 +9,8 @@ router.use(authenticate);
 
 // Dashboard data endpoints
 router.get('/stats', DashboardController.getStats);
-router.get('/companies', DashboardController.getCompanies);
-router.get('/companies/:id', DashboardController.getCompanyById);
+router.get('/projects', DashboardController.getProjects);
+router.get('/projects/:id', DashboardController.getProjectById);
 router.get('/partnerships', DashboardController.getPartnerships);
 router.get('/partnerships/:id', DashboardController.getPartnershipById);
 router.get('/messages', DashboardController.getMessages);

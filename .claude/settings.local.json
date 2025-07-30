@@ -18,7 +18,8 @@
       "Bash(ls:*)",
       "Bash(timeout 5s npm run dev:*)",
       "Bash(find:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }

@@ -80,8 +80,8 @@ export function useProject() {
   })
 
   // Utility functions
-  const createOrUpdateProject = (data: CreateProjectData | UpdateProjectData) => {
-    createOrUpdateProjectMutation.mutate(data)
+  const createOrUpdateProject = async (data: CreateProjectData | UpdateProjectData) => {
+    return await createOrUpdateProjectMutation.mutateAsync(data)
   }
 
   const deleteProject = () => {

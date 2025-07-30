@@ -79,8 +79,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
     // Check if user has a project, redirect to onboarding if not
     useEffect(() => {
-        if (!isProjectLoading && !project && pathname !== '/onboarding') {
-            router.push('/onboarding')
+        if (!isProjectLoading && !project && !pathname.includes('/onboarding')) {
+            // Add a small delay to allow for potential race conditions during project creation
+            const timer = setTimeout(() => {
+                router.push('/onboarding')
+            }, 100)
+            
+            return () => clearTimeout(timer)
         }
     }, [project, isProjectLoading, pathname, router])
 

@@ -20,17 +20,36 @@ export const validateProject = [
   
   body('website')
     .optional()
-    .isURL()
+    .isURL({
+      require_protocol: true,
+      allow_underscores: true,
+      allow_trailing_dot: false,
+      allow_protocol_relative_urls: false,
+      disallow_auth: false,
+      validate_length: true,
+      require_host: true,
+      require_valid_protocol: true,
+      protocols: ['http', 'https'],
+      require_tld: process.env.NODE_ENV === 'production' // Only require TLD in production
+    })
     .withMessage('Website must be a valid URL'),
   
   body('logoUrl')
     .optional()
-    .isURL()
+    .isURL({
+      require_protocol: true,
+      protocols: ['http', 'https'],
+      require_tld: process.env.NODE_ENV === 'production'
+    })
     .withMessage('Logo URL must be a valid URL'),
   
   body('bannerUrl')
     .optional()
-    .isURL()
+    .isURL({
+      require_protocol: true,
+      protocols: ['http', 'https'],
+      require_tld: process.env.NODE_ENV === 'production'
+    })
     .withMessage('Banner URL must be a valid URL'),
   
   body('foundedYear')
@@ -97,22 +116,48 @@ export const validateProject = [
   
   body('discordServer')
     .optional()
-    .isURL()
+    .isURL({
+      require_protocol: true,
+      protocols: ['http', 'https'],
+      require_tld: process.env.NODE_ENV === 'production'
+    })
     .withMessage('Discord server must be a valid URL'),
   
   body('telegramGroup')
     .optional()
-    .isURL()
+    .isURL({
+      require_protocol: true,
+      protocols: ['http', 'https'],
+      require_tld: process.env.NODE_ENV === 'production'
+    })
     .withMessage('Telegram group must be a valid URL'),
+  
+  body('redditCommunity')
+    .optional()
+    .trim()
+    .custom((value) => {
+      if (!value) return true;
+      // Allow r/community format or full URL
+      return /^r\/[A-Za-z0-9_]+$/.test(value) || /^https?:\/\/.+/.test(value);
+    })
+    .withMessage('Reddit community must be in format r/community or a valid URL'),
   
   body('githubUrl')
     .optional()
-    .isURL()
+    .isURL({
+      require_protocol: true,
+      protocols: ['http', 'https'],
+      require_tld: process.env.NODE_ENV === 'production'
+    })
     .withMessage('GitHub URL must be a valid URL'),
   
   body('whitepaperUrl')
     .optional()
-    .isURL()
+    .isURL({
+      require_protocol: true,
+      protocols: ['http', 'https'],
+      require_tld: process.env.NODE_ENV === 'production'
+    })
     .withMessage('Whitepaper URL must be a valid URL'),
   
   body('country')

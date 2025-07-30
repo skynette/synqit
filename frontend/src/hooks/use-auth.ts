@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { authApi, setAuthToken, clearAuthToken, getAuthToken } from '@/lib/api-client'
+import { authApi, projectApi, setAuthToken, clearAuthToken, getAuthToken } from '@/lib/api-client'
 import type { 
   LoginRequest, 
   RegisterRequest, 
@@ -67,8 +67,8 @@ export function useAuth() {
       if (data.status === 'success' && data.data) {
         setAuthToken(data.data.token)
         queryClient.setQueryData(['user'], { user: data.data.user })
-        router.push('/onboarding')
-        // toast.success('Account created successfully! Let\'s set up your project.')
+        router.push('/auth/verify-email')
+        // toast.success('Account created successfully! Please verify your email.')
       }
     },
     onError: (error: any) => {
@@ -83,11 +83,29 @@ export function useAuth() {
     mutationFn: authApi.verifyEmail,
     retry: 3, // Retry up to 3 times
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff: 2s, 4s, 8s...
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data.status === 'success') {
         queryClient.invalidateQueries({ queryKey: ['user'] })
-        router.push('/onboarding')
-        // toast.success('Email verified successfully! Let\'s set up your project.')
+        
+        // Check if user already has a project
+        try {
+          const projectData = await queryClient.fetchQuery({
+            queryKey: ['project'],
+            queryFn: projectApi.getMyProject,
+            staleTime: 0 // Force fresh fetch
+          })
+          
+          // If user has a project, go to dashboard; otherwise go to onboarding
+          if (projectData?.data?.project) {
+            router.push('/dashboard')
+          } else {
+            router.push('/onboarding')
+          }
+        } catch (error) {
+          // If error checking project, default to onboarding
+          router.push('/onboarding')
+        }
+        // toast.success('Email verified successfully!')
       }
     },
     onError: (error: any) => {

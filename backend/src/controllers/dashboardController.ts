@@ -8,7 +8,7 @@ export class DashboardController {
     static async getStats(req: AuthenticatedRequest, res: Response) {
         try {
             const userId = req.user!.id;
-            const stats = await DashboardService.getUserStats(userId);
+            const stats = await DashboardService.getDashboardStats(userId);
 
             res.status(200).json({
                 success: true,
@@ -23,7 +23,7 @@ export class DashboardController {
         }
     }
 
-    static async getCompanies(req: AuthenticatedRequest, res: Response) {
+    static async getProjects(req: AuthenticatedRequest, res: Response) {
         try {
             const userId = req.user!.id;
             const {
@@ -52,7 +52,7 @@ export class DashboardController {
                 tab: tab as string
             };
 
-            const companies = await DashboardService.getCompanies(
+            const projects = await DashboardService.getProjects(
                 userId,
                 parseInt(page as string),
                 parseInt(limit as string),
@@ -61,7 +61,7 @@ export class DashboardController {
 
             res.status(200).json({
                 success: true,
-                data: companies
+                data: projects
             });
         } catch (error) {
             console.error('Get companies error:', error);
@@ -72,29 +72,35 @@ export class DashboardController {
         }
     }
 
-    static async getCompanyById(req: AuthenticatedRequest, res: Response) {
+    static async getProjectById(req: AuthenticatedRequest, res: Response) {
         try {
             const userId = req.user!.id;
-            const companyId = req.params.id;
+            const projectId = req.params.id;
 
-            const company = await DashboardService.getCompanyById(userId, companyId);
+            const project = await DashboardService.getProjectById(userId, projectId);
 
-            if (!company) {
+            if (!project) {
                 return res.status(404).json({
                     success: false,
-                    message: 'Company not found'
+                    message: 'Project not found'
                 });
             }
 
             res.status(200).json({
                 success: true,
-                data: company
+                data: project
             });
         } catch (error) {
-            console.error('Get company by ID error:', error);
+            console.error('Get project by ID error:', error);
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    success: false,
+                    message: error.message
+                });
+            }
             res.status(500).json({
                 success: false,
-                message: 'Failed to get company details'
+                message: 'Failed to get project details'
             });
         }
     }
@@ -113,8 +119,7 @@ export class DashboardController {
                 userId,
                 parseInt(page as string),
                 parseInt(limit as string),
-                status as string,
-                type as string
+                status as string
             );
 
             res.status(200).json({
@@ -169,8 +174,7 @@ export class DashboardController {
             const messages = await DashboardService.getMessages(
                 userId,
                 parseInt(page as string),
-                parseInt(limit as string),
-                conversationId as string
+                parseInt(limit as string)
             );
 
             res.status(200).json({
@@ -198,8 +202,7 @@ export class DashboardController {
             const notifications = await DashboardService.getNotifications(
                 userId,
                 parseInt(page as string),
-                parseInt(limit as string),
-                unreadOnly === 'true'
+                parseInt(limit as string)
             );
 
             res.status(200).json({

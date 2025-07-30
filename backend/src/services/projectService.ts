@@ -1,5 +1,5 @@
 import { Project, ProjectType, ProjectStage, TokenAvailability, TeamSize, FundingStage, Blockchain } from '@prisma/client';
-import { prisma } from '../lib/database';
+import { prisma, withRetry } from '../lib/database';
 
 export interface CreateProjectData {
   name: string;
@@ -59,26 +59,41 @@ export class ProjectService {
    * Get project by user ID
    */
   static async getProjectByUserId(userId: string): Promise<any> {
-    return await prisma.project.findUnique({
-      where: { ownerId: userId },
-      include: {
-        blockchainPreferences: true,
-        tags: true,
-        owner: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            profileImage: true,
-            userType: true,
-            subscriptionTier: true,
-            isVerified: true,
-            createdAt: true,
+    try {
+      if (!prisma) {
+        throw new Error('Prisma client is not initialized');
+      }
+      
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+      
+      return await withRetry(() => 
+        prisma.project.findUnique({
+          where: { ownerId: userId },
+          include: {
+            blockchainPreferences: true,
+            tags: true,
+            owner: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                profileImage: true,
+                userType: true,
+                subscriptionTier: true,
+                isVerified: true,
+                createdAt: true,
+              },
+            },
           },
-        },
-      },
-    });
+        })
+      );
+    } catch (error) {
+      console.error('Error in getProjectByUserId:', error);
+      throw error;
+    }
   }
 
   /**
@@ -134,7 +149,7 @@ export class ProjectService {
         },
       });
 
-      let project;
+      let project: any;
 
       if (existingProject) {
         // Update existing project
@@ -227,6 +242,8 @@ export class ProjectService {
           },
         },
       });
+    }, {
+      timeout: 15000, // 15 seconds timeout
     });
   }
 
@@ -242,24 +259,29 @@ export class ProjectService {
       totalPages: number;
     };
   }> {
-    const {
-      search,
-      projectType,
-      projectStage,
-      blockchain,
-      country,
-      isLookingForFunding,
-      isLookingForPartners,
-      tags,
-      tokenAvailability,
-      fundingStage,
-      teamSize,
-      developmentFocus,
-      page = 1,
-      limit = 20,
-      sortBy = 'updatedAt',
-      sortOrder = 'desc',
-    } = filters;
+    try {
+      if (!prisma) {
+        throw new Error('Prisma client is not initialized');
+      }
+      
+      const {
+        search,
+        projectType,
+        projectStage,
+        blockchain,
+        country,
+        isLookingForFunding,
+        isLookingForPartners,
+        tags,
+        tokenAvailability,
+        fundingStage,
+        teamSize,
+        developmentFocus,
+        page = 1,
+        limit = 20,
+        sortBy = 'updatedAt',
+        sortOrder = 'desc',
+      } = filters;
 
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
@@ -347,6 +369,10 @@ export class ProjectService {
         totalPages: Math.ceil(total / Number(limit)),
       },
     };
+    } catch (error) {
+      console.error('Error in getProjects:', error);
+      throw error;
+    }
   }
 
   /**
@@ -385,6 +411,8 @@ export class ProjectService {
       await prisma.project.delete({
         where: { id: project.id },
       });
+    }, {
+      timeout: 10000, // 10 seconds timeout for delete operations
     });
   }
 

@@ -74,7 +74,7 @@ export class ProfileController {
   static async getCompanyProfile(req: AuthenticatedRequest, res: Response) {
     try {
       const userId = req.user!.id;
-      const profile = await ProfileService.getCompanyProfile(userId);
+      const profile = await ProfileService.getProjectProfile(userId);
       
       if (!profile) {
         return res.status(404).json({
@@ -110,7 +110,7 @@ export class ProfileController {
       const userId = req.user!.id;
       const updateData = req.body;
       
-      const updatedProfile = await ProfileService.updateCompanyProfile(userId, updateData);
+      const updatedProfile = await ProfileService.updateProjectProfile(userId, updateData);
       
       res.status(200).json({
         success: true,
@@ -199,18 +199,33 @@ export class ProfileController {
 
   static async toggle2FA(req: AuthenticatedRequest, res: Response) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
       const userId = req.user!.id;
-      const { enabled } = req.body;
+      const { enabled, secret } = req.body;
       
-      const result = await ProfileService.toggle2FA(userId, enabled);
+      const result = await ProfileService.toggle2FA(userId, enabled, secret);
       
       res.status(200).json({
         success: true,
         data: result,
-        message: `2FA ${enabled ? 'enabled' : 'disabled'} successfully`
+        message: result.message
       });
     } catch (error) {
       console.error('Toggle 2FA error:', error);
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          message: error.message
+        });
+      }
       res.status(500).json({
         success: false,
         message: 'Failed to toggle 2FA'
@@ -220,14 +235,21 @@ export class ProfileController {
 
   static async deleteAccount(req: AuthenticatedRequest, res: Response) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
       const userId = req.user!.id;
-      const { password } = req.body;
-      
-      await ProfileService.deleteAccount(userId, password);
+      const result = await ProfileService.deleteAccount(userId);
       
       res.status(200).json({
         success: true,
-        message: 'Account deleted successfully'
+        message: result.message
       });
     } catch (error) {
       console.error('Delete account error:', error);
