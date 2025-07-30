@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
 import { NotificationDrawer } from "@/components/ui/notification-drawer"
 import { useState, useEffect } from "react"
+import { useProject } from "@/hooks/use-project"
 import type React from "react"
 
 // Dashboard navigation items interface
@@ -72,7 +73,16 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
     const pathname = usePathname()
+    const router = useRouter()
+    const { project, isProjectLoading } = useProject()
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+
+    // Check if user has a project, redirect to onboarding if not
+    useEffect(() => {
+        if (!isProjectLoading && !project && pathname !== '/onboarding') {
+            router.push('/onboarding')
+        }
+    }, [project, isProjectLoading, pathname, router])
 
     // Close mobile nav when route changes
     useEffect(() => {
@@ -87,6 +97,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
         )
         return currentItem?.name || 'Dashboard'
+    }
+
+    // Show loading while checking project status
+    if (isProjectLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#0a0f1c]">
+                <div className="text-white">Loading...</div>
+            </div>
+        )
     }
 
     return (

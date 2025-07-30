@@ -67,8 +67,8 @@ export function useAuth() {
       if (data.status === 'success' && data.data) {
         setAuthToken(data.data.token)
         queryClient.setQueryData(['user'], { user: data.data.user })
-        router.push('/auth/verify-email')
-        // toast.success('Account created successfully! Please verify your email.')
+        router.push('/onboarding')
+        // toast.success('Account created successfully! Let\'s set up your project.')
       }
     },
     onError: (error: any) => {
@@ -86,8 +86,8 @@ export function useAuth() {
     onSuccess: (data) => {
       if (data.status === 'success') {
         queryClient.invalidateQueries({ queryKey: ['user'] })
-        router.push('/dashboard')
-        // toast.success('Email verified successfully!')
+        router.push('/onboarding')
+        // toast.success('Email verified successfully! Let\'s set up your project.')
       }
     },
     onError: (error: any) => {

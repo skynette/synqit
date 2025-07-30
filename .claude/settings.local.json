@@ -16,7 +16,9 @@
       "Bash(npx ts-node:*)",
       "Bash(node:*)",
       "Bash(ls:*)",
-      "Bash(timeout 5s npm run dev:*)"
+      "Bash(timeout 5s npm run dev:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }

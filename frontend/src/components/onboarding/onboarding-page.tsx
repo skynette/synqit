@@ -3,16 +3,23 @@
 import { useState, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
 import { Navbar } from "@/components/layout/navbar"
+import { useProject } from "@/hooks/use-project"
+// Define types inline since they're not exported from api-client
+type ProjectType = 'AI' | 'DEFI' | 'GAMEFI' | 'NFT' | 'DAO' | 'WEB3_TOOLS' | 'INFRASTRUCTURE' | 'METAVERSE' | 'SOCIAL' | 'OTHER'
+type ProjectStage = 'IDEA_STAGE' | 'MVP' | 'BETA_TESTING' | 'LIVE' | 'SCALING' | 'MATURE'
+type Blockchain = 'ETHEREUM' | 'BITCOIN' | 'SOLANA' | 'POLYGON' | 'BINANCE_SMART_CHAIN' | 'AVALANCHE' | 'CARDANO' | 'POLKADOT' | 'COSMOS' | 'ARBITRUM' | 'OPTIMISM' | 'BASE' | 'OTHER'
 
 // Types
 interface BasicInfoData {
     projectName: string
     website: string
     profilePicture: File | null
-    blockchains: string[]
-    projectCategory: string
+    blockchains: Blockchain[]
+    projectCategory: ProjectType
+    description: string
 }
 
 interface MarketingData {
@@ -20,14 +27,15 @@ interface MarketingData {
     targetAudience: string[]
     brandKeywords: string[]
     socialPlatforms: string[]
+    developmentFocus: string
 }
 
 interface DataConnectionsData {
-    connectedAccounts: {
-        twitter: boolean
-        discord: boolean
-        telegram: boolean
-        reddit: boolean
+    socialLinks: {
+        twitter: string
+        discord: string
+        telegram: string
+        reddit: string
     }
 }
 
@@ -77,14 +85,15 @@ function BasicInfoStep({
     const [searchTerm, setSearchTerm] = useState("")
     const fileInputRef = useRef<HTMLInputElement>(null)
 
-    const blockchainOptions = [
-        'N/A', 'Toronet', 'Polygon', 'Multi-Chain', 'Ethereum', 'Solana', 'Binance Smart Chain', 
-        'Cardano', 'Polkadot', 'Avalanche', 'Terra', 'Cosmos', 'Near', 'Fantom'
+    const blockchainOptions: Blockchain[] = [
+        'ETHEREUM', 'POLYGON', 'SOLANA', 'BINANCE_SMART_CHAIN', 
+        'CARDANO', 'POLKADOT', 'AVALANCHE', 'COSMOS', 'ARBITRUM', 
+        'OPTIMISM', 'BASE', 'OTHER'
     ]
 
-    const categoryOptions = [
-        'DeFi', 'NFT', 'Gaming', 'Infrastructure', 'Social', 'DAO', 'Metaverse', 
-        'Education', 'Healthcare', 'Supply Chain', 'Identity', 'Privacy'
+    const categoryOptions: ProjectType[] = [
+        'DEFI', 'NFT', 'GAMEFI', 'INFRASTRUCTURE', 'SOCIAL', 'DAO', 'METAVERSE', 
+        'AI', 'WEB3_TOOLS', 'OTHER'
     ]
 
     const filteredBlockchains = blockchainOptions.filter(blockchain =>
@@ -98,7 +107,7 @@ function BasicInfoStep({
         }
     }
 
-    const toggleBlockchain = (blockchain: string) => {
+    const toggleBlockchain = (blockchain: Blockchain) => {
         const newBlockchains = data.blockchains.includes(blockchain)
             ? data.blockchains.filter(b => b !== blockchain)
             : [...data.blockchains, blockchain]
@@ -197,7 +206,7 @@ function BasicInfoStep({
                         <div className="w-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-left flex items-center justify-between">
                             <span className={data.blockchains.length > 0 ? 'text-white' : 'text-gray-400'}>
                                 {data.blockchains.length > 0 
-                                    ? `${data.blockchains.length} blockchain(s) selected`
+                                    ? data.blockchains.map(b => b.replace(/_/g, ' ')).join(', ')
                                     : 'Select Blockchain(s) (Multi-Select)'
                                 }
                             </span>
@@ -247,7 +256,7 @@ function BasicInfoStep({
                                                 onChange={() => toggleBlockchain(blockchain)}
                                                 className="w-4 h-4 bg-[#2a3142] border border-[#4a5568] rounded"
                                             />
-                                            <span className="text-white">{blockchain}</span>
+                                            <span className="text-white">{blockchain.replace(/_/g, ' ')}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -329,6 +338,7 @@ function MarketingStep({
     onNext: () => void;
     onPrevious: () => void;
 }) {
+    const [focusedField, setFocusedField] = useState<string>('')
     const brandTones = ['Tech-Savy', 'Formal', 'Playful', 'Minimal']
     const audienceOptions = ['Startups', 'Devs', 'DAO contributors', 'VCs', 'Others']
     const keywordOptions = ['Trading', 'Web3', 'Sustainability', 'Gaming', 'Cryptocurrency', 'Community']
@@ -433,6 +443,22 @@ function MarketingStep({
                         ))}
                     </div>
                 </div>
+
+                {/* Development Focus */}
+                <div>
+                    <label className="text-white text-sm font-medium block mb-3">Development Focus</label>
+                    <div className={`${focusedField === 'developmentFocus' ? 'gradient-border' : 'gray-border'} rounded-lg`}>
+                        <textarea
+                            placeholder="What are you currently focusing on? (e.g., Building MVP, Token Launch, Partnership Development)"
+                            value={data.developmentFocus}
+                            onChange={(e) => onChange({ developmentFocus: e.target.value })}
+                            onFocus={() => setFocusedField('developmentFocus')}
+                            onBlur={() => setFocusedField('')}
+                            className="w-full bg-[#0a0f1c] rounded-lg px-4 py-3 text-white placeholder-gray-400 border-none focus:outline-none resize-none"
+                            rows={3}
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="flex gap-4">
@@ -466,18 +492,20 @@ function DataConnectionsStep({
     onFinish: () => void;
     onPrevious: () => void;
 }) {
+    const [focusedField, setFocusedField] = useState<string>('')
+    
     const socialConnections = [
-        { key: 'twitter' as const, name: 'Handler_jnr', icon: '/icons/twitter.svg', color: '#1DA1F2' },
-        { key: 'discord' as const, name: 'Link Discord Account', icon: '/icons/discord.svg', color: '#5865F2' },
-        { key: 'telegram' as const, name: 'Link Telegram Account', icon: '/icons/telegram.svg', color: '#0088CC' },
-        { key: 'reddit' as const, name: 'Link Reddit Account', icon: '/icons/reddit.svg', color: '#FF4500' }
+        { key: 'twitter' as const, name: 'Twitter/X Handle', placeholder: '@username', color: '#1DA1F2' },
+        { key: 'discord' as const, name: 'Discord Server', placeholder: 'https://discord.gg/...', color: '#5865F2' },
+        { key: 'telegram' as const, name: 'Telegram Group', placeholder: 'https://t.me/...', color: '#0088CC' },
+        { key: 'reddit' as const, name: 'Reddit Community', placeholder: 'r/community', color: '#FF4500' }
     ]
 
-    const toggleConnection = (key: keyof DataConnectionsData['connectedAccounts']) => {
+    const updateSocialLink = (key: keyof DataConnectionsData['socialLinks'], value: string) => {
         onChange({
-            connectedAccounts: {
-                ...data.connectedAccounts,
-                [key]: !data.connectedAccounts[key]
+            socialLinks: {
+                ...data.socialLinks,
+                [key]: value
             }
         })
     }
@@ -495,43 +523,31 @@ function DataConnectionsStep({
 
                 <div className="space-y-4">
                     {socialConnections.map((connection) => (
-                        <div
-                            key={connection.key}
-                            className="flex items-center justify-between bg-[#2a3142] border border-[#3a4152] rounded-lg px-4 py-4"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div 
-                                    className="w-8 h-8 rounded-full flex items-center justify-center"
-                                    style={{ backgroundColor: connection.color }}
-                                >
-                                    <span className="text-white text-sm font-bold">
-                                        {connection.key === 'twitter' ? '𝕏' : 
-                                         connection.key === 'discord' ? '💬' : 
-                                         connection.key === 'telegram' ? '✈' : '🔗'}
-                                    </span>
-                                </div>
-                                <span className="text-white font-medium">{connection.name}</span>
-                            </div>
-                            <button
-                                onClick={() => toggleConnection(connection.key)}
-                                className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-                            >
-                                <svg 
-                                    width="20" 
-                                    height="20" 
-                                    viewBox="0 0 20 20" 
-                                    fill="none"
-                                    className="text-black"
-                                >
-                                    <path 
-                                        d="M15 6L9 12L5 8" 
-                                        stroke="currentColor" 
-                                        strokeWidth="2" 
-                                        strokeLinecap="round" 
-                                        strokeLinejoin="round"
+                        <div key={connection.key}>
+                            <label className="text-gray-300 text-sm mb-2 block">{connection.name}</label>
+                            <div className={`${focusedField === connection.key ? 'gradient-border' : 'gray-border'} rounded-lg`}>
+                                <div className="flex items-center gap-3 bg-[#0a0f1c] rounded-lg px-4 py-3">
+                                    <div 
+                                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                                        style={{ backgroundColor: connection.color }}
+                                    >
+                                        <span className="text-white text-sm font-bold">
+                                            {connection.key === 'twitter' ? '𝕏' : 
+                                             connection.key === 'discord' ? '💬' : 
+                                             connection.key === 'telegram' ? '✈' : '🔗'}
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder={connection.placeholder}
+                                        value={data.socialLinks[connection.key]}
+                                        onChange={(e) => updateSocialLink(connection.key, e.target.value)}
+                                        onFocus={() => setFocusedField(connection.key)}
+                                        onBlur={() => setFocusedField('')}
+                                        className="flex-1 bg-transparent text-white placeholder-gray-400 border-none focus:outline-none"
                                     />
-                                </svg>
-                            </button>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -570,6 +586,8 @@ function OnboardingLayout({ children }: { children: React.ReactNode }) {
 
 // Main Onboarding Page Component
 export function OnboardingPage() {
+    const router = useRouter()
+    const { createOrUpdateProject, isSaving, saveError } = useProject()
     const [currentStep, setCurrentStep] = useState(1)
     const [onboardingData, setOnboardingData] = useState<OnboardingData>({
         // Basic Info
@@ -577,18 +595,20 @@ export function OnboardingPage() {
         website: '',
         profilePicture: null,
         blockchains: [],
-        projectCategory: '',
+        projectCategory: '' as ProjectType,
+        description: '',
         // Marketing
         brandTone: '',
         targetAudience: [],
         brandKeywords: [],
         socialPlatforms: [],
+        developmentFocus: '',
         // Data Connections
-        connectedAccounts: {
-            twitter: false,
-            discord: false,
-            telegram: false,
-            reddit: false
+        socialLinks: {
+            twitter: '',
+            discord: '',
+            telegram: '',
+            reddit: ''
         }
     })
 
@@ -609,14 +629,28 @@ export function OnboardingPage() {
     }
 
     const handleFinish = async () => {
-        // Here you would typically submit the data to your API
-        console.log('Onboarding completed:', onboardingData)
+        // Transform onboarding data to match API format
+        const projectData = {
+            name: onboardingData.projectName,
+            description: onboardingData.description,
+            website: onboardingData.website,
+            projectType: onboardingData.projectCategory,
+            developmentFocus: onboardingData.developmentFocus,
+            blockchainPreferences: onboardingData.blockchains,
+            tags: onboardingData.brandKeywords,
+            // Social links
+            twitterHandle: onboardingData.socialLinks.twitter,
+            discordServer: onboardingData.socialLinks.discord,
+            telegramGroup: onboardingData.socialLinks.telegram,
+            redditCommunity: onboardingData.socialLinks.reddit,
+            // Additional fields can be added later
+            projectStage: 'IDEA_STAGE' as const,
+            isLookingForPartners: true,
+        }
         
-        // Create project and redirect to dashboard
         try {
-            // await createProject(onboardingData)
-            // router.push('/dashboard')
-            alert('Onboarding completed! Project created successfully.')
+            await createOrUpdateProject(projectData)
+            router.push('/dashboard')
         } catch (error) {
             console.error('Error creating project:', error)
         }

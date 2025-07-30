@@ -45,7 +45,7 @@ export function useProject() {
   })
 
   // Get project by ID (for viewing other projects)
-  const getProjectById = (projectId: string) => {
+  const useProjectById = (projectId: string) => {
     return useQuery({
       queryKey: ['project', projectId],
       queryFn: () => projectApi.getProjectById(projectId),
@@ -120,7 +120,7 @@ export function useProject() {
     deleteProject,
     uploadLogo,
     uploadBanner,
-    getProjectById,
+    useProjectById,
 
     // Reset functions
     resetSaveError: createOrUpdateProjectMutation.reset,

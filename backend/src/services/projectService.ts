@@ -21,6 +21,7 @@ export interface CreateProjectData {
   twitterHandle?: string;
   discordServer?: string;
   telegramGroup?: string;
+  redditCommunity?: string;
   githubUrl?: string;
   whitepaperUrl?: string;
   country?: string;
