@@ -124,6 +124,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  profileImage?: string;
   userType: string;
   subscriptionTier: string;
   isEmailVerified: boolean;
@@ -418,18 +419,27 @@ export interface Company {
 
 export interface Partnership {
   id: string;
-  companyId: string;
-  partnerId: string;
-  status: 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
-  proposedBy: string;
-  proposalMessage?: string;
-  responseMessage?: string;
-  startDate?: string;
-  endDate?: string;
+  requesterId: string;
+  requesterProjectId: string;
+  receiverId: string;
+  receiverProjectId: string;
+  partnershipType: 'TECHNICAL_INTEGRATION' | 'MARKETING_COLLABORATION' | 'FUNDING_OPPORTUNITY' | 'ADVISORY_PARTNERSHIP' | 'JOINT_VENTURE' | 'ECOSYSTEM_PARTNERSHIP' | 'SERVICE_PROVIDER' | 'TALENT_EXCHANGE' | 'OTHER';
+  title: string;
+  description: string;
+  proposedTerms?: string;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  isVerified: boolean;
+  verificationHash?: string;
+  matchScore?: number;
+  matchReason?: string;
   createdAt: string;
   updatedAt: string;
-  company?: Company;
-  partner?: Company;
+  respondedAt?: string;
+  verifiedAt?: string;
+  receiverProject?: Project;
+  receiver?: User;
+  requesterProject?: Project;
+  requester?: User;
 }
 
 export interface Message {
@@ -527,8 +537,19 @@ export const dashboardApi = {
     partnershipType: string;
     title: string;
     description: string;
+    proposedTerms?: string;
   }): Promise<Partnership> => {
     const response = await apiClient.post('/dashboard/partnerships', data);
+    return response.data.data;
+  },
+
+  acceptPartnership: async (partnershipId: string): Promise<Partnership> => {
+    const response = await apiClient.put(`/dashboard/partnerships/${partnershipId}/accept`);
+    return response.data.data;
+  },
+
+  rejectPartnership: async (partnershipId: string): Promise<Partnership> => {
+    const response = await apiClient.put(`/dashboard/partnerships/${partnershipId}/reject`);
     return response.data.data;
   },
 

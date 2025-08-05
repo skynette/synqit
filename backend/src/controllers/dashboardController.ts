@@ -162,6 +162,103 @@ export class DashboardController {
         }
     }
 
+    static async createPartnership(req: AuthenticatedRequest, res: Response) {
+        try {
+            // Check for validation errors
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Validation failed',
+                    errors: errors.array()
+                });
+            }
+
+            const userId = req.user!.id;
+            const { receiverProjectId, partnershipType, title, description, proposedTerms } = req.body;
+
+            const partnership = await DashboardService.createPartnership(userId, {
+                receiverProjectId,
+                partnershipType,
+                title,
+                description,
+                proposedTerms
+            });
+
+            res.status(201).json({
+                success: true,
+                message: 'Partnership request created successfully',
+                data: partnership
+            });
+        } catch (error) {
+            console.error('Create partnership error:', error);
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    success: false,
+                    message: error.message
+                });
+            }
+            res.status(500).json({
+                success: false,
+                message: 'Failed to create partnership request'
+            });
+        }
+    }
+
+    static async acceptPartnership(req: AuthenticatedRequest, res: Response) {
+        try {
+            const userId = req.user!.id;
+            const partnershipId = req.params.id;
+
+            const partnership = await DashboardService.acceptPartnership(userId, partnershipId);
+
+            res.status(200).json({
+                success: true,
+                message: 'Partnership request accepted successfully',
+                data: partnership
+            });
+        } catch (error) {
+            console.error('Accept partnership error:', error);
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    success: false,
+                    message: error.message
+                });
+            }
+            res.status(500).json({
+                success: false,
+                message: 'Failed to accept partnership request'
+            });
+        }
+    }
+
+    static async rejectPartnership(req: AuthenticatedRequest, res: Response) {
+        try {
+            const userId = req.user!.id;
+            const partnershipId = req.params.id;
+
+            const partnership = await DashboardService.rejectPartnership(userId, partnershipId);
+
+            res.status(200).json({
+                success: true,
+                message: 'Partnership request rejected successfully',
+                data: partnership
+            });
+        } catch (error) {
+            console.error('Reject partnership error:', error);
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    success: false,
+                    message: error.message
+                });
+            }
+            res.status(500).json({
+                success: false,
+                message: 'Failed to reject partnership request'
+            });
+        }
+    }
+
     static async getMessages(req: AuthenticatedRequest, res: Response) {
         try {
             const userId = req.user!.id;

@@ -182,4 +182,44 @@ export const validateCompany = [
     .optional()
     .isIn(['ETHEREUM', 'SOLANA', 'MVP', 'BINANCE_SMART_CHAIN', 'POLYGON', 'AVALANCHE', 'TORONET', 'OTHER'])
     .withMessage('Invalid blockchain preference'),
+];
+
+/**
+ * Partnership creation validation
+ */
+export const validateCreatePartnership = [
+  body('receiverProjectId')
+    .notEmpty()
+    .isString()
+    .withMessage('Receiver project ID is required'),
+
+  body('partnershipType')
+    .isIn([
+      'TECHNICAL_INTEGRATION',
+      'MARKETING_COLLABORATION', 
+      'FUNDING_OPPORTUNITY',
+      'ADVISORY_PARTNERSHIP',
+      'JOINT_VENTURE',
+      'ECOSYSTEM_PARTNERSHIP',
+      'SERVICE_PROVIDER',
+      'TALENT_EXCHANGE',
+      'OTHER'
+    ])
+    .withMessage('Invalid partnership type'),
+
+  body('title')
+    .trim()
+    .isLength({ min: 1, max: 200 })
+    .withMessage('Title is required and must be between 1-200 characters'),
+
+  body('description')
+    .trim()
+    .isLength({ min: 10, max: 1000 })
+    .withMessage('Description is required and must be between 10-1000 characters'),
+
+  body('proposedTerms')
+    .optional()
+    .trim()
+    .isLength({ max: 2000 })
+    .withMessage('Proposed terms must not exceed 2000 characters'),
 ]; 

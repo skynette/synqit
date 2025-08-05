@@ -58,7 +58,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
             // Create partnership request
             await dashboardApi.createPartnership({
                 receiverProjectId: project.id,
-                partnershipType: 'COLLABORATION',
+                partnershipType: 'ECOSYSTEM_PARTNERSHIP',
                 title: `Partnership Request from ${user.firstName} ${user.lastName}`,
                 description: `I'm interested in exploring partnership opportunities with ${project.name} in the ${project.projectType} space.`
             })

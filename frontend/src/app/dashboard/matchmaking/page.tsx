@@ -37,15 +37,14 @@ export default function MatchmakingPage() {
     const [partnerships, setPartnerships] = useState<Partnership[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [processingPartnership, setProcessingPartnership] = useState<string | null>(null)
     
     useEffect(() => {
         async function fetchPartnerships() {
             try {
                 setLoading(true)
                 const data = await dashboardApi.getPartnerships()
-                // Ensure data is an array
-                const partnershipsArray = Array.isArray(data) ? data : (data?.partnerships || [])
-                setPartnerships(partnershipsArray)
+                setPartnerships(data)
             } catch (err: any) {
                 console.error('Error fetching partnerships:', err)
                 setError('Failed to load partnerships')
@@ -56,6 +55,48 @@ export default function MatchmakingPage() {
         
         fetchPartnerships()
     }, [])
+
+    const handleAcceptPartnership = async (partnershipId: string) => {
+        try {
+            setProcessingPartnership(partnershipId)
+            await dashboardApi.acceptPartnership(partnershipId)
+            
+            // Update the local state to reflect the change
+            setPartnerships(prev => prev.map(partnership => 
+                partnership.id === partnershipId 
+                    ? { ...partnership, status: 'ACCEPTED' as const, updatedAt: new Date().toISOString() }
+                    : partnership
+            ))
+            
+            alert('Partnership request accepted successfully!')
+        } catch (error: any) {
+            console.error('Error accepting partnership:', error)
+            alert('Failed to accept partnership request. Please try again.')
+        } finally {
+            setProcessingPartnership(null)
+        }
+    }
+
+    const handleRejectPartnership = async (partnershipId: string) => {
+        try {
+            setProcessingPartnership(partnershipId)
+            await dashboardApi.rejectPartnership(partnershipId)
+            
+            // Update the local state to reflect the change
+            setPartnerships(prev => prev.map(partnership => 
+                partnership.id === partnershipId 
+                    ? { ...partnership, status: 'REJECTED' as const, updatedAt: new Date().toISOString() }
+                    : partnership
+            ))
+            
+            alert('Partnership request rejected successfully!')
+        } catch (error: any) {
+            console.error('Error rejecting partnership:', error)
+            alert('Failed to reject partnership request. Please try again.')
+        } finally {
+            setProcessingPartnership(null)
+        }
+    }
     
     // Transform API data to match our component interface
     const transformPartnership = (partnership: Partnership, currentUserId: string): PartnerRequest => {
@@ -64,8 +105,8 @@ export default function MatchmakingPage() {
         
         return {
             id: partnership.id,
-            name: isIncoming ? partnership.requesterProject?.name || `${partnership.requester.firstName} ${partnership.requester.lastName}` 
-                             : partnership.receiverProject?.name || `${partnership.receiver.firstName} ${partnership.receiver.lastName}`,
+            name: isIncoming ? partnership.requesterProject?.name || `${partnership.requester?.firstName || 'Unknown'} ${partnership.requester?.lastName || 'User'}` 
+                             : partnership.receiverProject?.name || `${partnership.receiver?.firstName || 'Unknown'} ${partnership.receiver?.lastName || 'User'}`,
             logo: isIncoming ? partnership.requesterProject?.logoUrl || '/icons/default-project.png'
                              : partnership.receiverProject?.logoUrl || '/icons/default-project.png',
             description: partnership.description || 'Partnership request for collaboration opportunities.',
@@ -74,8 +115,24 @@ export default function MatchmakingPage() {
             isNew: partnership.status === 'PENDING',
             requestStatus: isIncoming ? 'incoming' : 'outgoing',
             status: partnership.status,
-            partnerProject: isIncoming ? partnership.requesterProject : partnership.receiverProject,
-            partner: isIncoming ? partnership.requester : partnership.receiver
+            partnerProject: (() => {
+                const project = isIncoming ? partnership.requesterProject : partnership.receiverProject
+                return project ? {
+                    id: project.id,
+                    name: project.name,
+                    logoUrl: project.logoUrl || null,
+                    projectType: project.projectType || ''
+                } : null
+            })(),
+            partner: (() => {
+                const user = isIncoming ? partnership.requester : partnership.receiver
+                return user ? {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    profileImage: user.profileImage || null
+                } : null
+            })()
         }
     }
     
@@ -286,14 +343,36 @@ export default function MatchmakingPage() {
                                     <div className="flex gap-3">
                                         {activeTab === 'incoming' ? (
                                             <>
-                                                <button 
-                                                    className="flex-1 py-3 bg-synqit-primary hover:bg-synqit-primary/80 text-white rounded-lg transition-colors duration-200 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                                    disabled={request.status !== 'PENDING'}
-                                                >
-                                                    {request.status === 'PENDING' ? 'Accept Partnership' : 
-                                                     request.status === 'ACCEPTED' ? 'Accepted' : 
-                                                     request.status === 'REJECTED' ? 'Rejected' : request.status}
-                                                </button>
+                                                {request.status === 'PENDING' ? (
+                                                    <>
+                                                        <button 
+                                                            onClick={() => handleAcceptPartnership(request.id)}
+                                                            className="flex-1 py-3 bg-synqit-primary hover:bg-synqit-primary/80 text-white rounded-lg transition-colors duration-200 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            disabled={processingPartnership === request.id}
+                                                        >
+                                                            {processingPartnership === request.id ? 'Processing...' : 'Accept Partnership'}
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleRejectPartnership(request.id)}
+                                                            className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            disabled={processingPartnership === request.id}
+                                                        >
+                                                            {processingPartnership === request.id ? 'Processing...' : 'Decline'}
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <div className="flex-1 py-3 text-center rounded-lg border border-synqit-border">
+                                                        <span className={`font-medium text-sm ${
+                                                            request.status === 'ACCEPTED' ? 'text-green-400' : 
+                                                            request.status === 'REJECTED' ? 'text-red-400' : 
+                                                            'text-synqit-muted-foreground'
+                                                        }`}>
+                                                            {request.status === 'ACCEPTED' ? 'Partnership Accepted' : 
+                                                             request.status === 'REJECTED' ? 'Partnership Declined' : 
+                                                             request.status}
+                                                        </span>
+                                                    </div>
+                                                )}
                                                 <Link href={`/dashboard/matchmaking/${request.id}`} className="px-6 py-3 bg-synqit-surface/50 hover:bg-synqit-surface border border-synqit-border text-synqit-muted-foreground hover:text-white rounded-lg transition-colors duration-200 font-medium text-sm text-center">
                                                     View Details
                                                 </Link>

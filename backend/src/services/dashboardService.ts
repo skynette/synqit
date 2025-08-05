@@ -508,6 +508,337 @@ export class DashboardService {
     }
 
     /**
+     * Create a new partnership request
+     */
+    static async createPartnership(userId: string, data: {
+        receiverProjectId: string;
+        partnershipType: string;
+        title: string;
+        description: string;
+        proposedTerms?: string;
+    }) {
+        try {
+            // Get the requester's project
+            const requesterProject = await prisma.project.findUnique({
+                where: { ownerId: userId },
+                select: { id: true }
+            });
+
+            if (!requesterProject) {
+                throw new AppError('You must have a project to create partnerships', 400);
+            }
+
+            // Get the receiver project and owner
+            const receiverProject = await prisma.project.findUnique({
+                where: { id: data.receiverProjectId },
+                select: { id: true, ownerId: true }
+            });
+
+            if (!receiverProject) {
+                throw new AppError('Receiver project not found', 404);
+            }
+
+            if (receiverProject.ownerId === userId) {
+                throw new AppError('You cannot create a partnership with your own project', 400);
+            }
+
+            // Check if partnership already exists
+            const existingPartnership = await prisma.partnership.findFirst({
+                where: {
+                    OR: [
+                        {
+                            requesterId: userId,
+                            receiverId: receiverProject.ownerId,
+                            requesterProjectId: requesterProject.id,
+                            receiverProjectId: data.receiverProjectId
+                        },
+                        {
+                            requesterId: receiverProject.ownerId,
+                            receiverId: userId,
+                            requesterProjectId: data.receiverProjectId,
+                            receiverProjectId: requesterProject.id
+                        }
+                    ]
+                }
+            });
+
+            if (existingPartnership) {
+                throw new AppError('Partnership request already exists between these projects', 400);
+            }
+
+            // Create the partnership
+            const partnership = await prisma.partnership.create({
+                data: {
+                    requesterId: userId,
+                    requesterProjectId: requesterProject.id,
+                    receiverId: receiverProject.ownerId,
+                    receiverProjectId: data.receiverProjectId,
+                    partnershipType: data.partnershipType as any,
+                    title: data.title,
+                    description: data.description,
+                    proposedTerms: data.proposedTerms,
+                    status: 'PENDING'
+                },
+                include: {
+                    requester: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            profileImage: true,
+                        }
+                    },
+                    receiver: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            profileImage: true,
+                        }
+                    },
+                    requesterProject: {
+                        select: {
+                            id: true,
+                            name: true,
+                            projectType: true,
+                            logoUrl: true,
+                        }
+                    },
+                    receiverProject: {
+                        select: {
+                            id: true,
+                            name: true,
+                            projectType: true,
+                            logoUrl: true,
+                        }
+                    }
+                }
+            });
+
+            // Create notification for the receiver
+            await prisma.notification.create({
+                data: {
+                    userId: receiverProject.ownerId,
+                    title: 'New Partnership Request',
+                    content: `${partnership.requester.firstName} ${partnership.requester.lastName} sent you a partnership request for "${data.title}"`,
+                    notificationType: 'PARTNERSHIP_REQUEST',
+                    partnershipId: partnership.id
+                }
+            });
+
+            return partnership;
+        } catch (error) {
+            console.error('Create partnership error:', error);
+            if (error instanceof AppError) {
+                throw error;
+            }
+            throw new AppError('Failed to create partnership', 500);
+        }
+    }
+
+    /**
+     * Accept a partnership request
+     */
+    static async acceptPartnership(userId: string, partnershipId: string) {
+        try {
+            // Check if partnership exists and user is the receiver
+            const partnership = await prisma.partnership.findFirst({
+                where: {
+                    id: partnershipId,
+                    receiverId: userId,
+                    status: 'PENDING'
+                },
+                include: {
+                    requester: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                        }
+                    },
+                    receiver: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                        }
+                    }
+                }
+            });
+
+            if (!partnership) {
+                throw new AppError('Partnership request not found or you are not authorized to accept it', 404);
+            }
+
+            // Update partnership status
+            const updatedPartnership = await prisma.partnership.update({
+                where: { id: partnershipId },
+                data: {
+                    status: 'ACCEPTED',
+                    respondedAt: new Date()
+                },
+                include: {
+                    requester: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            profileImage: true,
+                        }
+                    },
+                    receiver: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            profileImage: true,
+                        }
+                    },
+                    requesterProject: {
+                        select: {
+                            id: true,
+                            name: true,
+                            projectType: true,
+                            logoUrl: true,
+                        }
+                    },
+                    receiverProject: {
+                        select: {
+                            id: true,
+                            name: true,
+                            projectType: true,
+                            logoUrl: true,
+                        }
+                    }
+                }
+            });
+
+            // Create notification for the requester
+            await prisma.notification.create({
+                data: {
+                    userId: partnership.requesterId,
+                    title: 'Partnership Request Accepted',
+                    content: `${partnership.receiver.firstName} ${partnership.receiver.lastName} accepted your partnership request for "${partnership.title}"`,
+                    notificationType: 'PARTNERSHIP_ACCEPTED',
+                    partnershipId: partnership.id
+                }
+            });
+
+            return updatedPartnership;
+        } catch (error) {
+            console.error('Accept partnership error:', error);
+            if (error instanceof AppError) {
+                throw error;
+            }
+            throw new AppError('Failed to accept partnership', 500);
+        }
+    }
+
+    /**
+     * Reject a partnership request
+     */
+    static async rejectPartnership(userId: string, partnershipId: string) {
+        try {
+            // Check if partnership exists and user is the receiver
+            const partnership = await prisma.partnership.findFirst({
+                where: {
+                    id: partnershipId,
+                    receiverId: userId,
+                    status: 'PENDING'
+                },
+                include: {
+                    requester: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                        }
+                    },
+                    receiver: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                        }
+                    }
+                }
+            });
+
+            if (!partnership) {
+                throw new AppError('Partnership request not found or you are not authorized to reject it', 404);
+            }
+
+            // Update partnership status
+            const updatedPartnership = await prisma.partnership.update({
+                where: { id: partnershipId },
+                data: {
+                    status: 'REJECTED',
+                    respondedAt: new Date()
+                },
+                include: {
+                    requester: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            profileImage: true,
+                        }
+                    },
+                    receiver: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            profileImage: true,
+                        }
+                    },
+                    requesterProject: {
+                        select: {
+                            id: true,
+                            name: true,
+                            projectType: true,
+                            logoUrl: true,
+                        }
+                    },
+                    receiverProject: {
+                        select: {
+                            id: true,
+                            name: true,
+                            projectType: true,
+                            logoUrl: true,
+                        }
+                    }
+                }
+            });
+
+            // Create notification for the requester
+            await prisma.notification.create({
+                data: {
+                    userId: partnership.requesterId,
+                    title: 'Partnership Request Rejected',
+                    content: `${partnership.receiver.firstName} ${partnership.receiver.lastName} declined your partnership request for "${partnership.title}"`,
+                    notificationType: 'PARTNERSHIP_REJECTED',
+                    partnershipId: partnership.id
+                }
+            });
+
+            return updatedPartnership;
+        } catch (error) {
+            console.error('Reject partnership error:', error);
+            if (error instanceof AppError) {
+                throw error;
+            }
+            throw new AppError('Failed to reject partnership', 500);
+        }
+    }
+
+    /**
      * Get profile (placeholder)
      */
     static async getProfile(userId: string) {
