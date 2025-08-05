@@ -654,8 +654,8 @@ function OnboardingRightSide() {
                     {/* Feature Image */}
                     <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
                         <Image
-                            src="/images/web3-collab-2.png"
-                            alt="Decentralized Collaboration Icons"
+                            src="/images/how-it-works-1.png"
+                            alt="Create and Optimize Your Profile"
                             fill
                             className="object-contain"
                             priority
@@ -669,13 +669,13 @@ function OnboardingRightSide() {
                     </div>
                     
                     <h3 className="text-white text-xl font-semibold text-center mb-3">
-                        Decentralized Collaboration
+                        Set Up Your Profile for Better Matches
                     </h3>
                     <p className="text-gray-400 text-center text-sm mb-4">
-                        Chat, negotiate, and form partnerships using encrypted, on-chain communication.
+                        Showcase your company, blockchain focus, funding stage & interests.
                     </p>
                     <p className="text-gray-400 text-center text-sm">
-                        Leverage AI-driven insights to streamline deals and minimize risks.
+                        AI enhances your profile for maximum visibility & match accuracy.
                     </p>
                     
                     {/* Decorative dots pattern */}

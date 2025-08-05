@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { X, User, Target } from 'lucide-react'
+import Image from 'next/image'
 
 interface OnboardingPopupProps {
     isOpen: boolean
@@ -15,12 +16,12 @@ export function OnboardingPopup({ isOpen, onClose, onSetupProfile, onMaybeLater 
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center mt-20">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 border border-slate-700/50 rounded-3xl p-8 mx-4 max-w-lg w-full shadow-2xl">
+            <div className="relative bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 border border-slate-700/50 rounded-3xl p-8 mx-4 max-w-xl w-full shadow-2xl">
                 {/* Close button */}
                 <button
                     onClick={onClose}
@@ -30,69 +31,19 @@ export function OnboardingPopup({ isOpen, onClose, onSetupProfile, onMaybeLater 
                 </button>
 
                 {/* Profile Setup Visual */}
-                <div className="flex justify-center mb-8">
-                    <div className="relative">
-                        {/* Main profile window */}
-                        <div className="bg-slate-800/60 backdrop-blur border border-slate-600/50 rounded-2xl p-6 w-80">
-                            {/* Progress bar */}
-                            <div className="mb-6">
-                                <div className="bg-slate-700 rounded-full h-2 overflow-hidden">
-                                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-full w-1/3 transition-all duration-1000"></div>
-                                </div>
-                            </div>
-
-                            {/* Profile tags */}
-                            <div className="flex gap-2 mb-4">
-                                <div className="flex items-center gap-2 bg-slate-700/50 rounded-full px-3 py-1.5 text-sm">
-                                    <div className="w-6 h-6 bg-slate-600 rounded-full flex items-center justify-center">
-                                        <User className="w-3 h-3 text-slate-300" />
-                                    </div>
-                                    <span className="text-slate-300">Styla</span>
-                                </div>
-                                <div className="flex items-center gap-2 bg-slate-700/50 rounded-full px-3 py-1.5 text-sm">
-                                    <div className="w-6 h-6 bg-slate-600 rounded-full flex items-center justify-center">
-                                        <Target className="w-3 h-3 text-slate-300" />
-                                    </div>
-                                    <span className="text-slate-300">TechExplore</span>
-                                </div>
-                                <div className="flex items-center gap-2 bg-slate-700/50 rounded-full px-3 py-1.5 text-sm">
-                                    <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                                        <span className="text-white text-xs font-bold">T</span>
-                                    </div>
-                                    <span className="text-slate-300">Techtest</span>
-                                </div>
-                            </div>
-
-                            {/* Profile section */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                                        <User className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="bg-slate-600 rounded h-3 w-32 mb-1"></div>
-                                        <div className="bg-slate-700 rounded h-2 w-24"></div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-blue-600 hover:bg-blue-700 transition-colors text-white text-sm font-medium py-2 px-4 rounded-lg text-center cursor-pointer">
-                                    Profile
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Floating completion badge */}
-                        <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2 shadow-lg animate-bounce">
-                            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
+                <div className="relative w-full h-64 md:h-80">
+                    <Image
+                        src={'/images/how-it-works-1.png'}
+                        alt={'How Synqit Works'}
+                        fill
+                        className="object-contain"
+                        priority={true}
+                    />
                 </div>
 
                 {/* Content */}
-                <div className="text-center mb-8">
-                    <h2 className="text-3xl font-bold text-white mb-4">
+                <div className="mb-8">
+                    <h2 className="text-center text-3xl font-bold text-white mb-4">
                         Set Up Your Profile for Better Matches!
                     </h2>
                     <p className="text-slate-300 leading-relaxed mb-6">
@@ -117,7 +68,7 @@ export function OnboardingPopup({ isOpen, onClose, onSetupProfile, onMaybeLater 
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col md:flex-row gap-3">
                     <button
                         onClick={onSetupProfile}
                         className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
@@ -157,8 +108,8 @@ export function useOnboarding() {
         setShowProfileSetup(false)
         localStorage.setItem('synqit_onboarding_seen', 'true')
         setHasSeenOnboarding(true)
-        // Navigate to profile setup page - adjust this route as needed
-        window.location.href = '/dashboard/profile/setup'
+        // Navigate to onboarding page
+        window.location.href = '/dashboard/profile'
     }
 
     const handleMaybeLater = () => {
