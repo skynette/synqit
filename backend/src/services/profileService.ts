@@ -163,7 +163,8 @@ export class ProfileService {
         'name', 'description', 'website', 'logoUrl', 'bannerUrl', 'foundedYear', 
         'projectType', 'projectStage', 'tokenAvailability', 'developmentFocus', 
         'totalFunding', 'isLookingForFunding', 'isLookingForPartners', 'contactEmail', 
-        'twitterHandle', 'discordServer', 'telegramGroup', 'redditCommunity', 
+        'twitterHandle', 'discordServer', 'telegramGroup', 'facebookPage', 
+        'phoneNumber', 'phoneCountryCode', 'redditCommunity', 
         'githubUrl', 'whitepaperUrl', 'country', 'city', 'timezone', 'teamSize', 
         'fundingStage'
       ];

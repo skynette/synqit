@@ -67,11 +67,11 @@ export default function ProfilePage() {
                 teamEmail: companyProfile.contactEmail || "",
                 officialEmail: companyProfile.contactEmail || "",
                 websiteLink: companyProfile.website || "",
-                facebook: "",
+                facebook: companyProfile.facebookPage || "",
                 twitter: companyProfile.twitterHandle || "",
                 discord: companyProfile.discordServer || "",
-                phoneCountryCode: "🇳🇬 +234",
-                phoneNumber: "",
+                phoneCountryCode: companyProfile.phoneCountryCode || "🇳🇬 +234",
+                phoneNumber: companyProfile.phoneNumber || "",
                 collaborationPreferences: companyProfile.isLookingForPartners ? "Open to all" : "Closed"
             }))
         }
@@ -124,6 +124,9 @@ export default function ProfilePage() {
                 website: projectData.websiteLink,
                 twitterHandle: projectData.twitter,
                 discordServer: projectData.discord,
+                facebookPage: projectData.facebook,
+                phoneNumber: projectData.phoneNumber,
+                phoneCountryCode: projectData.phoneCountryCode,
                 isLookingForPartners: projectData.collaborationPreferences === "Open to all"
             })
         } catch (error) {
@@ -175,208 +178,6 @@ export default function ProfilePage() {
                     Security & Account Management
                 </button>
             </div>
-
-            {/* Tab Content */}
-            {activeTab === "security" && (
-                <div className="space-y-0">
-                    {/* Security Header with Save Button */}
-                    <div className="grid grid-cols-12 gap-8 pb-8 border-b border-synqit-border">
-                        <div className="col-span-4">
-                            <h2 className="text-xl font-semibold text-white">Security & Account Management</h2>
-                            <p className="text-sm text-synqit-muted-foreground mt-1">Set up your security & Account Management</p>
-                        </div>
-                        <div className="col-span-8 flex justify-end items-start">
-                            <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
-                                Save
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Change Password Section */}
-                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
-                        <div className="col-span-4">
-                            <div className="flex items-center space-x-2 mb-2">
-                                <h3 className="text-base font-medium text-white">Change Password</h3>
-                                <svg className="w-4 h-4 text-synqit-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                            <p className="text-sm text-synqit-muted-foreground">Change/Setup your password</p>
-                        </div>
-                        <div className="col-span-8">
-                            <div className="space-y-5 max-w-lg">
-                                {/* Old Password */}
-                                <div>
-                                    <label className="block text-sm font-medium text-white mb-2">Old Password</label>
-                                    <div className="relative">
-                                        <input
-                                            type={showOldPassword ? "text" : "password"}
-                                            value={passwordData.oldPassword}
-                                            onChange={(e) => setPasswordData(prev => ({ ...prev, oldPassword: e.target.value }))}
-                                            className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-lg text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
-                                            placeholder="••••••••••••••••"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowOldPassword(!showOldPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-                                        >
-                                            {showOldPassword ? (
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                                </svg>
-                                            ) : (
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* New Password */}
-                                <div>
-                                    <label className="block text-sm font-medium text-white mb-2">New Password</label>
-                                    <div className="relative">
-                                        <input
-                                            type={showNewPassword ? "text" : "password"}
-                                            value={passwordData.newPassword}
-                                            onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                                            className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-lg text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
-                                            placeholder="••••••••••••••••"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowNewPassword(!showNewPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-                                        >
-                                            {showNewPassword ? (
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                                </svg>
-                                            ) : (
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                            )}
-                                        </button>
-                                    </div>
-                                    {passwordData.newPassword && (
-                                        <div className="mt-3">
-                                            <div className={`h-1 w-full rounded-full bg-synqit-border overflow-hidden`}>
-                                                <div
-                                                    className={`h-full transition-all duration-300 ${isPasswordValid ? 'bg-green-500 w-full' : 'bg-yellow-500 w-1/2'
-                                                        }`}
-                                                />
-                                            </div>
-                                            <p className="text-xs text-synqit-muted-foreground mt-2">
-                                                Password must contain at least Capital letter, Special character & Number
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Confirm Password */}
-                                <div>
-                                    <label className="block text-sm font-medium text-white mb-2">Confirm Password</label>
-                                    <div className="relative">
-                                        <input
-                                            type={showConfirmPassword ? "text" : "password"}
-                                            value={passwordData.confirmPassword}
-                                            onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                                            className="w-full px-4 py-3 bg-[#1a1f2e] border border-gray-700 rounded-lg text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
-                                            placeholder="••••••••••••••••"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-                                        >
-                                            {showConfirmPassword ? (
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                                </svg>
-                                            ) : (
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                            )}
-                                        </button>
-                                    </div>
-                                    {passwordData.confirmPassword && !passwordsMatch && (
-                                        <p className="text-xs text-destructive mt-2">Does not match the new password</p>
-                                    )}
-                                </div>
-
-                                <button 
-                                    onClick={handlePasswordChange}
-                                    disabled={!isPasswordValid || !passwordsMatch || changePassword.isPending}
-                                    className="w-full bg-synqit-primary hover:bg-synqit-primary/80 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                                >
-                                    {changePassword.isPending ? 'Updating...' : 'Update Password'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Two-Factor Authentication */}
-                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
-                        <div className="col-span-4">
-                            <h3 className="text-base font-medium text-white">Two-Factor Authentication (2FA)</h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Add a Two-Factor Authentication (2FA) for better security protection on your account
-                            </p>
-                        </div>
-                        <div className="col-span-8 flex items-start">
-                            <button
-                                onClick={handleToggle2FA}
-                                disabled={toggle2FA.isPending}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${userProfile?.twoFactorEnabled ? 'bg-synqit-primary' : 'bg-synqit-muted'
-                                    }`}
-                            >
-                                <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${userProfile?.twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'
-                                        }`}
-                                />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Delete Account */}
-                    <div className="grid grid-cols-12 gap-8 py-8 border-b border-gray-800">
-                        <div className="col-span-4">
-                            <h3 className="text-base font-medium text-white">Delete Account</h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                                This will permanently delete your account including partnerships and collaborations will be lost.
-                            </p>
-                        </div>
-                        <div className="col-span-8">
-                            <button className="w-full max-w-lg bg-destructive hover:bg-destructive/80 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                                Delete Account
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Bottom Actions */}
-                    <div className="flex justify-end space-x-4 pt-8">
-                        <button className="bg-synqit-muted hover:bg-synqit-muted/80 text-white px-6 py-2.5 rounded-lg font-medium flex items-center space-x-2 transition-colors">
-                            <span>Cancel</span>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                        <button className="bg-synqit-primary hover:bg-synqit-primary/80 text-white px-6 py-2.5 rounded-lg font-medium flex items-center space-x-2 transition-colors">
-                            <span>Save Settings</span>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            )}
 
             {/* Tab Content */}
             {activeTab === "security" && (
@@ -672,20 +473,37 @@ export default function ProfilePage() {
                                     onChange={(e) => setProjectData(prev => ({ ...prev, category: e.target.value }))}
                                     className="flex-1 px-3 md:px-4 py-2.5 md:py-3 bg-[#1a1f2e] border border-gray-700 rounded-full text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
-                                    <option>Category</option>
-                                    <option>Technology</option>
-                                    <option>Finance</option>
-                                    <option>Healthcare</option>
+                                    <option value="">Category</option>
+                                    <option value="AI">AI</option>
+                                    <option value="DEFI">DeFi</option>
+                                    <option value="GAMEFI">GameFi</option>
+                                    <option value="NFT">NFT</option>
+                                    <option value="DAO">DAO</option>
+                                    <option value="WEB3_TOOLS">Web3 Tools</option>
+                                    <option value="INFRASTRUCTURE">Infrastructure</option>
+                                    <option value="METAVERSE">Metaverse</option>
+                                    <option value="SOCIAL">Social</option>
+                                    <option value="OTHER">Other</option>
                                 </select>
                                 <select
                                     value={projectData.blockchain}
                                     onChange={(e) => setProjectData(prev => ({ ...prev, blockchain: e.target.value }))}
                                     className="flex-1 px-3 md:px-4 py-2.5 md:py-3 bg-[#1a1f2e] border border-gray-700 rounded-full text-sm md:text-base text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
-                                    <option>Blockchain</option>
-                                    <option>Ethereum</option>
-                                    <option>Bitcoin</option>
-                                    <option>Solana</option>
+                                    <option value="">Blockchain</option>
+                                    <option value="ETHEREUM">Ethereum</option>
+                                    <option value="BITCOIN">Bitcoin</option>
+                                    <option value="SOLANA">Solana</option>
+                                    <option value="POLYGON">Polygon</option>
+                                    <option value="BINANCE_SMART_CHAIN">Binance Smart Chain</option>
+                                    <option value="AVALANCHE">Avalanche</option>
+                                    <option value="CARDANO">Cardano</option>
+                                    <option value="POLKADOT">Polkadot</option>
+                                    <option value="COSMOS">Cosmos</option>
+                                    <option value="ARBITRUM">Arbitrum</option>
+                                    <option value="OPTIMISM">Optimism</option>
+                                    <option value="BASE">Base</option>
+                                    <option value="OTHER">Other</option>
                                 </select>
                                 <select
                                     value={projectData.partnershipType}

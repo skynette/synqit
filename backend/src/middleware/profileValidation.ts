@@ -47,7 +47,7 @@ export const profileValidation = {
       .withMessage('Founded year must be a valid year'),
     body('projectType')
       .optional()
-      .isIn(['AI', 'DEFI', 'GAMEFI', 'NFT', 'DAO', 'WEB3_TOOLS', 'OTHER'])
+      .isIn(['AI', 'DEFI', 'GAMEFI', 'NFT', 'DAO', 'WEB3_TOOLS', 'INFRASTRUCTURE', 'METAVERSE', 'SOCIAL', 'OTHER'])
       .withMessage('Invalid project type'),
     body('projectStage')
       .optional()
@@ -89,6 +89,18 @@ export const profileValidation = {
       .optional()
       .isLength({ max: 100 })
       .withMessage('Telegram group must be less than 100 characters'),
+    body('facebookPage')
+      .optional()
+      .isLength({ max: 100 })
+      .withMessage('Facebook page must be less than 100 characters'),
+    body('phoneNumber')
+      .optional()
+      .isLength({ max: 20 })
+      .withMessage('Phone number must be less than 20 characters'),
+    body('phoneCountryCode')
+      .optional()
+      .isLength({ max: 10 })
+      .withMessage('Phone country code must be less than 10 characters'),
     body('country')
       .optional()
       .isLength({ max: 50 })

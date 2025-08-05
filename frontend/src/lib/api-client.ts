@@ -230,6 +230,9 @@ export interface CompanyProfile {
   twitterHandle?: string;
   discordServer?: string;
   telegramGroup?: string;
+  facebookPage?: string;
+  phoneNumber?: string;
+  phoneCountryCode?: string;
   country?: string;
   city?: string;
   timezone?: string;
@@ -266,6 +269,9 @@ export interface UpdateCompanyProfileRequest {
   twitterHandle?: string;
   discordServer?: string;
   telegramGroup?: string;
+  facebookPage?: string;
+  phoneNumber?: string;
+  phoneCountryCode?: string;
   country?: string;
   city?: string;
   timezone?: string;
