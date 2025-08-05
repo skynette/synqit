@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { projectApi } from "@/lib/api-client"
+import { projectApi, dashboardApi } from "@/lib/api-client"
+import { useAuth } from "@/hooks/use-auth"
 import type { Project } from "@/lib/api-client"
 
 interface ProjectDetailProps {
@@ -15,10 +16,12 @@ interface ProjectDetailProps {
 
 export default function ProjectDetailPage({ params }: ProjectDetailProps) {
     const router = useRouter()
+    const { user } = useAuth()
     const [isFollowing, setIsFollowing] = useState(false)
     const [project, setProject] = useState<Project | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [isRequestingPartnership, setIsRequestingPartnership] = useState(false)
     
     useEffect(() => {
         async function fetchProject() {
@@ -40,6 +43,36 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
         
         fetchProject()
     }, [params])
+    
+    const handlePartnershipRequest = async () => {
+        if (!user) {
+            router.push('/auth')
+            return
+        }
+        
+        if (!project) return
+        
+        try {
+            setIsRequestingPartnership(true)
+            
+            // Create partnership request
+            await dashboardApi.createPartnership({
+                receiverProjectId: project.id,
+                partnershipType: 'COLLABORATION',
+                title: `Partnership Request from ${user.firstName} ${user.lastName}`,
+                description: `I'm interested in exploring partnership opportunities with ${project.name} in the ${project.projectType} space.`
+            })
+            
+            // Show success and redirect to matchmaking
+            alert('Partnership request sent successfully!')
+            router.push('/dashboard/matchmaking')
+        } catch (err: any) {
+            console.error('Error creating partnership:', err)
+            alert('Failed to send partnership request. Please try again.')
+        } finally {
+            setIsRequestingPartnership(false)
+        }
+    }
     
     if (loading) {
         return (
@@ -213,8 +246,14 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
 
                         {/* Action Buttons */}
                         <div className="space-y-3">
-                            <button className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white py-3 px-4 rounded-lg font-medium transition-colors">
-                                Apply for Partnership
+                            <button 
+                                onClick={handlePartnershipRequest}
+                                disabled={isRequestingPartnership || !project.isLookingForPartners}
+                                className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isRequestingPartnership ? 'Sending Request...' : 
+                                 !project.isLookingForPartners ? 'Not Looking for Partners' : 
+                                 'Apply for Partnership'}
                             </button>
                             <button 
                                 onClick={() => setIsFollowing(!isFollowing)}
@@ -393,8 +432,14 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
                             </p>
                             
                             <div className="space-y-3">
-                                <button className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white py-3 px-4 rounded-lg font-medium transition-colors">
-                                    Request Partnership
+                                <button 
+                                    onClick={handlePartnershipRequest}
+                                    disabled={isRequestingPartnership || !project.isLookingForPartners}
+                                    className="w-full bg-synqit-primary hover:bg-synqit-primary/80 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isRequestingPartnership ? 'Sending Request...' : 
+                                     !project.isLookingForPartners ? 'Not Looking for Partners' : 
+                                     'Request Partnership'}
                                 </button>
                                 <button className="w-full bg-synqit-surface/50 border border-synqit-border hover:border-synqit-primary text-white py-3 px-4 rounded-lg font-medium transition-colors">
                                     Send Message

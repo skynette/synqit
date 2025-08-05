@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
 import { Navbar } from "@/components/layout/navbar"
 import { useAuth } from "@/hooks/use-auth"
+import { OnboardingPopup, useOnboarding } from "@/components/onboarding/onboarding-popup"
 import type { VerifyEmailRequest, ResendVerificationRequest } from "@/lib/api-client"
 
 // Auth Layout Component
@@ -35,19 +36,22 @@ interface EmailVerificationProps {
     isResending: boolean
     verifyError: any
     resendError: any
+    onVerificationSuccess: () => void
 }
 
-function EmailVerification({ 
-    token, 
-    user, 
-    onVerify, 
-    onResend, 
-    isVerifying, 
-    isResending, 
-    verifyError, 
-    resendError 
+function EmailVerification({
+    token,
+    user,
+    onVerify,
+    onResend,
+    isVerifying,
+    isResending,
+    verifyError,
+    resendError,
+    onVerificationSuccess
 }: EmailVerificationProps) {
     const hasAttemptedVerificationRef = useRef(false)
+    const router = useRouter()
 
     // Auto-verify if token is present in URL with persistence
     useEffect(() => {
@@ -55,7 +59,7 @@ function EmailVerification({
             // Check if we've already attempted verification for this token
             const verificationKey = `synqit_verified_${token}`
             const hasVerified = sessionStorage.getItem(verificationKey)
-            
+
             if (!hasVerified) {
                 hasAttemptedVerificationRef.current = true
                 // Mark as attempted in session storage
@@ -65,10 +69,44 @@ function EmailVerification({
         }
     }, [token, onVerify])
 
+    // Handle successful verification
+    useEffect(() => {
+        if (user?.isEmailVerified && !verifyError && !isVerifying) {
+            // Small delay to show success state, then trigger onboarding
+            const timer = setTimeout(() => {
+                onVerificationSuccess()
+                router.push('/dashboard')
+            }, 2000)
+
+            return () => clearTimeout(timer)
+        }
+    }, [user?.isEmailVerified, verifyError, isVerifying, onVerificationSuccess, router])
+
     const handleResendVerification = () => {
         if (user?.email) {
             onResend({ email: user.email })
         }
+    }
+
+    // Show verification success
+    if (user?.isEmailVerified && !verifyError) {
+        return (
+            <div className="text-center">
+                <div className="mb-6">
+                    <div className="w-16 h-16 bg-green-500/10 border border-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h1 className="text-2xl font-bold text-white mb-4">
+                        Email Verified Successfully!
+                    </h1>
+                    <p className="text-gray-400">
+                        Redirecting you to the dashboard...
+                    </p>
+                </div>
+            </div>
+        )
     }
 
     // Show verification in progress
@@ -123,7 +161,7 @@ function EmailVerification({
                             'Send New Verification Email'
                         )}
                     </button>
-                    
+
                     <Link
                         href="/auth"
                         className="block w-full text-gray-400 hover:text-white py-3 rounded-lg font-medium transition-colors text-center"
@@ -178,14 +216,14 @@ function EmailVerification({
                         'Resend Verification Email'
                     )}
                 </button>
-                
+
                 <Link
                     href="/dashboard"
                     className="block w-full text-gray-400 hover:text-white py-3 rounded-lg font-medium transition-colors text-center"
                 >
                     Continue to Dashboard
                 </Link>
-                
+
                 <Link
                     href="/auth"
                     className="block w-full text-gray-400 hover:text-white py-3 rounded-lg font-medium transition-colors text-center"
@@ -211,7 +249,7 @@ function VerifyEmailPageContent() {
     const searchParams = useSearchParams()
     const [token, setToken] = useState<string | null>(null)
 
-    const { 
+    const {
         user,
         verifyEmail,
         resendVerification,
@@ -224,6 +262,15 @@ function VerifyEmailPageContent() {
         userError
     } = useAuth()
 
+    // Add onboarding hook
+    const {
+        showProfileSetup,
+        startOnboarding,
+        handleSetupProfile,
+        handleMaybeLater,
+        handleClose
+    } = useOnboarding()
+
     useEffect(() => {
         const tokenParam = searchParams.get('token')
         setToken(tokenParam)
@@ -231,10 +278,10 @@ function VerifyEmailPageContent() {
 
     // Redirect if user is already verified
     useEffect(() => {
-        if (user?.isEmailVerified) {
+        if (user?.isEmailVerified && !token) {
             router.push('/dashboard')
         }
-    }, [user, router])
+    }, [user, router, token])
 
     const handleVerify = useCallback((data: VerifyEmailRequest) => {
         resetVerifyEmailError()
@@ -245,6 +292,14 @@ function VerifyEmailPageContent() {
         resetResendVerificationError()
         resendVerification(data)
     }, [resetResendVerificationError, resendVerification])
+
+    // Handle successful verification and trigger onboarding
+    const handleVerificationSuccess = useCallback(() => {
+        // Start onboarding after verification
+        setTimeout(() => {
+            startOnboarding()
+        }, 1000)
+    }, [startOnboarding])
 
     // Show error state if user data fails to load
     if (userError) {
@@ -260,8 +315,8 @@ function VerifyEmailPageContent() {
                             </div>
                             <h2 className="text-xl font-bold text-white mb-2">Connection Error</h2>
                             <p className="text-gray-400 mb-4">Failed to load user data. Please check your connection and try again.</p>
-                            <button 
-                                onClick={() => window.location.reload()} 
+                            <button
+                                onClick={() => window.location.reload()}
                                 className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
                             >
                                 Refresh Page
@@ -305,9 +360,18 @@ function VerifyEmailPageContent() {
                         isResending={isResendingVerification}
                         verifyError={verifyEmailError}
                         resendError={resendVerificationError}
+                        onVerificationSuccess={handleVerificationSuccess}
                     />
                 </div>
             </div>
+
+            {/* Onboarding popup */}
+            <OnboardingPopup
+                isOpen={showProfileSetup}
+                onClose={handleClose}
+                onSetupProfile={handleSetupProfile}
+                onMaybeLater={handleMaybeLater}
+            />
         </AuthLayout>
     )
 }
@@ -332,4 +396,4 @@ export default function VerifyEmailPage() {
             <VerifyEmailPageContent />
         </Suspense>
     )
-} 
+}

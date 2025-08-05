@@ -14,14 +14,22 @@ import type {
   User 
 } from '@/lib/api-client'
 import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 // import { toast } from 'sonner' // We'll add this for notifications later
 
 export function useAuth() {
   const queryClient = useQueryClient()
   const router = useRouter()
+  
+  // State to track authentication status after hydration
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [hasHydrated, setHasHydrated] = useState(false)
 
-  // Check if user is authenticated
-  const isAuthenticated = !!getAuthToken()
+  // Check authentication status on the client side after hydration
+  useEffect(() => {
+    setIsAuthenticated(!!getAuthToken())
+    setHasHydrated(true)
+  }, [])
 
   // Get current user profile
   const {
@@ -253,7 +261,7 @@ export function useAuth() {
     // State
     user: user?.user,
     isAuthenticated,
-    isUserLoading,
+    isUserLoading: isUserLoading || !hasHydrated,
     
     // Loading states
     isLoggingIn: loginMutation.isPending,

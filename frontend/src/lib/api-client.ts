@@ -500,11 +500,29 @@ export const dashboardApi = {
   // Partnerships
   getPartnerships: async (): Promise<Partnership[]> => {
     const response = await apiClient.get('/dashboard/partnerships');
-    return response.data.data;
+    // Handle different response formats from backend
+    const data = response.data.data;
+    if (Array.isArray(data)) {
+      return data;
+    }
+    if (data?.partnerships && Array.isArray(data.partnerships)) {
+      return data.partnerships;
+    }
+    return [];
   },
 
   getPartnershipById: async (id: string): Promise<Partnership> => {
     const response = await apiClient.get(`/dashboard/partnerships/${id}`);
+    return response.data.data;
+  },
+
+  createPartnership: async (data: {
+    receiverProjectId: string;
+    partnershipType: string;
+    title: string;
+    description: string;
+  }): Promise<Partnership> => {
+    const response = await apiClient.post('/dashboard/partnerships', data);
     return response.data.data;
   },
 

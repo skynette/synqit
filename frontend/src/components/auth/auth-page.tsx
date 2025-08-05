@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { BackgroundPattern } from "@/components/ui/background-pattern"
 import { Navbar } from "@/components/layout/navbar"
 import { useAuth } from "@/hooks/use-auth"
@@ -19,16 +20,16 @@ const validateEmail = (email: string): string | null => {
 const validatePassword = (password: string): string | null => {
     if (!password) return "Password is required"
     if (password.length < 8) return "Password must be at least 8 characters long"
-    
+
     const hasUpperCase = /[A-Z]/.test(password)
     const hasLowerCase = /[a-z]/.test(password)
     const hasNumbers = /\d/.test(password)
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
-    
+
     if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
         return "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     }
-    
+
     return null
 }
 
@@ -43,7 +44,7 @@ const validateName = (name: string, fieldName: string): string | null => {
 // Parse API validation errors
 const parseValidationErrors = (error: any): Record<string, string> => {
     const fieldErrors: Record<string, string> = {}
-    
+
     if (error?.response?.data?.errors && Array.isArray(error.response.data.errors)) {
         error.response.data.errors.forEach((err: any) => {
             if (err.path && err.msg) {
@@ -51,7 +52,7 @@ const parseValidationErrors = (error: any): Record<string, string> => {
             }
         })
     }
-    
+
     return fieldErrors
 }
 
@@ -123,7 +124,7 @@ function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        
+
         if (!agreeToTerms) {
             alert('Please agree to the terms of service')
             return
@@ -313,7 +314,7 @@ function SignUpForm({ onSubmit, isLoading, error }: SignUpFormProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        
+
         if (!agreeToTerms) {
             alert('Please agree to the terms of service')
             return
@@ -631,23 +632,58 @@ function SocialLoginSection() {
 
 // Main Auth Page Component
 export function AuthPage() {
+    const router = useRouter()
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login')
-    const { 
-        login, 
-        register, 
-        isLoggingIn, 
-        isRegistering, 
-        loginError, 
+    const {
+        user,
+        login,
+        register,
+        isLoggingIn,
+        isRegistering,
+        loginError,
         registerError,
         resetLoginError,
-        resetRegisterError 
+        resetRegisterError
     } = useAuth()
+
+    // Check if user is logged in and verified, redirect to dashboard
+    useEffect(() => {
+        if (user && user.isEmailVerified) {
+            router.push('/dashboard')
+        } else if (user && !user.isEmailVerified) {
+            // If user is logged in but not verified, redirect to verification page
+            router.push('/auth/verify-email')
+        }
+    }, [user, router])
 
     const handleTabChange = (tab: 'login' | 'signup') => {
         setActiveTab(tab)
         // Reset errors when switching tabs
         resetLoginError()
         resetRegisterError()
+    }
+
+    // Enhanced login handler
+    const handleLogin = async (data: LoginRequest) => {
+        try {
+            await login(data)
+            // After successful login, the useEffect above will handle redirection
+        } catch (error) {
+            // Error is already handled by the useAuth hook
+            console.error('Login failed:', error)
+        }
+    }
+
+    // Enhanced register handler
+    const handleRegister = async (data: RegisterRequest) => {
+        try {
+            await register(data)
+            // After successful registration, redirect to email verification
+            router.push('/auth/verify-email')
+        } catch (error) {
+            // Error is already handled by the useAuth hook
+            console.error('Registration failed:', error)
+        }
     }
 
     return (
@@ -679,14 +715,14 @@ export function AuthPage() {
                 <div className="bg-blue-800/5 border border-synqit-border rounded-3xl p-8">
                     {/* Dynamic Form Content */}
                     {activeTab === 'login' ? (
-                        <LoginForm 
-                            onSubmit={login} 
+                        <LoginForm
+                            onSubmit={handleLogin}
                             isLoading={isLoggingIn}
                             error={loginError}
                         />
                     ) : (
-                        <SignUpForm 
-                            onSubmit={register} 
+                        <SignUpForm
+                            onSubmit={handleRegister}
                             isLoading={isRegistering}
                             error={registerError}
                         />
