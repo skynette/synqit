@@ -21,6 +21,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
     const [partnerProject, setPartnerProject] = useState<Project | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [cancellingPartnership, setCancellingPartnership] = useState(false)
 
     useEffect(() => {
         async function fetchPartnershipDetails() {
@@ -62,6 +63,36 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
 
         fetchPartnershipDetails()
     }, [params])
+
+    const handleCancelPartnership = async () => {
+        if (!partnership || !user) return
+
+        const confirmed = window.confirm(
+            `Are you sure you want to cancel your partnership request with ${partnerProjectInfo?.name || `${partner?.firstName} ${partner?.lastName}`}?`
+        )
+        
+        if (!confirmed) return
+
+        try {
+            setCancellingPartnership(true)
+            await dashboardApi.cancelPartnership(partnership.id)
+            
+            // Update the local state to reflect the change
+            setPartnership(prev => prev ? { 
+                ...prev, 
+                status: 'CANCELLED' as const, 
+                updatedAt: new Date().toISOString(),
+                respondedAt: new Date().toISOString()
+            } : prev)
+            
+            alert('Partnership request cancelled successfully!')
+        } catch (error: any) {
+            console.error('Error cancelling partnership:', error)
+            alert('Failed to cancel partnership request. Please try again.')
+        } finally {
+            setCancellingPartnership(false)
+        }
+    }
 
     if (loading) {
         return (
@@ -219,13 +250,14 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                                 {/* Stats */}
                                 <div className="flex items-center gap-6 mb-3 text-sm">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-gray-400">👥</span>
-                                        <span className="text-white font-medium">61.2K</span>
-                                        <span className="text-gray-400">followers</span>
+                                        <span className="text-gray-400">👤</span>
+                                        <span className="text-white font-medium">{partner.firstName} {partner.lastName}</span>
+                                        <span className="text-gray-400">owner</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-gray-400">⚡</span>
-                                        <span className="text-white font-medium">13.3K</span>
+                                        <span className="text-gray-400">📅</span>
+                                        <span className="text-white font-medium">{partnerProject?.foundedYear || 'N/A'}</span>
+                                        <span className="text-gray-400">founded</span>
                                     </div>
                                 </div>
 
@@ -243,7 +275,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                                 {/* Description */}
                                 <p className="text-gray-400 mb-4 max-w-2xl text-sm">
                                     {partnerProject?.description || partnership.description ||
-                                        "Mintrise is a Web3-based Real World Asset (RWA) investment platform designed to bridge traditional real estate investment with decentralized finance (DeFi)."}
+                                        `${partnerProjectInfo?.name || partner.firstName + ' ' + partner.lastName} is looking to establish partnerships in the ${partnerProject?.projectType || 'Web3'} space.`}
                                 </p>
 
                                 {/* Request Type */}
@@ -255,9 +287,34 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
 
                             {/* Right Side Actions - Row layout instead of column */}
                             <div className="flex gap-3">
-                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm">
-                                    Cancel Request
-                                </button>
+                                {/* Show Cancel button only if user is the requester and partnership is pending */}
+                                {partnership.requesterId === user?.id && partnership.status === 'PENDING' && (
+                                    <button 
+                                        onClick={handleCancelPartnership}
+                                        disabled={cancellingPartnership}
+                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {cancellingPartnership ? 'Cancelling...' : 'Cancel Request'}
+                                    </button>
+                                )}
+                                
+                                {/* Show status for non-pending partnerships */}
+                                {partnership.status !== 'PENDING' && (
+                                    <div className="px-4 py-2 rounded-lg text-sm border border-synqit-border">
+                                        <span className={`font-medium ${
+                                            partnership.status === 'ACCEPTED' ? 'text-green-400' :
+                                            partnership.status === 'REJECTED' ? 'text-red-400' :
+                                            partnership.status === 'CANCELLED' ? 'text-gray-400' :
+                                            'text-yellow-400'
+                                        }`}>
+                                            {partnership.status === 'CANCELLED' ? 'Request Cancelled' :
+                                             partnership.status === 'ACCEPTED' ? 'Partnership Active' :
+                                             partnership.status === 'REJECTED' ? 'Request Declined' :
+                                             partnership.status}
+                                        </span>
+                                    </div>
+                                )}
+                                
                                 <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors text-sm">
                                     Following ✓
                                 </button>
@@ -308,64 +365,109 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                 </div>
             </div>
 
-            {/* Social Links Section - All icons with same background color */}
+            {/* Social Links Section */}
             <div className="px-6 mt-8">
                 <div className="grid grid-cols-4 gap-4">
-                    <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                                </svg>
+                    {partnerProject?.twitterHandle && (
+                        <a 
+                            href={`https://twitter.com/${partnerProject.twitterHandle.replace('@', '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#1E2837] border border-[#374151] rounded-xl p-4 hover:border-blue-500 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="text-white font-medium">Twitter</div>
+                                    <div className="text-sm text-blue-400">{partnerProject.twitterHandle}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div className="text-white font-medium">Twitter</div>
-                                <div className="text-sm text-green-400">18.2k ↗ 1.20%</div>
-                            </div>
-                        </div>
-                    </div>
+                        </a>
+                    )}
 
-                    <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9554 2.4189-2.1568 2.4189Z" />
-                                </svg>
+                    {partnerProject?.discordServer && (
+                        <a 
+                            href={partnerProject.discordServer}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#1E2837] border border-[#374151] rounded-xl p-4 hover:border-blue-500 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9554 2.4189-2.1568 2.4189Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="text-white font-medium">Discord</div>
+                                    <div className="text-sm text-indigo-400">Join Server</div>
+                                </div>
                             </div>
-                            <div>
-                                <div className="text-white font-medium">Discord</div>
-                                <div className="text-sm text-green-400">1430 users ↗ 1.20%</div>
-                            </div>
-                        </div>
-                    </div>
+                        </a>
+                    )}
 
-                    <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                                </svg>
+                    {partnerProject?.telegramGroup && (
+                        <a 
+                            href={partnerProject.telegramGroup}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#1E2837] border border-[#374151] rounded-xl p-4 hover:border-blue-500 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="text-white font-medium">Telegram</div>
+                                    <div className="text-sm text-blue-400">Join Group</div>
+                                </div>
                             </div>
-                            <div>
-                                <div className="text-white font-medium">Facebook</div>
-                                <div className="text-sm text-red-400">25.4k ↘ 2.84%</div>
-                            </div>
-                        </div>
-                    </div>
+                        </a>
+                    )}
 
-                    <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
-                                </svg>
+                    {partnerProject?.website && (
+                        <a 
+                            href={partnerProject.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#1E2837] border border-[#374151] rounded-xl p-4 hover:border-blue-500 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="text-white font-medium">Website</div>
+                                    <div className="text-sm text-green-400">Visit Site</div>
+                                </div>
                             </div>
-                            <div>
-                                <div className="text-white font-medium">Website</div>
-                                <div className="text-sm text-green-400">Active ↗ 1.20%</div>
+                        </a>
+                    )}
+
+                    {/* Fill remaining slots with placeholders if less than 4 social links */}
+                    {[...Array(Math.max(0, 4 - [partnerProject?.twitterHandle, partnerProject?.discordServer, partnerProject?.telegramGroup, partnerProject?.website].filter(Boolean).length))].map((_, index) => (
+                        <div key={index} className="bg-[#1E2837] border border-[#374151] rounded-xl p-4 opacity-50">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-[#374151] rounded-xl flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="text-gray-500 font-medium">Not Available</div>
+                                    <div className="text-sm text-gray-600">-</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
 
@@ -374,48 +476,82 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
             <div className="px-6 mt-8 grid grid-cols-3 gap-8">
                 {/* Left Column - Main Content */}
                 <div className="col-span-2 space-y-8">
-                    {/* About Arweave */}
+                    {/* About Project */}
                     <div>
-                        <h2 className="text-2xl font-bold text-white mb-6">About Arweave</h2>
+                        <h2 className="text-2xl font-bold text-white mb-6">
+                            About {partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`}
+                        </h2>
 
                         <div className="space-y-6">
                             <div>
                                 <h3 className="text-lg font-semibold text-white mb-3">Project Description:</h3>
                                 <p className="text-gray-400 leading-relaxed">
-                                    Arweave is a decentralized storage protocol that offers permanent and tamper-proof data storage on the blockchain. Unlike traditional cloud services, Arweave enables users to store information permanently with a single upfront payment, ensuring data persistence, security, and accessibility over time.
+                                    {partnerProject?.description || partnership.description || 
+                                     `${partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`} is a Web3 project focused on building innovative solutions in the blockchain space. They are looking to collaborate with like-minded projects to create meaningful partnerships and drive the ecosystem forward.`}
                                 </p>
                             </div>
 
                             <div>
                                 <h3 className="text-lg font-semibold text-white mb-3">What We Offer for Partnerships:</h3>
                                 <p className="text-gray-400 leading-relaxed mb-4">
-                                    Arweave is being used in countless different ways. Take your first steps with the power of permanent data storage by uploading a file, making your own homepage on the permaweb or simply learning more about Arweave and its ecosystem.
+                                    {partnership.proposedTerms || 
+                                     `This partnership request aims to explore collaboration opportunities in the ${partnerProject?.projectType || 'Web3'} space. We're looking for strategic partnerships that can benefit both projects and create value for our communities.`}
                                 </p>
                                 <div className="space-y-1 text-gray-400">
-                                    <p><strong>Blockchain Used:</strong> Arweave Blockchain</p>
-                                    <p><strong>Industry Focus:</strong> 🏠 Real Estate | 📦 DeFi | 🌐 RWA</p>
+                                    {partnerProject?.blockchainPreferences && partnerProject.blockchainPreferences.length > 0 && (
+                                        <p><strong>Blockchain Used:</strong> {partnerProject.blockchainPreferences.map(bp => bp.blockchain).join(', ')}</p>
+                                    )}
+                                    <p><strong>Industry Focus:</strong> {partnerProject?.projectType || 'Web3'} | {partnerProject?.projectStage || 'Development'}</p>
+                                    {partnerProject?.totalFunding && (
+                                        <p><strong>Funding Stage:</strong> ${Number(partnerProject.totalFunding).toLocaleString()} raised</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Arweave Section with Banner */}
+                    {/* Project Banner Section */}
                     <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-6">
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <span className="text-white font-bold">🌐</span>
+                            <div className="w-12 h-12 relative rounded-full flex items-center justify-center overflow-hidden">
+                                {partnerProject?.logoUrl ? (
+                                    <Image
+                                        src={partnerProject.logoUrl}
+                                        alt="Project Logo"
+                                        fill
+                                        className="object-contain"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                        <span className="text-white font-bold">
+                                            {(partnerProjectInfo?.name || partner.firstName).charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-white">Arweave</h3>
-                                <p className="text-blue-400">A Web3-powered investment platform transforming real-world assets (RWA) into fractional ownership opportunities.</p>
+                                <h3 className="text-xl font-bold text-white">
+                                    {partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`}
+                                </h3>
+                                <p className="text-blue-400">
+                                    {partnership.title || `Partnership opportunity in ${partnerProject?.projectType || 'Web3'} development`}
+                                </p>
                             </div>
                         </div>
                         <p className="text-gray-400 mb-4">
-                            Arweave is a decentralized storage protocol that offers permanent and tamper-proof data storage on the blockchain. Unlike traditional cloud services, Arweave enables users to store information permanently with a single upfront payment, ensuring data persistence, security, and accessibility over time.
+                            {partnerProject?.description || partnership.description || 
+                             `Explore partnership opportunities with ${partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`}. This collaboration aims to create synergies between our projects and drive innovation in the Web3 space.`}
                         </p>
-                        <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">
-                            Visit Mintrise Website
-                        </a>
+                        {partnerProject?.website && (
+                            <a 
+                                href={partnerProject.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 transition-colors"
+                            >
+                                Visit {partnerProjectInfo?.name || 'Project'} Website →
+                            </a>
+                        )}
                     </div>
 
                     {/* Partnership Details */}
@@ -425,12 +561,17 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                         <div className="space-y-4">
                             <div>
                                 <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                                    💼 Who Can Partner With Us?
+                                    💼 Partnership Type:
                                 </h4>
                                 <div className="space-y-2 text-gray-400">
-                                    <p>Marketing Projects → Looking for strategic co-branding</p>
-                                    <p>DeFi Protocols → Seeking integrations (staking, lending, etc.)</p>
-                                    <p>Web3 Communities → Interested in joint AMAs & collaborations</p>
+                                    <p>{partnership.partnershipType.replace(/_/g, ' ')} Partnership</p>
+                                    <p>Status: <span className={`font-medium ${
+                                        partnership.status === 'PENDING' ? 'text-yellow-400' :
+                                        partnership.status === 'ACCEPTED' ? 'text-green-400' :
+                                        partnership.status === 'REJECTED' ? 'text-red-400' :
+                                        'text-gray-400'
+                                    }`}>{partnership.status}</span></p>
+                                    <p>Created: {new Date(partnership.createdAt).toLocaleDateString()}</p>
                                 </div>
                             </div>
 
@@ -496,45 +637,94 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                     {/* Call-to-Action */}
                     <div className="py-8">
                         <h2 className="text-2xl font-bold text-white mb-4 flex gap-2">
-                            🚀 Call-to-Action (CTA)
+                            🚀 Partnership Status
                         </h2>
                         <p className="text-gray-400 mb-6 max-w-2xl">
-                            Partner with Mintrise & Shape the Future of Web3 Real Estate!
+                            {partnership.status === 'PENDING' ? 
+                                `Your partnership request with ${partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`} is pending review.` :
+                             partnership.status === 'ACCEPTED' ?
+                                `Your partnership with ${partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`} has been accepted! Start collaborating now.` :
+                             partnership.status === 'REJECTED' ?
+                                `Unfortunately, your partnership request with ${partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`} was not accepted at this time.` :
+                             partnership.status === 'CANCELLED' ?
+                                `You have cancelled your partnership request with ${partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`}.` :
+                                `Partnership status: ${partnership.status}`
+                            }
                         </p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors mb-6">
-                            Apply for Partnership
-                        </button>
+                        
+                        {partnership.status === 'ACCEPTED' && (
+                            <div className="flex gap-4 mb-6">
+                                <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                                    Start Collaboration
+                                </button>
+                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                                    Send Message
+                                </button>
+                            </div>
+                        )}
+                        
+                        {partnership.status === 'PENDING' && (
+                            <div className="flex gap-4 mb-6">
+                                <button className="bg-gray-600 text-white px-8 py-3 rounded-lg font-medium cursor-not-allowed" disabled>
+                                    Waiting for Response
+                                </button>
+                            </div>
+                        )}
+                        
                         <p className="text-gray-400 mb-6">
-                            Not ready yet? Follow Mintrise for updates!
+                            Stay connected with {partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`} for updates!
                         </p>
 
                         {/* Social Media Icons */}
                         <div className="flex gap-3">
-                            <a href="#" className="w-10 h-10 bg-black rounded-lg flex items-center justify-center hover:bg-gray-800 transition-colors">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                                </svg>
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center hover:bg-blue-800 transition-colors">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                                </svg>
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9554 2.4189-2.1568 2.4189Z" />
-                                </svg>
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                                </svg>
-                            </a>
-                            <a href="#" className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center hover:bg-red-700 transition-colors">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                                </svg>
-                            </a>
+                            {partnerProject?.twitterHandle && (
+                                <a 
+                                    href={`https://twitter.com/${partnerProject.twitterHandle.replace('@', '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-10 h-10 bg-black rounded-lg flex items-center justify-center hover:bg-gray-800 transition-colors"
+                                >
+                                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                    </svg>
+                                </a>
+                            )}
+                            {partnerProject?.discordServer && (
+                                <a 
+                                    href={partnerProject.discordServer}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center hover:bg-indigo-700 transition-colors"
+                                >
+                                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9554 2.4189-2.1568 2.4189Z" />
+                                    </svg>
+                                </a>
+                            )}
+                            {partnerProject?.telegramGroup && (
+                                <a 
+                                    href={partnerProject.telegramGroup}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+                                >
+                                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                    </svg>
+                                </a>
+                            )}
+                            {partnerProject?.website && (
+                                <a 
+                                    href={partnerProject.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors"
+                                >
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                                    </svg>
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -571,12 +761,45 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                     <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-6">
                         <div className="flex items-center justify-between mb-2">
                             <div>
-                                <h4 className="text-white font-medium">Follow Mintrise on SynQit</h4>
-                                <p className="text-gray-400 text-sm">Stay updated with company's news & trend</p>
+                                <h4 className="text-white font-medium">
+                                    Follow {partnerProjectInfo?.name || `${partner.firstName} ${partner.lastName}`} on SynQit
+                                </h4>
+                                <p className="text-gray-400 text-sm">Stay updated with their news & trends</p>
                             </div>
                             <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
                                 <span className="text-white text-sm">+</span>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Partnership Info */}
+                    <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-6">
+                        <h3 className="text-lg font-bold text-white mb-4">Partnership Info</h3>
+                        <div className="space-y-3 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Status:</span>
+                                <span className={`font-medium ${
+                                    partnership.status === 'PENDING' ? 'text-yellow-400' :
+                                    partnership.status === 'ACCEPTED' ? 'text-green-400' :
+                                    partnership.status === 'REJECTED' ? 'text-red-400' :
+                                    partnership.status === 'CANCELLED' ? 'text-gray-400' :
+                                    'text-gray-400'
+                                }`}>{partnership.status}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Type:</span>
+                                <span className="text-white">{partnership.partnershipType.replace(/_/g, ' ')}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Created:</span>
+                                <span className="text-white">{new Date(partnership.createdAt).toLocaleDateString()}</span>
+                            </div>
+                            {partnership.respondedAt && (
+                                <div className="flex justify-between">
+                                    <span className="text-gray-400">Responded:</span>
+                                    <span className="text-white">{new Date(partnership.respondedAt).toLocaleDateString()}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

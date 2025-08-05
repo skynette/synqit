@@ -310,6 +310,7 @@ export default function MatchmakingPage() {
                                             request.status === 'PENDING' ? 'bg-orange-500/20 text-orange-400' :
                                             request.status === 'ACCEPTED' ? 'bg-green-500/20 text-green-400' :
                                             request.status === 'REJECTED' ? 'bg-red-500/20 text-red-400' :
+                                            request.status === 'CANCELLED' ? 'bg-gray-500/20 text-gray-400' :
                                             'bg-gray-500/20 text-gray-400'
                                         }`}>
                                             {request.status}

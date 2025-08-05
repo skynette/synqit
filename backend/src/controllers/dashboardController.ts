@@ -259,6 +259,33 @@ export class DashboardController {
         }
     }
 
+    static async cancelPartnership(req: AuthenticatedRequest, res: Response) {
+        try {
+            const userId = req.user!.id;
+            const partnershipId = req.params.id;
+
+            const partnership = await DashboardService.cancelPartnership(userId, partnershipId);
+
+            res.status(200).json({
+                success: true,
+                message: 'Partnership request cancelled successfully',
+                data: partnership
+            });
+        } catch (error) {
+            console.error('Cancel partnership error:', error);
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({
+                    success: false,
+                    message: error.message
+                });
+            }
+            res.status(500).json({
+                success: false,
+                message: 'Failed to cancel partnership request'
+            });
+        }
+    }
+
     static async getMessages(req: AuthenticatedRequest, res: Response) {
         try {
             const userId = req.user!.id;

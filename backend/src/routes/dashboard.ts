@@ -17,6 +17,7 @@ router.post('/partnerships', validateCreatePartnership, DashboardController.crea
 router.get('/partnerships/:id', DashboardController.getPartnershipById);
 router.put('/partnerships/:id/accept', DashboardController.acceptPartnership);
 router.put('/partnerships/:id/reject', DashboardController.rejectPartnership);
+router.delete('/partnerships/:id', DashboardController.cancelPartnership);
 router.get('/messages', DashboardController.getMessages);
 router.get('/notifications', DashboardController.getNotifications);
 router.get('/profile', DashboardController.getProfile);

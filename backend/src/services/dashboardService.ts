@@ -839,6 +839,106 @@ export class DashboardService {
     }
 
     /**
+     * Cancel a partnership request
+     */
+    static async cancelPartnership(userId: string, partnershipId: string) {
+        try {
+            // Check if partnership exists and user is the requester
+            const partnership = await prisma.partnership.findFirst({
+                where: {
+                    id: partnershipId,
+                    requesterId: userId,
+                    status: 'PENDING'
+                },
+                include: {
+                    requester: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                        }
+                    },
+                    receiver: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                        }
+                    }
+                }
+            });
+
+            if (!partnership) {
+                throw new AppError('Partnership request not found or you are not authorized to cancel it', 404);
+            }
+
+            // Update partnership status to cancelled
+            const updatedPartnership = await prisma.partnership.update({
+                where: { id: partnershipId },
+                data: {
+                    status: 'CANCELLED',
+                    respondedAt: new Date()
+                },
+                include: {
+                    requester: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            profileImage: true,
+                        }
+                    },
+                    receiver: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            profileImage: true,
+                        }
+                    },
+                    requesterProject: {
+                        select: {
+                            id: true,
+                            name: true,
+                            projectType: true,
+                            logoUrl: true,
+                        }
+                    },
+                    receiverProject: {
+                        select: {
+                            id: true,
+                            name: true,
+                            projectType: true,
+                            logoUrl: true,
+                        }
+                    }
+                }
+            });
+
+            // Create notification for the receiver
+            await prisma.notification.create({
+                data: {
+                    userId: partnership.receiverId,
+                    title: 'Partnership Request Cancelled',
+                    content: `${partnership.requester.firstName} ${partnership.requester.lastName} cancelled their partnership request for "${partnership.title}"`,
+                    notificationType: 'SYSTEM_UPDATE',
+                    partnershipId: partnership.id
+                }
+            });
+
+            return updatedPartnership;
+        } catch (error) {
+            console.error('Cancel partnership error:', error);
+            if (error instanceof AppError) {
+                throw error;
+            }
+            throw new AppError('Failed to cancel partnership', 500);
+        }
+    }
+
+    /**
      * Get profile (placeholder)
      */
     static async getProfile(userId: string) {

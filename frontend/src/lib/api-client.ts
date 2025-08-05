@@ -553,6 +553,11 @@ export const dashboardApi = {
     return response.data.data;
   },
 
+  cancelPartnership: async (partnershipId: string): Promise<Partnership> => {
+    const response = await apiClient.delete(`/dashboard/partnerships/${partnershipId}`);
+    return response.data.data;
+  },
+
   // Messages
   getMessages: async (): Promise<Message[]> => {
     const response = await apiClient.get('/dashboard/messages');
