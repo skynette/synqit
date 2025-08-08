@@ -3,6 +3,7 @@ import { AuthenticatedRequest } from '../types/auth';
 import { ProfileService } from '../services/profileService';
 import { validationResult } from 'express-validator';
 import { AppError } from '../utils/errors';
+import { deleteImage, extractPublicId } from '../config/cloudinary';
 
 export class ProfileController {
   static async getUserProfile(req: AuthenticatedRequest, res: Response) {
@@ -53,17 +54,70 @@ export class ProfileController {
     }
   }
 
+  /**
+   * Upload user profile image
+   * @route POST /api/profile/image
+   * @access Private
+   * @middleware profileImageUpload.single('profileImage')
+   */
   static async uploadProfileImage(req: AuthenticatedRequest, res: Response) {
     try {
       const userId = req.user!.id;
-      // TODO: Implement file upload logic
+      const file = req.file;
+      
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          message: 'No image file provided'
+        });
+      }
+
+      // Get current user profile to delete old image if exists
+      const currentProfile = await ProfileService.getUserProfile(userId);
+      
+      // Delete old profile image from Cloudinary if exists
+      if (currentProfile?.profileImage) {
+        const oldPublicId = extractPublicId(currentProfile.profileImage);
+        if (oldPublicId) {
+          await deleteImage(oldPublicId);
+        }
+      }
+      
+      // Update user profile with new image URL
+      const updatedProfile = await ProfileService.updateUserProfile(userId, {
+        profileImage: file.path // Cloudinary URL
+      });
       
       res.status(200).json({
         success: true,
-        message: 'Profile image upload endpoint ready'
+        data: {
+          profileImage: file.path,
+          profile: updatedProfile
+        },
+        message: 'Profile image uploaded successfully'
       });
     } catch (error) {
       console.error('Upload profile image error:', error);
+      
+      // If file was uploaded but database update failed, clean up
+      if (req.file) {
+        const publicId = extractPublicId(req.file.path);
+        if (publicId) {
+          try {
+            await deleteImage(publicId);
+          } catch (cleanupError) {
+            console.error('Failed to cleanup uploaded file:', cleanupError);
+          }
+        }
+      }
+      
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          message: error.message
+        });
+      }
+      
       res.status(500).json({
         success: false,
         message: 'Failed to upload profile image'
@@ -126,17 +180,71 @@ export class ProfileController {
     }
   }
 
+  /**
+   * Upload company logo
+   * @route POST /api/profile/company/logo
+   * @access Private
+   * @middleware companyLogoUpload.single('companyLogo')
+   */
   static async uploadCompanyLogo(req: AuthenticatedRequest, res: Response) {
     try {
       const userId = req.user!.id;
-      // TODO: Implement file upload logic
+      const file = req.file;
+      
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          message: 'No logo file provided'
+        });
+      }
+
+      // Get current company profile to delete old logo if exists
+      const currentProfile = await ProfileService.getProjectProfile(userId);
+      
+      // Delete old logo from Cloudinary if exists
+      // Note: Current schema uses logoUrl, not companyLogo
+      if (currentProfile?.logoUrl) {
+        const oldPublicId = extractPublicId(currentProfile.logoUrl);
+        if (oldPublicId) {
+          await deleteImage(oldPublicId);
+        }
+      }
+      
+      // Update company profile with new logo URL
+      const updatedProfile = await ProfileService.updateProjectProfile(userId, {
+        logoUrl: file.path
+      });
       
       res.status(200).json({
         success: true,
-        message: 'Company logo upload endpoint ready'
+        data: {
+          companyLogo: file.path,
+          profile: updatedProfile
+        },
+        message: 'Company logo uploaded successfully'
       });
     } catch (error) {
       console.error('Upload company logo error:', error);
+      
+      // Cleanup uploaded file on error
+      if (req.file) {
+        const publicId = extractPublicId(req.file.path);
+        if (publicId) {
+          try {
+            await deleteImage(publicId);
+          } catch (cleanupError) {
+            console.error('Failed to cleanup uploaded file:', cleanupError);
+          }
+        }
+      }
+      
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          message: error.message
+        });
+      }
+      
       res.status(500).json({
         success: false,
         message: 'Failed to upload company logo'
@@ -144,17 +252,71 @@ export class ProfileController {
     }
   }
 
+  /**
+   * Upload company banner
+   * @route POST /api/profile/company/banner
+   * @access Private
+   * @middleware companyBannerUpload.single('companyBanner')
+   */
   static async uploadCompanyBanner(req: AuthenticatedRequest, res: Response) {
     try {
       const userId = req.user!.id;
-      // TODO: Implement file upload logic
+      const file = req.file;
+      
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          message: 'No banner file provided'
+        });
+      }
+
+      // Get current company profile to delete old banner if exists
+      const currentProfile = await ProfileService.getProjectProfile(userId);
+      
+      // Delete old banner from Cloudinary if exists
+      // Note: Current schema uses bannerUrl, not companyBanner
+      if (currentProfile?.bannerUrl) {
+        const oldPublicId = extractPublicId(currentProfile.bannerUrl);
+        if (oldPublicId) {
+          await deleteImage(oldPublicId);
+        }
+      }
+      
+      // Update company profile with new banner URL
+      const updatedProfile = await ProfileService.updateProjectProfile(userId, {
+        bannerUrl: file.path
+      });
       
       res.status(200).json({
         success: true,
-        message: 'Company banner upload endpoint ready'
+        data: {
+          companyBanner: file.path,
+          profile: updatedProfile
+        },
+        message: 'Company banner uploaded successfully'
       });
     } catch (error) {
       console.error('Upload company banner error:', error);
+      
+      // Cleanup uploaded file on error
+      if (req.file) {
+        const publicId = extractPublicId(req.file.path);
+        if (publicId) {
+          try {
+            await deleteImage(publicId);
+          } catch (cleanupError) {
+            console.error('Failed to cleanup uploaded file:', cleanupError);
+          }
+        }
+      }
+      
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          message: error.message
+        });
+      }
+      
       res.status(500).json({
         success: false,
         message: 'Failed to upload company banner'

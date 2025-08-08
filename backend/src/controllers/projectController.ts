@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { ProjectService } from '../services/projectService';
+import { ProfileService } from '../services/profileService';
 import { AuthenticatedRequest } from '../types/auth';
+import { deleteImage, extractPublicId } from '../config/cloudinary';
 
 /**
  * Project Controller
@@ -172,7 +174,9 @@ export class ProjectController {
 
   /**
    * Upload project logo
-   * POST /api/project/upload-logo
+   * @route POST /api/project/logo
+   * @access Private
+   * @middleware projectLogoUpload.single('projectLogo')
    */
   static async uploadLogo(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
@@ -184,22 +188,70 @@ export class ProjectController {
         return;
       }
 
-      // TODO: Implement file upload logic
-      res.status(501).json({
-        status: 'error',
-        message: 'File upload not implemented yet',
+      const file = req.file;
+      
+      if (!file) {
+        res.status(400).json({
+          status: 'error',
+          message: 'No logo file provided',
+        });
+        return;
+      }
+
+      // Get current project to delete old logo if exists
+      const currentProject = await ProjectService.getProjectByUserId(req.user.id);
+      
+      // Delete old logo from Cloudinary if exists
+      if (currentProject?.projectLogo) {
+        const oldPublicId = extractPublicId(currentProject.projectLogo);
+        if (oldPublicId) {
+          await deleteImage(oldPublicId);
+        }
+      }
+      
+      // Update project with new logo URL
+      const projectData = {
+        projectLogo: file.path
+      };
+      
+      // For now, use ProfileService to update project profile
+      const updatedProject = await ProfileService.updateProjectProfile(req.user.id, projectData);
+      
+      res.status(200).json({
+        status: 'success',
+        data: {
+          projectLogo: file.path,
+          project: updatedProject
+        },
+        message: 'Project logo uploaded successfully'
       });
     } catch (error: any) {
+      console.error('Upload project logo error:', error);
+      
+      // Cleanup uploaded file on error
+      if (req.file) {
+        const publicId = extractPublicId(req.file.path);
+        if (publicId) {
+          try {
+            await deleteImage(publicId);
+          } catch (cleanupError) {
+            console.error('Failed to cleanup uploaded file:', cleanupError);
+          }
+        }
+      }
+      
       res.status(500).json({
         status: 'error',
-        message: error.message || 'Failed to upload logo',
+        message: error.message || 'Failed to upload project logo',
       });
     }
   }
 
   /**
    * Upload project banner
-   * POST /api/project/upload-banner
+   * @route POST /api/project/banner
+   * @access Private  
+   * @middleware projectBannerUpload.single('projectBanner')
    */
   static async uploadBanner(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
@@ -211,12 +263,57 @@ export class ProjectController {
         return;
       }
 
-      // TODO: Implement file upload logic
-      res.status(501).json({
-        status: 'error',
-        message: 'File upload not implemented yet',
+      const file = req.file;
+      
+      if (!file) {
+        res.status(400).json({
+          status: 'error',
+          message: 'No banner file provided',
+        });
+        return;
+      }
+
+      // Get current project to delete old banner if exists
+      const currentProject = await ProjectService.getProjectByUserId(req.user.id);
+      
+      // Delete old banner from Cloudinary if exists
+      if (currentProject?.projectBanner) {
+        const oldPublicId = extractPublicId(currentProject.projectBanner);
+        if (oldPublicId) {
+          await deleteImage(oldPublicId);
+        }
+      }
+      
+      // Update project with new banner URL
+      const projectData = {
+        projectBanner: file.path
+      };
+      
+      // For now, use ProfileService to update project profile
+      const updatedProject = await ProfileService.updateProjectProfile(req.user.id, projectData);
+      
+      res.status(200).json({
+        status: 'success',
+        data: {
+          projectBanner: file.path,
+          project: updatedProject
+        },
+        message: 'Project banner uploaded successfully'
       });
     } catch (error: any) {
+      console.error('Upload project banner error:', error);
+      
+      // Cleanup uploaded file on error
+      if (req.file) {
+        const publicId = extractPublicId(req.file.path);
+        if (publicId) {
+          try {
+            await deleteImage(publicId);
+          } catch (cleanupError) {
+            console.error('Failed to cleanup uploaded file:', cleanupError);
+          }
+        }
+      }
       res.status(500).json({
         status: 'error',
         message: error.message || 'Failed to upload banner',

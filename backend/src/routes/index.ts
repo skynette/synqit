@@ -3,6 +3,10 @@ import authRoutes from './auth';
 import dashboardRoutes from './dashboard';
 import profileRoutes from './profile';
 import projectRoutes from './project';
+import projectsRoutes from './projects';
+import matchesRoutes from './matches';
+import messagesRoutes from './messages';
+import companiesRoutes from './companies';
 
 const router = Router();
 
@@ -33,6 +37,16 @@ router.use('/profile', profileRoutes);
 
 // Project routes
 router.use('/project', projectRoutes);
+router.use('/projects', projectsRoutes); // Plural route for public project listing
+
+// Matching/Partnership routes
+router.use('/matches', matchesRoutes);
+
+// Messaging routes
+router.use('/messages', messagesRoutes);
+
+// Companies routes
+router.use('/companies', companiesRoutes);
 
 // API info
 router.get('/', (req, res) => {
@@ -47,6 +61,9 @@ router.get('/', (req, res) => {
       dashboard: '/api/dashboard',
       profile: '/api/profile',
       project: '/api/project',
+      matches: '/api/matches',
+      messages: '/api/messages',
+      companies: '/api/companies',
     },
   });
 });

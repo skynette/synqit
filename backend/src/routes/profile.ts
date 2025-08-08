@@ -2,6 +2,11 @@ import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
 import { ProfileController } from '../controllers/profileController';
 import { profileValidation } from '../middleware/profileValidation';
+import { 
+  profileImageUpload, 
+  companyLogoUpload, 
+  companyBannerUpload 
+} from '../config/cloudinary';
 
 const router = Router();
 
@@ -11,13 +16,17 @@ router.use(authenticate);
 // User profile endpoints
 router.get('/user', ProfileController.getUserProfile);
 router.put('/user', profileValidation.updateUserProfile, ProfileController.updateUserProfile);
-router.post('/user/upload-profile-image', ProfileController.uploadProfileImage);
+
+// Root profile routes (alias for user profile for compatibility)
+router.get('/', ProfileController.getUserProfile);
+router.put('/', profileValidation.updateUserProfile, ProfileController.updateUserProfile);
+router.post('/image', profileImageUpload.single('profileImage'), ProfileController.uploadProfileImage);
 
 // Company profile endpoints
 router.get('/company', ProfileController.getCompanyProfile);
 router.put('/company', profileValidation.updateCompanyProfile, ProfileController.updateCompanyProfile);
-router.post('/company/upload-logo', ProfileController.uploadCompanyLogo);
-router.post('/company/upload-banner', ProfileController.uploadCompanyBanner);
+router.post('/company/logo', companyLogoUpload.single('companyLogo'), ProfileController.uploadCompanyLogo);
+router.post('/company/banner', companyBannerUpload.single('companyBanner'), ProfileController.uploadCompanyBanner);
 
 // Security endpoints
 router.post('/change-password', profileValidation.changePassword, ProfileController.changePassword);

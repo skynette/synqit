@@ -3,6 +3,7 @@ import { ProjectController } from '../controllers/projectController';
 import { authenticate } from '../middleware/auth';
 import { validateProject, validateProjectFilters } from '../middleware/projectValidation';
 import { generalLimiter } from '../middleware/rateLimiter';
+import { projectLogoUpload, projectBannerUpload } from '../config/cloudinary';
 
 const router = Router();
 
@@ -55,6 +56,8 @@ router.get(
   ProjectController.getProjects
 );
 
+// This will conflict with the user's project route above, so we'll handle this in the main router
+
 /**
  * @route   GET /api/project/:id
  * @desc    Get project by ID
@@ -67,26 +70,28 @@ router.get(
 );
 
 /**
- * @route   POST /api/project/upload-logo
+ * @route   POST /api/project/logo
  * @desc    Upload project logo
  * @access  Private
  */
 router.post(
-  '/upload-logo',
+  '/logo',
   generalLimiter,
   authenticate,
+  projectLogoUpload.single('projectLogo'),
   ProjectController.uploadLogo
 );
 
 /**
- * @route   POST /api/project/upload-banner
+ * @route   POST /api/project/banner
  * @desc    Upload project banner
  * @access  Private
  */
 router.post(
-  '/upload-banner',
+  '/banner',
   generalLimiter,
   authenticate,
+  projectBannerUpload.single('projectBanner'),
   ProjectController.uploadBanner
 );
 
