@@ -34,10 +34,10 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
-// CORS configuration - Explicitly allow all origins
+// CORS configuration - Allow all origins for hosted environments
 app.use(cors({
-  origin: '*', // Allow all origins
-  credentials: true,
+  origin: true, // Allow all origins
+  credentials: false, // Disable credentials for wildcard origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['X-Total-Count', 'Content-Length', 'Content-Type'],
