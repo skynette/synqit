@@ -238,8 +238,8 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
         {/* Profile Section Overlay */}
         <div className="relative -mt-40 ">
           <div className="bg-[#121D2EE5] backdrop-blur-[24px] rounded-2xl p-6 border border-[#374151]">
-            <div className="flex gap-4 justify-between">
-              <div className="flex items-center gap-4 -mt-12 mb-4">
+            <div className="flex gap-2 justify-between md:flex-row flex-col">
+              <div className="flex items-center gap-4 md:-mt-12 md:mb-4">
                 {/* Profile Image - No ring around it */}
                 <div className="w-24 h-24 relative rounded-full bg-[#1E2837] flex-shrink-0">
                   {partnerProject?.logoUrl ? (
@@ -429,7 +429,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
 
       {/* Social Links Section */}
       <div className="px-6 mt-8">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid md:grid-cols-4 grid-cols-2 gap-4">
           {partnerProject?.twitterHandle && (
             <a
               href={`https://twitter.com/${partnerProject.twitterHandle.replace(
@@ -588,7 +588,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
 
       {/* Rest of the content remains the same... */}
       {/* Two Column Layout */}
-      <div className="px-6 mt-8 grid grid-cols-3 gap-8">
+      <div className="px-6 mt-8 grid md:grid-cols-3 gap-8">
         {/* Left Column - Main Content */}
         <div className="col-span-2 space-y-8">
           {/* About Project */}
@@ -809,7 +809,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                 <h4 className="text-white font-medium mb-3">
                   🤝 Active Collaborations:
                 </h4>
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-wrap">
                   {[
                     "ShortLegagos",
                     "Mintrise",

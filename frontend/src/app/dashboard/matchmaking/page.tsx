@@ -323,7 +323,7 @@ export default function MatchmakingPage() {
                 </div>
 
                 {/* Card Content */}
-                <div className="bg-white flex flex-col flex-grow h-full">
+                <div className=" flex flex-col flex-grow h-full">
                   <div className="p-5  bg-[#121D2EE5] rounded-t-2xl h-full">
                     {/* Project/User Name */}
                     <div className="flex items-center gap-3 mb-3">
