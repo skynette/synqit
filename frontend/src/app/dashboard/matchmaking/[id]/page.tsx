@@ -392,25 +392,37 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
               </div>
             </div>
 
-            {/* Partners Icons - Using actual images instead of gradients */}
-            <div className="flex items-center gap-2 mt-4">
-              <span className="text-white text-sm mr-2">Partners</span>
-              <div className="flex gap-1">
-                {/* These would be actual partner images */}
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="w-8 h-8 bg-gray-600 rounded-full overflow-hidden"
-                  >
-                    {/* Replace with actual Image components when you have the URLs */}
-                    <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">{i}</span>
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              {/* Partners Icons - Using actual images instead of gradients */}
+              <div className="flex items-center gap-2 mt-4">
+                <span className="text-white text-sm mr-2">Partners</span>
+                <div className="flex gap-1">
+                  {/* These would be actual partner images */}
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-8 bg-gray-600 rounded-full overflow-hidden"
+                    >
+                      {/* Replace with actual Image components when you have the URLs */}
+                      <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {i}
+                        </span>
+                      </div>
                     </div>
+                  ))}
+                  <div className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center text-xs text-white">
+                    +10
                   </div>
-                ))}
-                <div className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center text-xs text-white">
-                  +10
                 </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-white text-sm mr-2">
+                  Token Contract address:
+                </span>
+                <span className="bg-[#374151] text-gray-300 px-3 py-1 rounded-full text-sm">
+                  {"0xkdfbbbj.............................nm33kk3"}
+                </span>
               </div>
             </div>
 
