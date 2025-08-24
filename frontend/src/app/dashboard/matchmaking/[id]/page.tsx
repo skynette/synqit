@@ -11,6 +11,8 @@ import { buildStyles, CircularProgressbar } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 import { Socials } from "./Socials"
 import { AnalyticsChart } from "./AnalyticsChart"
+import { TechnologyCompatibility } from "./TechnologyCompatibility"
+import { AnalyticsSummary } from "./AnalyticsSummary"
 
 interface PartnerProfileProps {
   params: Promise<{
@@ -243,7 +245,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
             <div className="flex gap-2 justify-between md:flex-row flex-col">
               <div className="flex items-center gap-4 md:-mt-12 md:mb-4">
                 {/* Profile Image - No ring around it */}
-                <div className="w-24 h-24 relative rounded-full bg-[#1E2837] flex-shrink-0">
+                <div className="w-24 h-24 relative rounded-full bg-white/5 backdrop-blur-2xl flex-shrink-0">
                   {partnerProject?.logoUrl ? (
                     <Image
                       src={partnerProject.logoUrl}
@@ -454,8 +456,9 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
       <div className="mt-8 grid md:grid-cols-3 gap-8">
         {/* Left Column - Main Content */}
         <div className="col-span-2 space-y-8">
-          {/* Social Links Section */}
-
+          <div className="w-full">
+            <TechnologyCompatibility />
+          </div>
           <div className="w-full">
             <AnalyticsChart />
           </div>
@@ -520,7 +523,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
           </div>
 
           {/* Project Banner Section */}
-          <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-6">
+          <div className="bg-white/5 backdrop-blur-2xl border border-[#374151] rounded-xl p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 relative rounded-full flex items-center justify-center overflow-hidden">
                 {partnerProject?.logoUrl ? (
@@ -687,7 +690,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                   ].map((name, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 bg-[#1E2837] rounded-full px-3 py-1 border border-[#374151]"
+                      className="flex items-center gap-2 bg-white/5 backdrop-blur-2xl rounded-full px-3 py-1 border border-[#374151]"
                     >
                       <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full"></div>
                       <span className="text-sm text-white">{name}</span>
@@ -837,14 +840,17 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
 
         {/* Right Sidebar */}
         <div className="space-y-6">
+          <div>
+            <AnalyticsSummary />
+          </div>
           {/* How to Apply */}
-          <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-6">
+          <div className="bg-white/5 backdrop-blur-2xl border border-[#374151] rounded-xl p-6">
             <h3 className="text-lg font-bold text-white mb-4">
               How to Apply for Partnership
             </h3>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                <div className="w-6 h-6 border-1 border-[#E8EAEC1A] rounded-full flex items-center justify-center text-white text-sm font-bold">
                   1
                 </div>
                 <p className="text-gray-300 text-sm">
@@ -852,7 +858,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                <div className="w-6 h-6 border-1 border-[#E8EAEC1A] rounded-full flex items-center justify-center text-white text-sm font-bold">
                   2
                 </div>
                 <p className="text-gray-300 text-sm">
@@ -860,13 +866,13 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
                 </p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                <div className="w-6 h-6 border-1 border-[#E8EAEC1A] rounded-full flex items-center justify-center text-white text-sm font-bold">
                   3
                 </div>
                 <p className="text-gray-300 text-sm">Complete the onboarding</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                <div className="w-6 h-6 border-1 border-[#E8EAEC1A] rounded-full flex items-center justify-center text-white text-sm font-bold">
                   4
                 </div>
                 <div>
@@ -878,7 +884,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
           </div>
 
           {/* Follow Section */}
-          <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-6">
+          <div className="bg-white/5 backdrop-blur-2xl border border-[#374151] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
               <div>
                 <h4 className="text-white font-medium">
@@ -898,7 +904,7 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
           </div>
 
           {/* Partnership Info */}
-          <div className="bg-[#1E2837] border border-[#374151] rounded-xl p-6">
+          <div className="bg-white/5 backdrop-blur-2xl border border-[#374151] rounded-xl p-6">
             <h3 className="text-lg font-bold text-white mb-4">
               Partnership Info
             </h3>
