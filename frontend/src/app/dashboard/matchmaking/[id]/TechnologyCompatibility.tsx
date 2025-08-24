@@ -20,7 +20,7 @@ const StatBox: React.FC<{ value: string; label: string }> = ({
   value,
   label,
 }) => (
-  <div className="flex h-24 w-full items-center justify-center rounded-xl border border-white/10 bg-[#5D93FF]">
+  <div className="flex h-24 w-full items-center justify-center rounded-xl border border-white/10 bg-[#5D93FF]/60">
     <div className="text-center">
       <div className="text-3xl font-semibold tracking-tight text-white">
         {value}
@@ -67,7 +67,7 @@ export const TechnologyCompatibility: React.FC<Props> = ({
   const scoreClamped = Math.max(0, Math.min(100, score))
 
   return (
-    <div className="w-full rounded-2xl bg-white/5 backdrop-blur-2xl p-5 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.05)_inset]">
+    <div className="w-full rounded-2xl bg-white/5 backdrop-blur-2xl p-5 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.05)_inset] md:space-y-7">
       {/* Title */}
       <div className="mb-4 flex items-center gap-2 text-sm font-medium text-white">
         <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/10">

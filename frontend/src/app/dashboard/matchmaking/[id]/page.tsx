@@ -13,6 +13,7 @@ import { Socials } from "./Socials"
 import { AnalyticsChart } from "./AnalyticsChart"
 import { TechnologyCompatibility } from "./TechnologyCompatibility"
 import { AnalyticsSummary } from "./AnalyticsSummary"
+import { TokenPerformance } from "./TokenPerformance"
 
 interface PartnerProfileProps {
   params: Promise<{
@@ -461,6 +462,9 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
           </div>
           <div className="w-full">
             <AnalyticsChart />
+          </div>
+          <div>
+            <TokenPerformance />
           </div>
           {/* About Project */}
           <div>
