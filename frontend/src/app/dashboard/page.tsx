@@ -10,6 +10,9 @@ import {
   useOnboarding,
 } from "@/components/onboarding/onboarding-popup"
 import { Project } from "@/lib/api-client"
+import { CompatibilityScore } from "./CompatibilityScore"
+import { ScorePill } from "./ScorePill"
+import SocialsStatus from "./SocialsStatus"
 
 // Loading skeleton component
 const CardSkeleton = () => (
@@ -170,80 +173,97 @@ export default function ExplorePage() {
   return (
     <>
       <div className="space-y-6">
+        <SocialsStatus />
         {/* Header Badge */}
-        <div className="bg-[#121D2E] p-4 md:p-6 rounded-2xl space-y-6">
-          <div className="space-y-3 md:space-y-6 bg-gradient-to-r from-[#030816] to-[#0A0E237D] p-4 md:p-6 rounded-2xl ">
-            <div className="flex justify-start">
-              <div className="flex items-center gap-2 bg-[#1a1f2e] border border-blue-700 rounded-full px-4 py-2">
-                <div className="w-5 h-5 bg-blue-600 rounded flex items-center justify-center">
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
-                  </svg>
+        <div className="grid md:grid-cols-4 md:gap-7 gap-4 bg-[#121D2E] p-4 md:p-6 rounded-2xl">
+          <div className="flex flex-col justify-between space-y-6 col-span-3">
+            <div className="space-y-3 md:space-y-6 bg-gradient-to-r from-[#030816] to-[#0A0E237D] p-4 md:p-6 rounded-2xl ">
+              <div className="flex justify-start">
+                <div className="flex items-center gap-2 bg-[#1a1f2e] border border-blue-700 rounded-full px-4 py-2">
+                  <div className="w-5 h-5 bg-blue-600 rounded flex items-center justify-center">
+                    <svg
+                      className="w-3 h-3 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+                    </svg>
+                  </div>
+                  <span className="text-white text-sm">Explore SynQit</span>
                 </div>
-                <span className="text-white text-sm">Explore SynQit</span>
+              </div>
+
+              {/* Main Header */}
+              <div className="space-y-6">
+                <h1 className="text-xl md:text-4xl font-bold text-white">
+                  Explore Web3 Partnerships Tailored to Your Vision.
+                </h1>
+                <p className="text-gray-400 text-lg">
+                  Discover, Connect, Collaborate - Find the Perfect Web3
+                  Partnership!
+                </p>
               </div>
             </div>
 
-            {/* Main Header */}
-            <div className="space-y-6">
-              <h1 className="text-xl md:text-4xl font-bold text-white">
-                Explore Web3 Partnerships Tailored to Your Vision.
-              </h1>
-              <p className="text-gray-400 text-lg">
-                Discover, Connect, Collaborate - Find the Perfect Web3
-                Partnership!
-              </p>
+            <div className="flex flex-wrap items-center gap-6">
+              <ScorePill label="Community" value={46} />
+              <ScorePill label="Performance" value={46} />
+              <ScorePill label="Marketing" value={46} />
+              <ScorePill label="Tech Fit" value={46} />
             </div>
-          </div>
-          <div className="space-y-3 md:space-y-6 bg-gradient-to-r from-[#030816] to-[#0A0E237D] p-4 md:p-6 rounded-2xl ">
-            {/* Search Bar */}
-            <div className="relative max-w-2xl">
-              <div className="flex items-center gap-3 bg-[#1a1f2e] border border-gray-700 rounded-2xl px-5 py-3.5">
-                <Image
-                  src="/icons/synqit.png"
-                  alt="Synqit AI"
-                  width={24}
-                  height={24}
-                  className="rounded"
-                />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  placeholder="Search projects, VCs, or builders... (AI-powered suggestions)"
-                  className="flex-1 bg-transparent text-white placeholder:text-gray-500 focus:outline-none text-sm"
-                />
+            <div className="space-y-3 md:space-y-6 bg-gradient-to-r from-[#030816] to-[#0A0E237D] p-4 md:p-6 rounded-2xl ">
+              {/* Search Bar */}
+              <div className="relative max-w-2xl">
+                <div className="flex items-center gap-3 bg-[#1a1f2e] border border-gray-700 rounded-2xl px-5 py-3.5">
+                  <Image
+                    src="/icons/synqit.png"
+                    alt="Synqit AI"
+                    width={24}
+                    height={24}
+                    className="rounded"
+                  />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    placeholder="Search projects, VCs, or builders... (AI-powered suggestions)"
+                    className="flex-1 bg-transparent text-white placeholder:text-gray-500 focus:outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Status Messages */}
+              <div className="space-y-1">
+                <p className="text-gray-400 text-sm italic">
+                  {isLoading
+                    ? "Loading..."
+                    : `Showing ${projects.length} results`}
+                </p>
+                <p className="text-gray-400 text-sm">
+                  <span className="italic">
+                    SynQit AI suggests Partners that Matches your Profile
+                  </span>{" "}
+                  <span className="font-medium">(Coming Soon!)</span>
+                </p>
+              </div>
+
+              {/* AI Suggestions Placeholder */}
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-pink-500/20 rounded-full animate-pulse"></div>
+                <div className="w-8 h-8 bg-blue-500/20 rounded-full animate-pulse"></div>
+                <div className="w-8 h-8 bg-gray-500/20 rounded-full animate-pulse"></div>
+                <div className="w-8 h-8 bg-green-500/20 rounded-full animate-pulse"></div>
+                <div className="w-8 h-8 bg-purple-500/20 rounded-full animate-pulse"></div>
               </div>
             </div>
-
-            {/* Status Messages */}
-            <div className="space-y-1">
-              <p className="text-gray-400 text-sm italic">
-                {isLoading
-                  ? "Loading..."
-                  : `Showing ${projects.length} results`}
-              </p>
-              <p className="text-gray-400 text-sm">
-                <span className="italic">
-                  SynQit AI suggests Partners that Matches your Profile
-                </span>{" "}
-                <span className="font-medium">(Coming Soon!)</span>
-              </p>
-            </div>
-
-            {/* AI Suggestions Placeholder */}
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-pink-500/20 rounded-full animate-pulse"></div>
-              <div className="w-8 h-8 bg-blue-500/20 rounded-full animate-pulse"></div>
-              <div className="w-8 h-8 bg-gray-500/20 rounded-full animate-pulse"></div>
-              <div className="w-8 h-8 bg-green-500/20 rounded-full animate-pulse"></div>
-              <div className="w-8 h-8 bg-purple-500/20 rounded-full animate-pulse"></div>
-            </div>
           </div>
+
+          <CompatibilityScore
+            value={95}
+            suggested={{ name: "The Graph" }}
+            onFinish={() => alert("Finish Profile Setup")}
+            onViewProfile={() => alert("View Profile")}
+          />
         </div>
 
         {/* Filters Container */}
