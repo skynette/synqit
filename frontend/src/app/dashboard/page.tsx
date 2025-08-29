@@ -14,6 +14,43 @@ import { CompatibilityScore } from "./CompatibilityScore"
 import { ScorePill } from "./ScorePill"
 import SocialsStatus from "./SocialsStatus"
 
+function MetricTile({
+  value,
+  label,
+}: {
+  value: number | string
+  label: string
+}) {
+  return (
+    <div className="flex h-18 w-full items-center justify-center rounded-[22px] border border-[#7EA0FF] bg-gradient-to-b from-[#5E7EE6] to-[#4968D1] px-6 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
+      <div className="text-center">
+        <div className="text-[20px] leading-none font-extrabold tracking-tight">
+          {value}
+        </div>
+        <div className="mt-2 text-[14px] leading-none opacity-95">
+          Github {label}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ProgressBar({ value }: { value: number }) {
+  const v = Math.max(0, Math.min(100, value))
+  return (
+    <div className="h-2 w-full rounded-full bg-[#D9DEE7] mb-4">
+      <div
+        className="h-2 rounded-full bg-[#37C27F]"
+        style={{ width: `${v}%` }}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={v}
+        role="progressbar"
+      />
+    </div>
+  )
+}
+
 // Loading skeleton component
 const CardSkeleton = () => (
   <div className="bg-[#1a1f2e] border border-gray-800 rounded-2xl overflow-hidden animate-pulse">
@@ -646,6 +683,25 @@ export default function ExplorePage() {
                               {blockchain.blockchain}
                             </span>
                           ))}
+                    </div>
+
+                    {/* Tiles */}
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <MetricTile value={234} label="Stars" />
+                      <MetricTile value={542} label="Forks" />
+                    </div>
+
+                    {/* Tech Alignment header */}
+                    <div className="mt-5 flex items-center justify-between text-[16px]">
+                      <span className="text-white/90">
+                        Tech Alignment Score
+                      </span>
+                      <span className="font-semibold">{87}/100</span>
+                    </div>
+
+                    {/* Progress */}
+                    <div className="mt-2">
+                      <ProgressBar value={87} />
                     </div>
 
                     {/* View Details Button */}
