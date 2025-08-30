@@ -7,6 +7,8 @@
  * 
  * Routes:
  * - POST /api/messages/send - Send a message
+ * - POST /api/messages/direct - Send a direct message
+ * - GET /api/messages/direct/:userId - Get direct messages with a user
  * - GET /api/messages/conversations - Get all conversations
  * - GET /api/messages/partnerships/:id - Get messages for a partnership
  * - POST /api/messages/mark-read - Mark messages as read
@@ -112,6 +114,32 @@ const validatePaginationQuery = [
 ];
 
 /**
+ * Direct Message Validation
+ */
+const validateDirectMessage = [
+  body('receiverId')
+    .isUUID()
+    .withMessage('Receiver ID must be a valid UUID'),
+  body('content')
+    .isLength({ min: 1, max: 5000 })
+    .withMessage('Message content must be between 1 and 5000 characters')
+    .trim(),
+  body('messageType')
+    .optional()
+    .isIn(['TEXT', 'FILE', 'SYSTEM'])
+    .withMessage('Invalid message type')
+];
+
+/**
+ * User ID Validation for direct messages
+ */
+const validateUserId = [
+  param('userId')
+    .isUUID()
+    .withMessage('User ID must be a valid UUID')
+];
+
+/**
  * Search Query Validation
  */
 const validateSearchQuery = [
@@ -136,6 +164,41 @@ router.post(
   generalLimiter,
   validateSendMessage,
   MessageController.sendMessage
+);
+
+/**
+ * @route POST /api/messages/direct
+ * @desc Send a direct message to another user
+ * @access Private
+ * @middleware generalLimiter, authenticate, validateDirectMessage
+ */
+router.post(
+  '/direct',
+  generalLimiter,
+  validateDirectMessage,
+  MessageController.sendDirectMessage
+);
+
+/**
+ * @route GET /api/messages/direct/:userId
+ * @desc Get direct messages with another user
+ * @access Private
+ * @middleware generalLimiter, authenticate, validateUserId, validatePaginationQuery
+ */
+router.get(
+  '/direct/:userId',
+  generalLimiter,
+  validateUserId,
+  validatePaginationQuery,
+  query('before')
+    .optional()
+    .isISO8601()
+    .withMessage('Before date must be in ISO8601 format'),
+  query('after')
+    .optional()
+    .isISO8601()
+    .withMessage('After date must be in ISO8601 format'),
+  MessageController.getDirectMessages
 );
 
 /**

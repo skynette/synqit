@@ -20,7 +20,9 @@
       "Bash(find:*)",
       "Bash(mkdir:*)",
       "Bash(sed:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(chmod:*)",
+      "Bash(./verify-endpoints.sh:*)"
     ],
     "deny": []
   }

@@ -28,6 +28,173 @@ import { AppError } from '../utils/errors';
 export class MessageService {
 
   /**
+   * Get direct messages between two users (regardless of partnerships)
+   * @param userId - Current user ID
+   * @param otherUserId - Other user ID
+   * @param options - Pagination options
+   * @returns Direct messages between the two users
+   */
+  static async getDirectMessages(
+    userId: string,
+    otherUserId: string,
+    options: {
+      page?: number;
+      limit?: number;
+      before?: Date;
+      after?: Date;
+    } = {}
+  ) {
+    try {
+      const { page = 1, limit = 50, before, after } = options;
+      const skip = (page - 1) * limit;
+
+      // Build where clause for messages between these two users
+      const whereClause: any = {
+        OR: [
+          { senderId: userId, receiverId: otherUserId },
+          { senderId: otherUserId, receiverId: userId }
+        ]
+      };
+
+      if (before || after) {
+        whereClause.createdAt = {};
+        if (before) whereClause.createdAt.lt = before;
+        if (after) whereClause.createdAt.gt = after;
+      }
+
+      const messages = await prisma.message.findMany({
+        where: whereClause,
+        include: {
+          sender: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              profileImage: true
+            }
+          },
+          receiver: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              profileImage: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      });
+
+      const total = await prisma.message.count({ where: whereClause });
+
+      // Mark messages as read for the requesting user
+      await prisma.message.updateMany({
+        where: {
+          senderId: otherUserId,
+          receiverId: userId,
+          isRead: false
+        },
+        data: {
+          isRead: true,
+          readAt: new Date()
+        }
+      });
+
+      // Reverse messages to show oldest first
+      const sortedMessages = messages.reverse();
+
+      return {
+        messages: sortedMessages,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        }
+      };
+    } catch (error) {
+      console.error('Get direct messages error:', error);
+      throw new AppError('Failed to get direct messages', 500);
+    }
+  }
+
+  /**
+   * Send a direct message between two users
+   * @param senderId - Sender user ID
+   * @param receiverId - Receiver user ID
+   * @param content - Message content
+   * @param messageType - Type of message
+   * @returns Created message
+   */
+  static async sendDirectMessage(
+    senderId: string,
+    receiverId: string,
+    content: string,
+    messageType: 'TEXT' | 'FILE' | 'SYSTEM' = 'TEXT'
+  ) {
+    try {
+      // Verify both users exist
+      const [sender, receiver] = await Promise.all([
+        prisma.user.findUnique({ where: { id: senderId } }),
+        prisma.user.findUnique({ where: { id: receiverId } })
+      ]);
+
+      if (!sender || !receiver) {
+        throw new AppError('One or both users not found', 404);
+      }
+
+      // Create the direct message
+      const message = await prisma.message.create({
+        data: {
+          senderId,
+          receiverId,
+          content,
+          messageType,
+          isRead: false
+        },
+        include: {
+          sender: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              profileImage: true
+            }
+          },
+          receiver: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              profileImage: true
+            }
+          }
+        }
+      });
+
+      // Create notification for the recipient
+      await prisma.notification.create({
+        data: {
+          userId: receiverId,
+          title: 'New Message',
+          content: `${sender.firstName} ${sender.lastName} sent you a direct message`,
+          notificationType: 'SYSTEM_UPDATE'
+        }
+      });
+
+      return message;
+    } catch (error) {
+      console.error('Send direct message error:', error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError('Failed to send direct message', 500);
+    }
+  }
+
+  /**
    * Send a message within a partnership
    * @param userId - ID of the user sending the message
    * @param data - Message data including partnership ID and content
@@ -73,7 +240,7 @@ export class MessageService {
           partnershipId,
           content,
           messageType,
-          // attachmentUrl, // Field not in schema
+          // Note: attachmentUrl field not in current schema
           isRead: false
         },
         include: {
@@ -90,14 +257,14 @@ export class MessageService {
 
       // Create notification for the recipient
       const recipientId = partnership.requesterId === userId ? partnership.receiverId : partnership.requesterId;
-      const senderName = 'Someone'; // `${message.sender.firstName} ${message.sender.lastName}` - sender relation not included
+      const senderName = `${message.sender.firstName} ${message.sender.lastName}`;
       
       await prisma.notification.create({
         data: {
           userId: recipientId,
           title: 'New Message',
           content: `${senderName} sent you a message in "${partnership.title}"`,
-          notificationType: 'SYSTEM_UPDATE', // 'MESSAGE' type doesn't exist in schema
+          notificationType: 'SYSTEM_UPDATE',
           partnershipId: partnershipId
         }
       });
@@ -267,22 +434,33 @@ export class MessageService {
           requesterProject: {
             select: {
               id: true,
-              name: true, // Schema uses 'name' not 'projectName'
-              logoUrl: true // Schema uses 'logoUrl' not 'projectLogo'
+              name: true,
+              logoUrl: true
             }
           },
           receiverProject: {
             select: {
               id: true,
-              name: true, // Schema uses 'name' not 'projectName'
-              logoUrl: true // Schema uses 'logoUrl' not 'projectLogo'
+              name: true,
+              logoUrl: true
             }
           },
-          // messages: { orderBy: { createdAt: 'desc' }, take: 1 } - not including messages for now
-          // _count: { messages: true } - not including message counts for now
+          messages: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+            include: {
+              sender: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true
+                }
+              }
+            }
+          }
         },
         orderBy: {
-          updatedAt: 'desc' // Changed from messages._count which doesn't work
+          updatedAt: 'desc'
         },
         skip,
         take: limit
@@ -292,12 +470,28 @@ export class MessageService {
         where: partnershipsWhereClause
       });
 
+      // Get unread counts for each partnership
+      const partnershipIds = partnerships.map(p => p.id);
+      const unreadCounts = await Promise.all(
+        partnershipIds.map(async (partnershipId) => {
+          const count = await prisma.message.count({
+            where: {
+              partnershipId,
+              senderId: { not: userId },
+              isRead: false
+            }
+          });
+          return { partnershipId, count };
+        })
+      );
+
       // Format conversations
       const conversations = partnerships.map(partnership => {
         const isRequester = partnership.requesterId === userId;
-        const partner = null; // isRequester ? partnership.receiver : partnership.requester - relations not included
-        const partnerProject = null; // isRequester ? partnership.receiverProject : partnership.requesterProject - relations not included
-        const myProject = null; // isRequester ? partnership.requesterProject : partnership.receiverProject - relations not included
+        const partner = isRequester ? partnership.receiver : partnership.requester;
+        const partnerProject = isRequester ? partnership.receiverProject : partnership.requesterProject;
+        const myProject = isRequester ? partnership.requesterProject : partnership.receiverProject;
+        const unreadCount = unreadCounts.find(uc => uc.partnershipId === partnership.id)?.count || 0;
         
         return {
           id: partnership.id,
@@ -306,16 +500,16 @@ export class MessageService {
           partner,
           partnerProject,
           myProject,
-          lastMessage: null, // partnership.messages[0] || null - messages not included
-          unreadCount: 0, // partnership._count.messages - count not included
+          lastMessage: partnership.messages[0] || null,
+          unreadCount,
           updatedAt: partnership.updatedAt
         };
       });
 
-      // Sort by last message time (using partnership updatedAt since lastMessage is null)
+      // Sort by last message time
       conversations.sort((a, b) => {
-        const aTime = a.updatedAt; // a.lastMessage?.createdAt || a.updatedAt - lastMessage is null
-        const bTime = b.updatedAt; // b.lastMessage?.createdAt || b.updatedAt - lastMessage is null
+        const aTime = a.lastMessage?.createdAt || a.updatedAt;
+        const bTime = b.lastMessage?.createdAt || b.updatedAt;
         return new Date(bTime).getTime() - new Date(aTime).getTime();
       });
 
@@ -373,11 +567,12 @@ export class MessageService {
         whereClause.id = { in: messageIds };
       }
 
-      // Mark messages as read
+      // Mark messages as read and set readAt timestamp
       const result = await prisma.message.updateMany({
         where: whereClause,
         data: {
-          isRead: true
+          isRead: true,
+          readAt: new Date()
         }
       });
 

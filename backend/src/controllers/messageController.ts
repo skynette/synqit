@@ -33,6 +33,108 @@ import { AppError } from '../utils/errors';
 export class MessageController {
 
   /**
+   * Get direct messages between two users
+   * @route GET /api/messages/direct/:userId
+   * @access Private
+   * @param req.params.userId - Other user ID
+   * @query page, limit, before, after - Pagination and filtering
+   * @returns Direct messages between users
+   */
+  static async getDirectMessages(req: AuthenticatedRequest, res: Response) {
+    try {
+      const currentUserId = req.user!.id;
+      const otherUserId = req.params.userId;
+      const {
+        page = 1,
+        limit = 50,
+        before,
+        after
+      } = req.query as any;
+
+      if (!otherUserId) {
+        return res.status(400).json({
+          success: false,
+          message: 'User ID is required'
+        });
+      }
+
+      const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        before: before ? new Date(before) : undefined,
+        after: after ? new Date(after) : undefined
+      };
+
+      const result = await MessageService.getDirectMessages(currentUserId, otherUserId, options);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        message: 'Direct messages retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Get direct messages error:', error);
+      
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          message: error.message
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get direct messages'
+      });
+    }
+  }
+
+  /**
+   * Send a direct message to another user
+   * @route POST /api/messages/direct
+   * @access Private
+   * @param req.body - Message data including receiver ID and content
+   * @returns Created message object
+   */
+  static async sendDirectMessage(req: AuthenticatedRequest, res: Response) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
+      const senderId = req.user!.id;
+      const { receiverId, content, messageType = 'TEXT' } = req.body;
+
+      const message = await MessageService.sendDirectMessage(senderId, receiverId, content, messageType);
+
+      res.status(201).json({
+        success: true,
+        data: message,
+        message: 'Direct message sent successfully'
+      });
+    } catch (error) {
+      console.error('Send direct message error:', error);
+      
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({
+          success: false,
+          message: error.message
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send direct message'
+      });
+    }
+  }
+
+  /**
    * Send a message within a partnership
    * @route POST /api/messages/send
    * @access Private
