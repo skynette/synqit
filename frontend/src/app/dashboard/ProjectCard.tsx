@@ -203,7 +203,7 @@ function TechFitCard({ project }: { project: Project }) {
           <ProgressBar value={87} />
         </div>
 
-        <Link href={`/dashboard/matchmaking/${project.id}`} className="mt-auto">
+        <Link href={`/dashboard/explore/${project.id}`} className="mt-auto">
           <button className="w-full rounded-lg bg-blue-600/20 py-3 text-sm font-medium text-blue-400 transition-colors duration-200 hover:bg-blue-600/30">
             View Details
           </button>
@@ -235,7 +235,7 @@ function PerformanceCard({
 }) {
   const pct = clampPct(totals.sentimentPct)
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-[#1C2736] bg-[#0F1720] p-4 sm:p-5">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-800 bg-[#1a1f2e] p-4 sm:p-5">
       <div className="mb-3 flex items-center gap-3">
         <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-[#0B1320] text-white">
           {project.logoUrl ? (
@@ -260,7 +260,7 @@ function PerformanceCard({
         </div>
       </div>
 
-      <p className="mb-3 line-clamp-1 text-sm text-white/70">
+      <p className="mb-5 line-clamp-1 text-sm text-white/70">
         {project.description || "—"}
       </p>
 
@@ -311,7 +311,7 @@ function PerformanceCard({
       </div>
       <ProgressBar value={pct} track="#E6EAF2" fill="#30B26F" />
 
-      <Link href={`/dashboard/matchmaking/${project.id}`} className="mt-auto">
+      <Link href={`/dashboard/explore/${project.id}`} className="mt-auto">
         <button className="w-full rounded-[14px] border border-[#5F7EE6] bg-[#5D93FF99] from-[#5E7EE6] to-[#4968D1] px-4 py-3 text-sm font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition-opacity hover:opacity-95">
           View Details
         </button>
@@ -345,7 +345,7 @@ function MarketingCard({
   const mscore = clampPct(metrics.marketingScore)
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-[#1C2736] bg-[#0F1720] p-4 sm:p-5">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-800 bg-[#1a1f2e] p-4 sm:p-5">
       {/* Header */}
       <div className="mb-3 flex items-center gap-3">
         <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-[#0B1320] text-white">
@@ -369,7 +369,7 @@ function MarketingCard({
         </h3>
       </div>
 
-      <p className="mb-3 line-clamp-1 text-sm text-white/70">
+      <p className="mb-5 line-clamp-1 text-sm text-white/70">
         {project.description || "—"}
       </p>
 
@@ -417,7 +417,7 @@ function MarketingCard({
       </div>
       <ProgressBar value={mscore} />
 
-      <Link href={`/dashboard/matchmaking/${project.id}`} className="mt-auto">
+      <Link href={`/dashboard/explore/${project.id}`} className="mt-auto">
         <button className="w-full rounded-[14px] border border-[#5F7EE6] bg-[#5D93FF99] from-[#5E7EE6] to-[#4968D1] px-4 py-3 text-sm font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition-opacity hover:opacity-95">
           View Details
         </button>
@@ -454,7 +454,7 @@ function TokenPerformanceCard({
   const compDeg = `${(comp / 100) * 360}deg`
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-[#1C2736] bg-[#0F1720] p-4 sm:p-5">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-800 bg-[#1a1f2e] p-4 sm:p-5">
       {/* header */}
       <div className="mb-3 flex items-center gap-3">
         <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-[#0B1320] text-white">
@@ -478,7 +478,7 @@ function TokenPerformanceCard({
         </h3>
       </div>
 
-      <p className="mb-3 line-clamp-1 text-sm text-white/70">
+      <p className="mb-5 line-clamp-1 text-sm text-white/70">
         {project.description || "—"}
       </p>
 
@@ -569,7 +569,7 @@ function TokenPerformanceCard({
         </span>
       </div>
 
-      <Link href={`/dashboard/matchmaking/${project.id}`} className="mt-auto">
+      <Link href={`/dashboard/explore/${project.id}`} className="mt-auto">
         <button className="w-full rounded-[14px] border border-[#5F7EE6] bg-[#5D93FF99] from-[#5E7EE6] to-[#4968D1] px-4 py-3 text-sm font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition-opacity hover:opacity-95">
           View Details
         </button>
