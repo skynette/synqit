@@ -33,6 +33,7 @@ import { authenticate } from '../middleware/auth';
 import { MatchingController } from '../controllers/matchingController';
 import { generalLimiter } from '../middleware/rateLimiter';
 import { body, param, query } from 'express-validator';
+import { validateCuid } from '../utils/validation';
 
 const router = Router();
 
@@ -44,8 +45,8 @@ router.use(authenticate);
  */
 const validatePartnershipRequest = [
   body('receiverProjectId')
-    .isLength({ min: 1 })
-    .withMessage('Receiver project ID is required'),
+    .custom(validateCuid)
+    .withMessage('Receiver project ID must be a valid cuid'),
   body('partnershipType')
     .isIn(['TECHNICAL', 'BUSINESS', 'MARKETING', 'ADVISORY', 'INVESTMENT', 'COLLABORATION'])
     .withMessage('Invalid partnership type'),
@@ -78,8 +79,8 @@ const validatePartnershipRequest = [
  */
 const validatePartnershipId = [
   param('id')
-    .isLength({ min: 1 })
-    .withMessage('Partnership ID is required')
+    .custom(validateCuid)
+    .withMessage('Partnership ID must be a valid cuid')
 ];
 
 /**
