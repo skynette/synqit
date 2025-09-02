@@ -34,6 +34,7 @@ import { authenticate } from '../middleware/auth';
 import { MessageController } from '../controllers/messageController';
 import { generalLimiter } from '../middleware/rateLimiter';
 import { body, param, query } from 'express-validator';
+import { validateCuid } from '../utils/validation';
 
 const router = Router();
 
@@ -45,8 +46,8 @@ router.use(authenticate);
  */
 const validateSendMessage = [
   body('partnershipId')
-    .isUUID()
-    .withMessage('Partnership ID must be a valid UUID'),
+    .custom(validateCuid)
+    .withMessage('Partnership ID must be a valid cuid'),
   body('content')
     .isLength({ min: 1, max: 5000 })
     .withMessage('Message content must be between 1 and 5000 characters')
@@ -66,19 +67,19 @@ const validateSendMessage = [
  */
 const validateMarkAsRead = [
   body('partnershipId')
-    .isUUID()
-    .withMessage('Partnership ID must be a valid UUID'),
+    .custom(validateCuid)
+    .withMessage('Partnership ID must be a valid cuid'),
   body('messageIds')
     .optional()
     .isArray()
     .withMessage('Message IDs must be an array')
     .custom((value) => {
       if (Array.isArray(value)) {
-        return value.every(id => typeof id === 'string' && id.length > 0);
+        return value.every(id => typeof id === 'string' && validateCuid(id));
       }
       return false;
     })
-    .withMessage('All message IDs must be valid strings')
+    .withMessage('All message IDs must be valid cuids')
 ];
 
 /**
@@ -86,8 +87,8 @@ const validateMarkAsRead = [
  */
 const validatePartnershipId = [
   param('id')
-    .isUUID()
-    .withMessage('Partnership ID must be a valid UUID')
+    .custom(validateCuid)
+    .withMessage('Partnership ID must be a valid cuid')
 ];
 
 /**
@@ -95,8 +96,8 @@ const validatePartnershipId = [
  */
 const validateMessageId = [
   param('id')
-    .isUUID()
-    .withMessage('Message ID must be a valid UUID')
+    .custom(validateCuid)
+    .withMessage('Message ID must be a valid cuid')
 ];
 
 /**
@@ -118,8 +119,8 @@ const validatePaginationQuery = [
  */
 const validateDirectMessage = [
   body('receiverId')
-    .isUUID()
-    .withMessage('Receiver ID must be a valid UUID'),
+    .custom(validateCuid)
+    .withMessage('Receiver ID must be a valid cuid'),
   body('content')
     .isLength({ min: 1, max: 5000 })
     .withMessage('Message content must be between 1 and 5000 characters')
@@ -135,8 +136,8 @@ const validateDirectMessage = [
  */
 const validateUserId = [
   param('userId')
-    .isUUID()
-    .withMessage('User ID must be a valid UUID')
+    .custom(validateCuid)
+    .withMessage('User ID must be a valid cuid')
 ];
 
 /**
@@ -148,8 +149,8 @@ const validateSearchQuery = [
     .withMessage('Search query must be between 2 and 100 characters'),
   query('partnershipId')
     .optional()
-    .isUUID()
-    .withMessage('Partnership ID must be a valid UUID'),
+    .custom(validateCuid)
+    .withMessage('Partnership ID must be a valid cuid'),
   ...validatePaginationQuery
 ];
 

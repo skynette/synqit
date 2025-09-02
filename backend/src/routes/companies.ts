@@ -31,6 +31,7 @@ import { authenticate } from '../middleware/auth';
 import { CompanyController } from '../controllers/companyController';
 import { generalLimiter } from '../middleware/rateLimiter';
 import { param, query } from 'express-validator';
+import { validateCuid } from '../utils/validation';
 
 const router = Router();
 
@@ -89,8 +90,8 @@ const validateListingQuery = [
  */
 const validateCompanyId = [
   param('id')
-    .isUUID()
-    .withMessage('Company ID must be a valid UUID')
+    .custom(validateCuid)
+    .withMessage('Company ID must be a valid cuid')
 ];
 
 /**
@@ -243,8 +244,8 @@ router.get(
     .withMessage('Limit must be between 1 and 50'),
   query('excludeCompanyId')
     .optional()
-    .isUUID()
-    .withMessage('Exclude company ID must be a valid UUID'),
+    .custom(validateCuid)
+    .withMessage('Exclude company ID must be a valid cuid'),
   CompanyController.getCompaniesByType
 );
 
