@@ -14,6 +14,9 @@ import { AnalyticsChart } from "./AnalyticsChart"
 import { TechnologyCompatibility } from "./TechnologyCompatibility"
 import { AnalyticsSummary } from "./AnalyticsSummary"
 import { TokenPerformance } from "./TokenPerformance"
+import { BarChart, BookOpen, TrendingUp } from "lucide-react"
+import { SocialMediaPerformance } from "./SocialPeroformace"
+import { SocialAnalyticsChart } from "./SocialAnalyticsChart"
 
 interface PartnerProfileProps {
   params: Promise<{
@@ -111,6 +114,10 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
       setCancellingPartnership(false)
     }
   }
+
+  const [analyticsTab, setAnalyticsTab] = useState<"general" | "social">(
+    "general"
+  )
 
   if (loading) {
     return (
@@ -444,9 +451,42 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
         </div>
       </div>
 
-      <div>
-        <h2 className="text-xl mt-8">General Analytics</h2>
-        <p className="opacity-60">Linked website performance</p>
+      <div className="flex items-center justify-between flex-wrap">
+        <div>
+          <h2 className="text-xl mt-8">
+            {analyticsTab === "general"
+              ? "General Analytics"
+              : "Social media performance"}
+          </h2>
+          <p className="opacity-60">Linked website performance</p>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="bg-[#D0DCF514] p-1 rounded-md flex text-sm">
+            <div
+              className={`p-2 px-3 rounded-md flex items-center gap-2 cursor-pointer ${
+                analyticsTab === "general" ? "bg-[#464C59]" : ""
+              }`}
+              onClick={() => setAnalyticsTab("general")}
+            >
+              <TrendingUp size={16} />
+              <p>General Analytics</p>
+            </div>
+            <div
+              className={`p-2 px-3 rounded-md flex items-center gap-2 cursor-pointer ${
+                analyticsTab === "social" ? "bg-[#464C59]" : ""
+              }`}
+              onClick={() => setAnalyticsTab("social")}
+            >
+              <BarChart size={16} />
+              <p>Social Media</p>
+            </div>
+          </div>
+
+          <div className="bg-[#D0DCF514] p-3 rounded-md cursor-pointer">
+            <BookOpen size={16} />
+          </div>
+        </div>
       </div>
 
       {/* Social Links Section */}
@@ -458,10 +498,18 @@ export default function PartnerProfilePage({ params }: PartnerProfileProps) {
         {/* Left Column - Main Content */}
         <div className="col-span-2 space-y-8">
           <div className="w-full">
-            <TechnologyCompatibility />
+            {analyticsTab === "general" ? (
+              <TechnologyCompatibility />
+            ) : (
+              <SocialMediaPerformance />
+            )}
           </div>
           <div className="w-full">
-            <AnalyticsChart />
+            {analyticsTab === "general" ? (
+              <AnalyticsChart />
+            ) : (
+              <SocialAnalyticsChart />
+            )}
           </div>
           <div>
             <TokenPerformance />

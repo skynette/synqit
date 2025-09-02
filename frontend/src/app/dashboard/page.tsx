@@ -13,43 +13,8 @@ import { Project } from "@/lib/api-client"
 import { CompatibilityScore } from "./CompatibilityScore"
 import { ScorePill } from "./ScorePill"
 import SocialsStatus from "./SocialsStatus"
-
-function MetricTile({
-  value,
-  label,
-}: {
-  value: number | string
-  label: string
-}) {
-  return (
-    <div className="flex h-18 w-full items-center justify-center rounded-[22px] border border-[#7EA0FF] bg-gradient-to-b from-[#5E7EE6] to-[#4968D1] px-6 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
-      <div className="text-center">
-        <div className="text-[20px] leading-none font-extrabold tracking-tight">
-          {value}
-        </div>
-        <div className="mt-2 text-[14px] leading-none opacity-95">
-          Github {label}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function ProgressBar({ value }: { value: number }) {
-  const v = Math.max(0, Math.min(100, value))
-  return (
-    <div className="h-2 w-full rounded-full bg-[#D9DEE7] mb-4">
-      <div
-        className="h-2 rounded-full bg-[#37C27F]"
-        style={{ width: `${v}%` }}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={v}
-        role="progressbar"
-      />
-    </div>
-  )
-}
+import TrendingNowTabs from "./TrendingNowTabs"
+import { ProjectCard } from "./ProjectCard"
 
 // Loading skeleton component
 const CardSkeleton = () => (
@@ -500,7 +465,7 @@ export default function ExplorePage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar border p-1 rounded-full w-fit">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -532,187 +497,27 @@ export default function ExplorePage() {
         )}
 
         {!isError && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div>
             {isLoading ? (
               // Show loading skeletons
-              Array.from({ length: 8 }).map((_, index) => (
-                <CardSkeleton key={index} />
-              ))
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <CardSkeleton key={index} />
+                ))}
+              </div>
             ) : projects.length > 0 ? (
               // Show projects
-              projects.map((project: Project) => (
-                <div
-                  key={project.id}
-                  className="bg-[#1a1f2e] border border-gray-800 rounded-2xl overflow-hidden flex flex-col hover:border-gray-700 transition-colors"
-                >
-                  {/* Banner Image */}
-                  <div className="relative h-20 w-full bg-gradient-to-br from-blue-600 to-purple-600">
-                    {project.bannerUrl ? (
-                      <Image
-                        src={project.bannerUrl}
-                        alt={`${project.name} banner`}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <span className="text-white text-2xl font-bold">
-                          {project.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
+              <>
+                {activeTab === "Trending Now" ? (
+                  <TrendingNowTabs projects={projects} />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {projects.map((project: Project) => (
+                      <ProjectCard project={project} key={project.id} />
+                    ))}
                   </div>
-
-                  {/* Card Content */}
-                  <div className="p-5 flex flex-col flex-grow">
-                    {/* Project Logo and Name */}
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 relative rounded-full bg-gradient-to-br from-blue-600 to-purple-600 p-1">
-                        {project.logoUrl ? (
-                          <Image
-                            src={project.logoUrl}
-                            alt={`${project.name} logo`}
-                            fill
-                            className="object-contain rounded-full"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <span className="text-white font-bold">
-                              {project.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <h3 className="font-semibold text-white">
-                        {project.name}
-                      </h3>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-gray-400 text-sm mb-4 flex-grow line-clamp-3">
-                      {project.description || "No description available"}
-                    </p>
-
-                    {/* Project Info */}
-                    <div className="space-y-2 mb-3">
-                      {project.projectType && (
-                        <div className="flex items-center gap-2">
-                          <svg
-                            width="14"
-                            height="15"
-                            viewBox="0 0 14 15"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M8.64513 7.17116V2.97116C8.64513 1.99116 8.1143 1.79283 7.4668 2.52783L7.00013 3.05866L3.05096 7.55033C2.50846 8.16283 2.73596 8.66449 3.55263 8.66449H5.35513V12.8645C5.35513 13.8445 5.88596 14.0428 6.53346 13.3078L7.00013 12.777L10.9493 8.28533C11.4918 7.67283 11.2643 7.17116 10.4476 7.17116H8.64513Z"
-                              fill="#6B7280"
-                            />
-                          </svg>
-                          <span className="text-sm text-gray-400">
-                            Type: {project.projectType}
-                          </span>
-                        </div>
-                      )}
-
-                      {project.projectStage && (
-                        <div className="flex items-center gap-2">
-                          <svg
-                            className="w-4 h-4 text-gray-400"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          <span className="text-sm text-gray-400">
-                            Stage: {project.projectStage}
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="flex items-center gap-2">
-                        <svg
-                          className="w-4 h-4 text-gray-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span className="text-sm text-gray-400">
-                          {project.isLookingForFunding &&
-                          project.isLookingForPartners
-                            ? "Seeking Funding & Partners"
-                            : project.isLookingForFunding
-                            ? "Seeking Funding"
-                            : project.isLookingForPartners
-                            ? "Seeking Partners"
-                            : "Not actively seeking"}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-5">
-                      {project.tags?.slice(0, 3).map((tag, index) => (
-                        <span
-                          key={
-                            typeof tag === "string"
-                              ? tag
-                              : tag.id || tag.tag || index
-                          }
-                          className="px-3 py-1 bg-gray-800 text-gray-400 rounded-full text-xs"
-                        >
-                          {typeof tag === "string" ? tag : tag.tag}
-                        </span>
-                      )) ||
-                        project.blockchainPreferences
-                          ?.slice(0, 3)
-                          .map((blockchain) => (
-                            <span
-                              key={blockchain.id || blockchain.blockchain}
-                              className="px-3 py-1 bg-gray-800 text-gray-400 rounded-full text-xs"
-                            >
-                              {blockchain.blockchain}
-                            </span>
-                          ))}
-                    </div>
-
-                    {/* Tiles */}
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <MetricTile value={234} label="Stars" />
-                      <MetricTile value={542} label="Forks" />
-                    </div>
-
-                    {/* Tech Alignment header */}
-                    <div className="mt-5 flex items-center justify-between text-[16px]">
-                      <span className="text-white/90">
-                        Tech Alignment Score
-                      </span>
-                      <span className="font-semibold">{87}/100</span>
-                    </div>
-
-                    {/* Progress */}
-                    <div className="mt-2">
-                      <ProgressBar value={87} />
-                    </div>
-
-                    {/* View Details Button */}
-                    <Link href={`/dashboard/explore/${project.id}`}>
-                      <button className="w-full py-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg transition-colors duration-200 font-medium text-sm">
-                        View Details
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              ))
+                )}
+              </>
             ) : (
               // No projects found
               <div className="col-span-full text-center py-12">
